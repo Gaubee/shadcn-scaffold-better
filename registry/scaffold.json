@@ -1,0 +1,56 @@
+{
+  "name": "scaffold",
+  "type": "registry:ui",
+  "files": [
+    {
+      "path": "components/scaffold/scaffold.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/scaffold/app-bar.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/scaffold/drawer.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/scaffold/bottom-navigation-bar.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/scaffold/navigation-rail.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/scaffold/floating-action-button.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/scaffold/snackbar.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/scaffold/modal.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/scaffold/index.ts",
+      "type": "registry:ui"
+    }
+  ],
+  "dependencies": [
+    "class-variance-authority",
+    "clsx",
+    "tailwind-merge",
+    "lucide-react"
+  ],
+  "registryDependencies": [],
+  "tailwind": {
+    "config": {
+      "content": [
+        "./src/components/scaffold/**/*.{js,ts,jsx,tsx,mdx}"
+      ]
+    }
+  }
+}

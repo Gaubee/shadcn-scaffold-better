@@ -1,0 +1,16 @@
+{
+  "name": "drawer",
+  "type": "registry:ui",
+  "files": [
+    {
+      "path": "components/scaffold/drawer.tsx",
+      "type": "registry:ui"
+    }
+  ],
+  "dependencies": [
+    "class-variance-authority",
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": []
+}

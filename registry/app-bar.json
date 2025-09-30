@@ -1,0 +1,16 @@
+{
+  "name": "app-bar",
+  "type": "registry:ui",
+  "files": [
+    {
+      "path": "components/scaffold/app-bar.tsx",
+      "type": "registry:ui"
+    }
+  ],
+  "dependencies": [
+    "class-variance-authority",
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": []
+}

@@ -1,0 +1,434 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  :root {
+    --radius: 0.65rem;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+  }
+
+  .dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  /* Enable scroll-driven animations support */
+  @supports (animation-timeline: scroll()) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  @supports (corner-shape: superellipse(2)) {
+    :root {
+      --radius: 1.3rem;
+    }
+    :not(.rounded-full) {
+      corner-shape: superellipse(2);
+    }
+  }
+}
+
+/* Advanced scroll-driven animations */
+@layer utilities {
+  @supports (animation-timeline: scroll()) {
+    @keyframes fade-in-up {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes scale-up {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes reveal {
+      from {
+        clip-path: inset(0 100% 0 0);
+      }
+      to {
+        clip-path: inset(0 0 0 0);
+      }
+    }
+
+    .scroll-fade-in {
+      animation: fade-in-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+
+    .scroll-scale {
+      animation: scale-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 25%;
+    }
+
+    .scroll-reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 40%;
+    }
+  }
+
+  /* Parallax scroll effects */
+  @supports (animation-timeline: scroll()) {
+    @keyframes parallax-slow {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(100px);
+      }
+    }
+
+    @keyframes parallax-fast {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(-100px);
+      }
+    }
+
+    .parallax-slow {
+      animation: parallax-slow linear;
+      animation-timeline: scroll();
+      animation-range: 0 500px;
+    }
+
+    .parallax-fast {
+      animation: parallax-fast linear;
+      animation-timeline: scroll();
+      animation-range: 0 500px;
+    }
+  }
+
+  /* AppBar scroll-driven animations */
+  @supports (animation-timeline: scroll()) {
+    /* Collapsible AppBar - height shrink */
+    @keyframes app-bar-collapse {
+      from {
+        height: var(--app-bar-expanded-height, 64px);
+      }
+      to {
+        height: var(--app-bar-collapsed-height, 56px);
+      }
+    }
+
+    .app-bar-collapsible {
+      animation: app-bar-collapse linear both;
+      animation-timeline: scroll();
+      animation-range: 0 100px;
+    }
+
+    /* Immersive AppBar - backdrop fade in */
+    @keyframes app-bar-backdrop-fade {
+      from {
+        opacity: 0;
+        backdrop-filter: blur(0px) saturate(1);
+      }
+      to {
+        opacity: 1;
+        backdrop-filter: blur(12px) saturate(1.5);
+      }
+    }
+
+    .app-bar-backdrop {
+      animation: app-bar-backdrop-fade linear both;
+      animation-timeline: scroll();
+      animation-range: 0 100px;
+    }
+
+    /* Immersive AppBar - leading element slide */
+    @keyframes app-bar-leading-slide {
+      from {
+        opacity: 0.5;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-4px);
+      }
+    }
+
+    .app-bar-leading {
+      animation: app-bar-leading-slide linear both;
+      animation-timeline: scroll();
+      animation-range: 0 200px;
+    }
+
+    /* Immersive AppBar - title movement */
+    @keyframes app-bar-title-move {
+      from {
+        opacity: 0.5;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(2px);
+      }
+    }
+
+    .app-bar-title {
+      animation: app-bar-title-move linear both;
+      animation-timeline: scroll();
+      animation-range: 0 200px;
+    }
+
+    /* Immersive AppBar - actions slide */
+    @keyframes app-bar-actions-slide {
+      from {
+        opacity: 0.5;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(4px);
+      }
+    }
+
+    .app-bar-actions {
+      animation: app-bar-actions-slide linear both;
+      animation-timeline: scroll();
+      animation-range: 0 200px;
+    }
+
+    /* Immersive AppBar - overall scale */
+    @keyframes app-bar-scale {
+      from {
+        transform: scale(1);
+      }
+      to {
+        transform: scale(0.98);
+      }
+    }
+
+    .app-bar-immersive {
+      animation: app-bar-scale linear both;
+      animation-timeline: scroll();
+      animation-range: 0 200px;
+      transform-origin: top center;
+    }
+  }
+
+  /* Bottom Navigation Bar scroll-driven animations */
+  @supports (animation-timeline: scroll()) {
+    @keyframes bottom-nav-hide {
+      0%, 10% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(100%);
+      }
+    }
+
+    .bottom-nav-hide-on-scroll {
+      animation: bottom-nav-hide linear both;
+      animation-timeline: scroll();
+      animation-range: 100px 300px;
+    }
+  }
+
+  /* Foldable device support */
+  @media (horizontal-viewport-segments: 2) {
+    .foldable-device.device-unfolded {
+      grid-template-columns: env(viewport-segment-width 0 0) env(
+          viewport-segment-width 1 0
+        );
+    }
+  }
+
+  @media (vertical-viewport-segments: 2) {
+    .foldable-device.device-unfolded {
+      grid-template-rows: env(viewport-segment-height 0 0) env(
+          viewport-segment-height 1 0
+        );
+    }
+  }
+
+  /* Container query support for responsive layouts */
+  @supports (container-type: inline-size) {
+    /* Scaffold container queries */
+    @container scaffold (min-width: 640px) {
+      .scaffold-responsive {
+        --scaffold-spacing: 1rem;
+        --scaffold-content-max-width: 640px;
+      }
+    }
+
+    @container scaffold (min-width: 768px) {
+      .scaffold-responsive {
+        --scaffold-spacing: 1.5rem;
+        --scaffold-content-max-width: 768px;
+      }
+    }
+
+    @container scaffold (min-width: 1024px) {
+      .scaffold-responsive {
+        --scaffold-spacing: 2rem;
+        --scaffold-content-max-width: 1024px;
+      }
+    }
+
+    @container scaffold (min-width: 1280px) {
+      .scaffold-responsive {
+        --scaffold-spacing: 2.5rem;
+        --scaffold-content-max-width: 1280px;
+      }
+    }
+
+    @container scaffold (min-width: 1536px) {
+      .scaffold-responsive {
+        --scaffold-spacing: 3rem;
+        --scaffold-content-max-width: 1536px;
+      }
+    }
+
+    /* Content area responsive styles */
+    .scaffold-content {
+      padding-inline: var(--scaffold-spacing, 1rem);
+      max-width: var(--scaffold-content-max-width, 100%);
+      margin-inline: auto;
+    }
+
+    /* Adaptive grid columns */
+    @container scaffold (min-width: 640px) {
+      .scaffold-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @container scaffold (min-width: 1024px) {
+      .scaffold-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @container scaffold (min-width: 1280px) {
+      .scaffold-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  }
+}
