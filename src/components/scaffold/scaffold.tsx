@@ -77,50 +77,119 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
 
       let rafId: number | null = null;
       let ticking = false;
+      let cleanup: (() => void) | null = null;
+      let isMounted = true;
 
       const checkBreakpoint = () => {
-        if (ticking) return;
+        if (!isMounted || ticking) return;
         ticking = true;
 
         rafId = requestAnimationFrame(() => {
+          if (!isMounted) {
+            ticking = false;
+            return;
+          }
+
           const width = window.innerWidth;
           setIsDesktop(width >= responsiveBreakpoint);
 
-          // Detect foldable devices using viewport segments
-          if ('visualViewport' in window && (window as any).visualViewport?.segments) {
-            setIsFoldable(true);
-            const segments = (window as any).visualViewport.segments;
-            setFoldState(segments.length > 1 ? 'unfolded' : 'folded');
-          } else {
+          // Detect foldable devices using viewport segments with feature detection
+          import('@/lib/feature-detection').then(({ supports }) => {
+            if (!isMounted) return; // Skip if unmounted
+            const viewportSegmentsSupport = supports('viewport-segments');
+            if (viewportSegmentsSupport.supported) {
+              setIsFoldable(true);
+              const segments = (window as any).visualViewport?.segments;
+              setFoldState(segments && segments.length > 1 ? 'unfolded' : 'folded');
+            } else {
+              setIsFoldable(false);
+            }
+          }).catch(() => {
+            if (!isMounted) return; // Skip if unmounted
             setIsFoldable(false);
-          }
+          });
 
           ticking = false;
         });
       };
 
-      // Use ResizeObserver for better performance if available
-      if (typeof ResizeObserver !== 'undefined') {
-        const resizeObserver = new ResizeObserver(checkBreakpoint);
-        resizeObserver.observe(document.documentElement);
+      // Use feature detection for ResizeObserver
+      import('@/lib/feature-detection').then(({ supports, loadPolyfill }) => {
+        if (!isMounted) return; // Component unmounted before module loaded
 
-        // Initial check
-        checkBreakpoint();
+        const resizeObserverSupport = supports('resize-observer');
 
-        return () => {
-          resizeObserver.disconnect();
-          if (rafId !== null) cancelAnimationFrame(rafId);
+        const setupObserver = () => {
+          if (!isMounted) return; // Skip setup if unmounted
+
+          if (resizeObserverSupport.supported || window.ResizeObserver) {
+            const resizeObserver = new ResizeObserver(checkBreakpoint);
+            resizeObserver.observe(document.documentElement);
+
+            // Initial check
+            checkBreakpoint();
+
+            // Store cleanup function
+            cleanup = () => {
+              resizeObserver.disconnect();
+              if (rafId !== null) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+              }
+            };
+          } else {
+            // Fallback to resize event
+            checkBreakpoint();
+            window.addEventListener('resize', checkBreakpoint);
+
+            // Store cleanup function
+            cleanup = () => {
+              window.removeEventListener('resize', checkBreakpoint);
+              if (rafId !== null) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+              }
+            };
+          }
         };
-      } else {
-        // Fallback to resize event
+
+        // Load polyfill if needed
+        if (resizeObserverSupport.polyfillNeeded) {
+          loadPolyfill('resize-observer')
+            .then(() => {
+              if (isMounted) setupObserver();
+            })
+            .catch(() => {
+              if (isMounted) setupObserver();
+            });
+        } else {
+          setupObserver();
+        }
+      }).catch(() => {
+        if (!isMounted) return; // Skip if unmounted
+
+        // Fallback if feature detection module fails to load
         checkBreakpoint();
         window.addEventListener('resize', checkBreakpoint);
-
-        return () => {
+        cleanup = () => {
           window.removeEventListener('resize', checkBreakpoint);
-          if (rafId !== null) cancelAnimationFrame(rafId);
+          if (rafId !== null) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+          }
         };
-      }
+      });
+
+      // Return cleanup function that will be called on unmount or dependency change
+      return () => {
+        isMounted = false;
+        if (cleanup) {
+          cleanup();
+        }
+        if (rafId !== null) {
+          cancelAnimationFrame(rafId);
+        }
+      };
     }, [responsive, responsiveBreakpoint]);
 
     // Determine which navigation to show

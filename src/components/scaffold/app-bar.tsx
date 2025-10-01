@@ -75,16 +75,26 @@ export const AppBar = React.forwardRef<HTMLElement, AppBarProps>(
     const [isCollapsed, setIsCollapsed] = React.useState(false);
     const headerRef = React.useRef<HTMLElement>(null);
 
-    // Check for CSS scroll-driven animations support
+    // Check for CSS scroll-driven animations support using feature detection
     React.useEffect(() => {
       if (typeof window === 'undefined') return;
 
-      const supported =
-        typeof CSS !== 'undefined' &&
-        (CSS.supports('animation-timeline: scroll()') ||
-        'scrollTimeline' in document.documentElement.style);
+      let isMounted = true;
 
-      setSupportsScrollTimeline(supported);
+      // Dynamically import feature detection to avoid SSR issues
+      import('@/lib/feature-detection').then(({ supports }) => {
+        if (!isMounted) return; // Component unmounted, skip state update
+        const scrollTimelineSupport = supports('scroll-timeline');
+        setSupportsScrollTimeline(scrollTimelineSupport.supported);
+      }).catch(() => {
+        // Silently fail if module can't be loaded
+        if (!isMounted) return;
+        setSupportsScrollTimeline(false);
+      });
+
+      return () => {
+        isMounted = false;
+      };
     }, []);
 
     // JavaScript fallback for browsers without scroll-driven animations support
