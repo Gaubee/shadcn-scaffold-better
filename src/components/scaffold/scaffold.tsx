@@ -218,30 +218,36 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
         style={{
           display: 'grid',
           gridTemplateAreas: hasNavRail
-            ? `"nav header header"
-               "nav main main"
-               "nav footer footer"`
-            : `"header header header"
-               "main main main"
-               "footer footer footer"`,
+            ? `"nav header"
+               "nav main"
+               "nav footer"`
+            : `"header"
+               "main"
+               "footer"`,
           gridTemplateRows: 'auto 1fr auto',
-          gridTemplateColumns: hasNavRail ? `${navRailWidth}px 1fr auto` : '1fr',
+          gridTemplateColumns: hasNavRail ? `${navRailWidth}px 1fr` : '1fr',
           containerType: 'inline-size',
           containerName: 'scaffold',
         } as React.CSSProperties}
       >
-        {/* AppBar */}
+        {/* AppBar - rendered first to ensure proper z-index stacking */}
         {appBar && (
-          <div style={{ gridArea: 'header' }}>
+          <div
+            className="scaffold-header"
+            style={{
+              gridArea: 'header',
+              // Only apply sticky positioning if AppBar uses sticky position (default)
+              // This allows AppBar's position prop to work correctly
+              ...((!appBar.props.position || appBar.props.position === 'sticky') && {
+                position: 'sticky',
+                top: 0,
+                zIndex: 50,
+              }),
+            }}
+          >
             {appBar}
           </div>
         )}
-
-        {/* Drawer (left) */}
-        {showDrawer && drawer}
-
-        {/* End Drawer (right) */}
-        {endDrawer}
 
         {/* Navigation Rail */}
         {showNavigationRail && (
@@ -271,6 +277,12 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
 
         {/* Floating Action Button */}
         {floatingActionButton}
+
+        {/* Drawer (left) - rendered after grid content for proper z-index stacking */}
+        {showDrawer && drawer}
+
+        {/* End Drawer (right) */}
+        {endDrawer}
       </div>
     );
   }
