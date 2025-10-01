@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/utils';
+import { supports } from '@/lib/feature-detection';
 
 export interface AppBarProps {
   children?: React.ReactNode;
@@ -79,22 +80,8 @@ export const AppBar = React.forwardRef<HTMLElement, AppBarProps>(
     React.useEffect(() => {
       if (typeof window === 'undefined') return;
 
-      let isMounted = true;
-
-      // Dynamically import feature detection to avoid SSR issues
-      import('@/lib/feature-detection').then(({ supports }) => {
-        if (!isMounted) return; // Component unmounted, skip state update
-        const scrollTimelineSupport = supports('scroll-timeline');
-        setSupportsScrollTimeline(scrollTimelineSupport.supported);
-      }).catch(() => {
-        // Silently fail if module can't be loaded
-        if (!isMounted) return;
-        setSupportsScrollTimeline(false);
-      });
-
-      return () => {
-        isMounted = false;
-      };
+      const scrollTimelineSupport = supports('scroll-timeline');
+      setSupportsScrollTimeline(scrollTimelineSupport.supported);
     }, []);
 
     // JavaScript fallback for browsers without scroll-driven animations support

@@ -5,7 +5,6 @@ import {
   Scaffold,
   AppBar,
   Drawer,
-  NavigationRail,
   FloatingActionButton,
   Snackbar,
   useSnackbar,
@@ -226,33 +225,13 @@ export default function ResponsiveExamplePage() {
             </div>
           </Drawer>
         }
-        navigationRail={
-          <NavigationRail
-            items={navigationItems}
-            value={selectedNav}
-            onValueChange={(value) => {
-              setSelectedNav(value);
-              snackbar.show(`Switched to ${navigationItems.find(i => i.key === value)?.label}`, { severity: 'default' });
-            }}
-            showLabels
-            width={120}
-            elevation={2}
-            header={
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-purple-600 rounded-full flex items-center justify-center text-primary-foreground font-bold shadow-md">
-                FM
-              </div>
-            }
-            footer={
-              <button
-                onClick={() => setModalOpen(true)}
-                className="p-2 hover:bg-accent rounded-full transition-colors"
-                aria-label="Settings"
-              >
-                <Settings size={24} />
-              </button>
-            }
-          />
-        }
+        navigationItems={navigationItems}
+        navigationValue={selectedNav}
+        onNavigationChange={(value) => {
+          setSelectedNav(value);
+          snackbar.show(`Switched to ${navigationItems.find(i => i.key === value)?.label}`, { severity: 'default' });
+        }}
+        navigationShowLabels
         floatingActionButton={
           <FloatingActionButton
             icon={<Plus size={24} />}

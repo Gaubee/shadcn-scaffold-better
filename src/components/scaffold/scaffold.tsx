@@ -4,9 +4,23 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import type { AppBarProps } from './app-bar';
 import type { DrawerProps } from './drawer';
-import type { BottomNavigationBarProps } from './bottom-navigation-bar';
-import type { NavigationRailProps } from './navigation-rail';
+import type { BottomNavigationBarProps, BottomNavigationItem } from './bottom-navigation-bar';
+import type { NavigationRailProps, NavigationRailItem } from './navigation-rail';
 import type { FloatingActionButtonProps } from './floating-action-button';
+import { BottomNavigationBar } from './bottom-navigation-bar';
+import { NavigationRail } from './navigation-rail';
+import { supports, loadPolyfill } from '@/lib/feature-detection';
+
+/**
+ * Unified navigation item type (compatible with both BottomNavigationBar and NavigationRail)
+ */
+export interface NavigationItem {
+  key: string;
+  icon: React.ReactNode;
+  label: string;
+  badge?: string | number;
+  disabled?: boolean;
+}
 
 export interface ScaffoldProps {
   children: React.ReactNode;
@@ -31,6 +45,26 @@ export interface ScaffoldProps {
    * Navigation rail component (alternative to drawer for desktop)
    */
   navigationRail?: React.ReactElement<NavigationRailProps>;
+  /**
+   * Adaptive navigation items (auto-switch between BottomNavigationBar and NavigationRail based on screen size)
+   * When provided, bottomNavigationBar and navigationRail props are ignored
+   */
+  navigationItems?: NavigationItem[];
+  /**
+   * Current selected navigation item key (used with navigationItems)
+   */
+  navigationValue?: string;
+  /**
+   * Callback when navigation selection changes (used with navigationItems)
+   */
+  onNavigationChange?: (value: string) => void;
+  /**
+   * Whether to show labels in navigation (used with navigationItems)
+   * - true: Always show labels
+   * - false: Never show labels
+   * - 'selected': Only show label for selected item
+   */
+  navigationShowLabels?: boolean | 'selected';
   /**
    * Floating action button
    */
@@ -59,6 +93,10 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
       endDrawer,
       bottomNavigationBar,
       navigationRail,
+      navigationItems,
+      navigationValue,
+      onNavigationChange,
+      navigationShowLabels = true,
       floatingActionButton,
       backgroundColor = 'bg-background',
       responsive = true,
@@ -66,9 +104,11 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
     },
     ref
   ) => {
-    const [isDesktop, setIsDesktop] = React.useState(
-      typeof window !== 'undefined' ? window.innerWidth >= responsiveBreakpoint : false
-    );
+    // Use lazy initialization to get correct initial value on client without SSR mismatch
+    const [isDesktop, setIsDesktop] = React.useState(() => {
+      if (typeof window === 'undefined') return false;
+      return window.innerWidth >= responsiveBreakpoint;
+    });
     const [isFoldable, setIsFoldable] = React.useState(false);
     const [foldState, setFoldState] = React.useState<'folded' | 'unfolded'>('unfolded');
 
@@ -94,8 +134,7 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
           setIsDesktop(width >= responsiveBreakpoint);
 
           // Detect foldable devices using viewport segments with feature detection
-          import('@/lib/feature-detection').then(({ supports }) => {
-            if (!isMounted) return; // Skip if unmounted
+          try {
             const viewportSegmentsSupport = supports('viewport-segments');
             if (viewportSegmentsSupport.supported) {
               setIsFoldable(true);
@@ -104,81 +143,63 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
             } else {
               setIsFoldable(false);
             }
-          }).catch(() => {
-            if (!isMounted) return; // Skip if unmounted
+          } catch {
             setIsFoldable(false);
-          });
+          }
 
           ticking = false;
         });
       };
 
       // Use feature detection for ResizeObserver
-      import('@/lib/feature-detection').then(({ supports, loadPolyfill }) => {
-        if (!isMounted) return; // Component unmounted before module loaded
+      const resizeObserverSupport = supports('resize-observer');
 
-        const resizeObserverSupport = supports('resize-observer');
+      const setupObserver = () => {
+        if (!isMounted) return; // Skip setup if unmounted
 
-        const setupObserver = () => {
-          if (!isMounted) return; // Skip setup if unmounted
+        if (resizeObserverSupport.supported || window.ResizeObserver) {
+          const resizeObserver = new ResizeObserver(checkBreakpoint);
+          resizeObserver.observe(document.documentElement);
 
-          if (resizeObserverSupport.supported || window.ResizeObserver) {
-            const resizeObserver = new ResizeObserver(checkBreakpoint);
-            resizeObserver.observe(document.documentElement);
+          // Initial check
+          checkBreakpoint();
 
-            // Initial check
-            checkBreakpoint();
-
-            // Store cleanup function
-            cleanup = () => {
-              resizeObserver.disconnect();
-              if (rafId !== null) {
-                cancelAnimationFrame(rafId);
-                rafId = null;
-              }
-            };
-          } else {
-            // Fallback to resize event
-            checkBreakpoint();
-            window.addEventListener('resize', checkBreakpoint);
-
-            // Store cleanup function
-            cleanup = () => {
-              window.removeEventListener('resize', checkBreakpoint);
-              if (rafId !== null) {
-                cancelAnimationFrame(rafId);
-                rafId = null;
-              }
-            };
-          }
-        };
-
-        // Load polyfill if needed
-        if (resizeObserverSupport.polyfillNeeded) {
-          loadPolyfill('resize-observer')
-            .then(() => {
-              if (isMounted) setupObserver();
-            })
-            .catch(() => {
-              if (isMounted) setupObserver();
-            });
+          // Store cleanup function
+          cleanup = () => {
+            resizeObserver.disconnect();
+            if (rafId !== null) {
+              cancelAnimationFrame(rafId);
+              rafId = null;
+            }
+          };
         } else {
-          setupObserver();
-        }
-      }).catch(() => {
-        if (!isMounted) return; // Skip if unmounted
+          // Fallback to resize event
+          checkBreakpoint();
+          window.addEventListener('resize', checkBreakpoint);
 
-        // Fallback if feature detection module fails to load
-        checkBreakpoint();
-        window.addEventListener('resize', checkBreakpoint);
-        cleanup = () => {
-          window.removeEventListener('resize', checkBreakpoint);
-          if (rafId !== null) {
-            cancelAnimationFrame(rafId);
-            rafId = null;
-          }
-        };
-      });
+          // Store cleanup function
+          cleanup = () => {
+            window.removeEventListener('resize', checkBreakpoint);
+            if (rafId !== null) {
+              cancelAnimationFrame(rafId);
+              rafId = null;
+            }
+          };
+        }
+      };
+
+      // Load polyfill if needed
+      if (resizeObserverSupport.polyfillNeeded) {
+        loadPolyfill('resize-observer')
+          .then(() => {
+            if (isMounted) setupObserver();
+          })
+          .catch(() => {
+            if (isMounted) setupObserver();
+          });
+      } else {
+        setupObserver();
+      }
 
       // Return cleanup function that will be called on unmount or dependency change
       return () => {
@@ -192,17 +213,52 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
       };
     }, [responsive, responsiveBreakpoint]);
 
+    // Auto-generate navigation components from navigationItems if provided
+    const autoBottomNav = React.useMemo(() => {
+      if (!navigationItems) return null;
+      return (
+        <BottomNavigationBar
+          items={navigationItems}
+          value={navigationValue}
+          onValueChange={onNavigationChange}
+          showLabels={navigationShowLabels}
+          elevation={3}
+        />
+      );
+    }, [navigationItems, navigationValue, onNavigationChange, navigationShowLabels]);
+
+    const autoNavigationRail = React.useMemo(() => {
+      if (!navigationItems) return null;
+      // NavigationRail only supports boolean for showLabels, so convert 'selected' to true
+      const railShowLabels = navigationShowLabels === 'selected' ? true : navigationShowLabels;
+      return (
+        <NavigationRail
+          items={navigationItems}
+          value={navigationValue}
+          onValueChange={onNavigationChange}
+          showLabels={railShowLabels}
+          elevation={2}
+        />
+      );
+    }, [navigationItems, navigationValue, onNavigationChange, navigationShowLabels]);
+
+    // Use auto-generated navigation if navigationItems is provided, otherwise use provided components
+    const finalBottomNav = navigationItems ? autoBottomNav : bottomNavigationBar;
+    const finalNavigationRail = navigationItems ? autoNavigationRail : navigationRail;
+
     // Determine which navigation to show
-    const showNavigationRail = responsive && isDesktop && navigationRail;
+    const showNavigationRail = responsive && isDesktop && finalNavigationRail;
     const showDrawer = drawer && (!responsive || !isDesktop);
+    // Only hide bottomNavigationBar on desktop if navigationRail is available as alternative
+    const showBottomNav = finalBottomNav && (!responsive || !isDesktop || !finalNavigationRail);
 
     // Calculate content padding based on active components
-    const hasBottomNav = !!bottomNavigationBar;
+    const hasBottomNav = !!showBottomNav;
     const hasNavRail = !!showNavigationRail;
 
     // Get navigation rail width if present
     const navRailWidth = showNavigationRail
-      ? navigationRail.props.width || 80
+      ? (finalNavigationRail as React.ReactElement<NavigationRailProps>)?.props?.width || 80
       : 0;
 
     return (
@@ -252,7 +308,7 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
         {/* Navigation Rail */}
         {showNavigationRail && (
           <div style={{ gridArea: 'nav' }}>
-            {navigationRail}
+            {finalNavigationRail}
           </div>
         )}
 
@@ -269,9 +325,9 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
         </main>
 
         {/* Bottom Navigation Bar */}
-        {bottomNavigationBar && (
+        {showBottomNav && (
           <div style={{ gridArea: 'footer' }}>
-            {bottomNavigationBar}
+            {finalBottomNav}
           </div>
         )}
 
