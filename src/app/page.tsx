@@ -51,13 +51,13 @@ export default function Home() {
               <Link
                 key={example.href}
                 href={example.href}
-                className="group p-6 border-2 rounded-xl hover:border-primary hover:shadow-lg transition-all duration-300"
+                className="group p-6 border-2 rounded-xl hover:border-primary hover:shadow-lg transition-all duration-300 hover:bg-accent/50"
               >
                 <div className="text-4xl mb-4">{example.icon}</div>
-                <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+                <h3 className="text-xl font-semibold mb-2 group-hover:text-foreground transition-colors">
                   {example.title}
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground group-hover:text-foreground/80">
                   {example.description}
                 </p>
               </Link>
