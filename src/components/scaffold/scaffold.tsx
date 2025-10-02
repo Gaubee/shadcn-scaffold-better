@@ -104,13 +104,16 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
     },
     ref
   ) => {
-    // Use lazy initialization to get correct initial value on client without SSR mismatch
-    const [isDesktop, setIsDesktop] = React.useState(() => {
-      if (typeof window === 'undefined') return false;
-      return window.innerWidth >= responsiveBreakpoint;
-    });
+    // Always start with false to match SSR, then update after mount
+    const [isDesktop, setIsDesktop] = React.useState(false);
     const [isFoldable, setIsFoldable] = React.useState(false);
     const [foldState, setFoldState] = React.useState<'folded' | 'unfolded'>('unfolded');
+    const [mounted, setMounted] = React.useState(false);
+
+    // Set mounted flag after hydration
+    React.useEffect(() => {
+      setMounted(true);
+    }, []);
 
     React.useEffect(() => {
       if (!responsive) return;

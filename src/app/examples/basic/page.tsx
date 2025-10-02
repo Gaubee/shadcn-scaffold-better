@@ -12,6 +12,8 @@ import {
   Modal,
   ModalFooter,
 } from '@/components/scaffold';
+import { useTheme } from '@/components/theme-provider';
+import { Select } from '@/components/ui/select';
 import {
   Menu,
   Home,
@@ -45,6 +47,7 @@ export default function BasicExamplePage() {
   const [likedPosts, setLikedPosts] = React.useState<Set<number>>(new Set());
   const [bookmarkedPosts, setBookmarkedPosts] = React.useState<Set<number>>(new Set());
   const snackbar = useSnackbar();
+  const { theme, setTheme } = useTheme();
 
   const navigationItems = [
     { key: 'home', icon: <Home size={24} />, label: 'Home' },
@@ -133,7 +136,7 @@ export default function BasicExamplePage() {
             leading={
               <button
                 onClick={() => setDrawerOpen(true)}
-                className="p-2 hover:bg-accent rounded-full transition-colors"
+                className="p-2 hover:bg-accent rounded-full transition-colors text-foreground"
                 aria-label="Open menu"
               >
                 <Menu size={24} />
@@ -151,14 +154,14 @@ export default function BasicExamplePage() {
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => snackbar.show('Search feature coming soon', { severity: 'info' })}
-                  className="p-2 hover:bg-accent rounded-full transition-colors"
+                  className="p-2 hover:bg-accent rounded-full transition-colors text-foreground"
                   aria-label="Search"
                 >
                   <Search size={20} />
                 </button>
                 <button
                   onClick={() => setModalOpen(true)}
-                  className="p-2 hover:bg-accent rounded-full transition-colors"
+                  className="p-2 hover:bg-accent rounded-full transition-colors text-foreground"
                   aria-label="Settings"
                 >
                   <Settings size={20} />
@@ -292,13 +295,13 @@ export default function BasicExamplePage() {
               <div className="flex flex-wrap gap-3 justify-center">
                 <button
                   onClick={() => snackbar.show('Opening documentation...', { severity: 'info' })}
-                  className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:brightness-110 transition-all shadow-md hover:shadow-lg"
+                  className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg"
                 >
                   View Documentation
                 </button>
                 <button
                   onClick={() => window.open('https://github.com', '_blank')}
-                  className="px-6 py-3 border border-primary text-primary rounded-lg hover:bg-primary/10 transition-all"
+                  className="px-6 py-3 border-2 border-primary text-primary rounded-lg hover:bg-primary hover:text-primary-foreground transition-all"
                 >
                   View on GitHub
                 </button>
@@ -307,28 +310,28 @@ export default function BasicExamplePage() {
 
             {/* Stats Section */}
             <section className="grid gap-4 md:grid-cols-3">
-              <div className="p-6 border rounded-lg bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950 dark:to-blue-900/50">
+              <div className="p-6 border-2 border-blue-200 dark:border-blue-800 rounded-lg bg-gradient-to-br from-blue-50/80 to-white dark:from-blue-950 dark:to-blue-900/50">
                 <div className="flex items-center gap-3 mb-2">
                   <TrendingUp className="text-blue-600 dark:text-blue-400" size={24} />
-                  <h4 className="font-semibold">Growing Fast</h4>
+                  <h4 className="font-semibold text-foreground">Growing Fast</h4>
                 </div>
-                <p className="text-2xl font-bold mb-1">10K+</p>
+                <p className="text-2xl font-bold mb-1 text-foreground">10K+</p>
                 <p className="text-sm text-muted-foreground">Active Users</p>
               </div>
-              <div className="p-6 border rounded-lg bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950 dark:to-purple-900/50">
+              <div className="p-6 border-2 border-purple-200 dark:border-purple-800 rounded-lg bg-gradient-to-br from-purple-50/80 to-white dark:from-purple-950 dark:to-purple-900/50">
                 <div className="flex items-center gap-3 mb-2">
                   <Star className="text-purple-600 dark:text-purple-400" size={24} />
-                  <h4 className="font-semibold">High Quality</h4>
+                  <h4 className="font-semibold text-foreground">High Quality</h4>
                 </div>
-                <p className="text-2xl font-bold mb-1">4.9/5</p>
+                <p className="text-2xl font-bold mb-1 text-foreground">4.9/5</p>
                 <p className="text-sm text-muted-foreground">User Rating</p>
               </div>
-              <div className="p-6 border rounded-lg bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-950 dark:to-green-900/50">
+              <div className="p-6 border-2 border-green-200 dark:border-green-800 rounded-lg bg-gradient-to-br from-green-50/80 to-white dark:from-green-950 dark:to-green-900/50">
                 <div className="flex items-center gap-3 mb-2">
                   <Activity className="text-green-600 dark:text-green-400" size={24} />
-                  <h4 className="font-semibold">Actively Maintained</h4>
+                  <h4 className="font-semibold text-foreground">Actively Maintained</h4>
                 </div>
-                <p className="text-2xl font-bold mb-1">Weekly</p>
+                <p className="text-2xl font-bold mb-1 text-foreground">Weekly</p>
                 <p className="text-sm text-muted-foreground">Updates</p>
               </div>
             </section>
@@ -346,67 +349,67 @@ export default function BasicExamplePage() {
                 </button>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="p-6 border rounded-lg hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="p-6 border rounded-lg hover:shadow-lg hover:bg-accent/50 hover:border-primary/50 transition-all cursor-pointer group">
                   <div className="flex items-start justify-between mb-3">
-                    <h4 className="font-semibold text-lg group-hover:text-primary transition-colors">AppBar</h4>
-                    <div className="p-2 bg-primary/10 rounded-lg">
+                    <h4 className="font-semibold text-lg text-foreground transition-colors">AppBar</h4>
+                    <div className="p-2 bg-primary/15 dark:bg-primary/30 rounded-lg group-hover:bg-primary/25 dark:group-hover:bg-primary/40 transition-colors">
                       <Menu size={20} className="text-primary" />
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">
+                  <p className="text-sm text-muted-foreground group-hover:text-foreground/90 mb-3 transition-colors">
                     Fixed header with leading, title, and action areas. Supports collapsible and immersive modes with scroll-driven animations.
                   </p>
                   <div className="flex gap-2">
-                    <span className="px-2 py-1 text-xs bg-primary/10 text-primary rounded">Collapsible</span>
-                    <span className="px-2 py-1 text-xs bg-primary/10 text-primary rounded">Immersive</span>
+                    <span className="px-2 py-1 text-xs bg-primary/15 text-primary dark:bg-primary/30 dark:text-primary-foreground rounded font-semibold">Collapsible</span>
+                    <span className="px-2 py-1 text-xs bg-primary/15 text-primary dark:bg-primary/30 dark:text-primary-foreground rounded font-semibold">Immersive</span>
                   </div>
                 </div>
 
-                <div className="p-6 border rounded-lg hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="p-6 border rounded-lg hover:shadow-lg hover:bg-accent/50 hover:border-purple-500/50 transition-all cursor-pointer group">
                   <div className="flex items-start justify-between mb-3">
-                    <h4 className="font-semibold text-lg group-hover:text-primary transition-colors">Drawer</h4>
-                    <div className="p-2 bg-purple-500/10 rounded-lg">
-                      <Menu size={20} className="text-purple-500" />
+                    <h4 className="font-semibold text-lg text-foreground transition-colors">Drawer</h4>
+                    <div className="p-2 bg-purple-100 dark:bg-purple-500/30 rounded-lg group-hover:bg-purple-200 dark:group-hover:bg-purple-500/40 transition-colors">
+                      <Menu size={20} className="text-purple-600 dark:text-purple-400" />
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">
+                  <p className="text-sm text-muted-foreground group-hover:text-foreground/90 mb-3 transition-colors">
                     Side navigation with gesture support for swipe-to-close. Includes backdrop overlay and keyboard accessibility.
                   </p>
                   <div className="flex gap-2">
-                    <span className="px-2 py-1 text-xs bg-purple-500/10 text-purple-500 rounded">Gestures</span>
-                    <span className="px-2 py-1 text-xs bg-purple-500/10 text-purple-500 rounded">Accessible</span>
+                    <span className="px-2 py-1 text-xs bg-purple-100 text-purple-700 dark:bg-purple-500/30 dark:text-purple-300 rounded font-semibold">Gestures</span>
+                    <span className="px-2 py-1 text-xs bg-purple-100 text-purple-700 dark:bg-purple-500/30 dark:text-purple-300 rounded font-semibold">Accessible</span>
                   </div>
                 </div>
 
-                <div className="p-6 border rounded-lg hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="p-6 border rounded-lg hover:shadow-lg hover:bg-accent/50 hover:border-blue-500/50 transition-all cursor-pointer group">
                   <div className="flex items-start justify-between mb-3">
-                    <h4 className="font-semibold text-lg group-hover:text-primary transition-colors">Bottom Navigation</h4>
-                    <div className="p-2 bg-blue-500/10 rounded-lg">
-                      <Home size={20} className="text-blue-500" />
+                    <h4 className="font-semibold text-lg text-foreground transition-colors">Bottom Navigation</h4>
+                    <div className="p-2 bg-blue-100 dark:bg-blue-500/30 rounded-lg group-hover:bg-blue-200 dark:group-hover:bg-blue-500/40 transition-colors">
+                      <Home size={20} className="text-blue-600 dark:text-blue-400" />
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">
+                  <p className="text-sm text-muted-foreground group-hover:text-foreground/90 mb-3 transition-colors">
                     Mobile-friendly bottom navigation bar with badges, labels, and smooth transitions. Supports hide-on-scroll.
                   </p>
                   <div className="flex gap-2">
-                    <span className="px-2 py-1 text-xs bg-blue-500/10 text-blue-500 rounded">Mobile</span>
-                    <span className="px-2 py-1 text-xs bg-blue-500/10 text-blue-500 rounded">Badges</span>
+                    <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 dark:bg-blue-500/30 dark:text-blue-300 rounded font-semibold">Mobile</span>
+                    <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 dark:bg-blue-500/30 dark:text-blue-300 rounded font-semibold">Badges</span>
                   </div>
                 </div>
 
-                <div className="p-6 border rounded-lg hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="p-6 border rounded-lg hover:shadow-lg hover:bg-accent/50 hover:border-green-500/50 transition-all cursor-pointer group">
                   <div className="flex items-start justify-between mb-3">
-                    <h4 className="font-semibold text-lg group-hover:text-primary transition-colors">FAB</h4>
-                    <div className="p-2 bg-green-500/10 rounded-lg">
-                      <Plus size={20} className="text-green-500" />
+                    <h4 className="font-semibold text-lg text-foreground transition-colors">FAB</h4>
+                    <div className="p-2 bg-green-100 dark:bg-green-500/30 rounded-lg group-hover:bg-green-200 dark:group-hover:bg-green-500/40 transition-colors">
+                      <Plus size={20} className="text-green-600 dark:text-green-400" />
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">
+                  <p className="text-sm text-muted-foreground group-hover:text-foreground/90 mb-3 transition-colors">
                     Floating action button for primary actions. Available in multiple sizes with extended variant for labels.
                   </p>
                   <div className="flex gap-2">
-                    <span className="px-2 py-1 text-xs bg-green-500/10 text-green-500 rounded">Extended</span>
-                    <span className="px-2 py-1 text-xs bg-green-500/10 text-green-500 rounded">Customizable</span>
+                    <span className="px-2 py-1 text-xs bg-green-100 text-green-700 dark:bg-green-500/30 dark:text-green-300 rounded font-semibold">Extended</span>
+                    <span className="px-2 py-1 text-xs bg-green-100 text-green-700 dark:bg-green-500/30 dark:text-green-300 rounded font-semibold">Customizable</span>
                   </div>
                 </div>
               </div>
@@ -422,7 +425,7 @@ export default function BasicExamplePage() {
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => snackbar.show('This is a default message', { severity: 'default' })}
-                    className="px-4 py-2 bg-foreground text-background rounded-lg hover:brightness-90 transition-all text-sm"
+                    className="px-4 py-2 bg-foreground text-background rounded-lg hover:opacity-90 transition-all text-sm"
                   >
                     Default
                   </button>
@@ -481,7 +484,7 @@ export default function BasicExamplePage() {
               {samplePosts.map((post) => (
                 <article
                   key={post.id}
-                  className="p-6 border rounded-lg hover:shadow-lg transition-all"
+                  className="p-6 border rounded-lg hover:shadow-lg hover:bg-accent/30 hover:border-primary/30 transition-all group"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
@@ -489,20 +492,20 @@ export default function BasicExamplePage() {
                         {post.author[0]}
                       </div>
                       <div>
-                        <h4 className="font-semibold">{post.author}</h4>
+                        <h4 className="font-semibold text-foreground">{post.author}</h4>
                         <p className="text-xs text-muted-foreground">{post.time}</p>
                       </div>
                     </div>
                     <button
                       onClick={() => snackbar.show('More options', { severity: 'info' })}
-                      className="p-2 hover:bg-accent rounded-full transition-colors"
+                      className="p-2 hover:bg-accent rounded-full transition-colors text-foreground"
                     >
                       <MoreVertical size={18} />
                     </button>
                   </div>
 
-                  <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
-                  <p className="text-muted-foreground mb-4">{post.content}</p>
+                  <h3 className="text-lg font-semibold mb-2 text-foreground">{post.title}</h3>
+                  <p className="text-muted-foreground group-hover:text-foreground/80 mb-4 transition-colors">{post.content}</p>
 
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div className="flex items-center gap-4">
@@ -510,8 +513,8 @@ export default function BasicExamplePage() {
                         onClick={() => toggleLike(post.id)}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all ${
                           likedPosts.has(post.id)
-                            ? 'bg-red-500/10 text-red-500'
-                            : 'hover:bg-accent text-muted-foreground'
+                            ? 'bg-red-500/15 dark:bg-red-500/25 text-red-600 dark:text-red-400'
+                            : 'hover:bg-accent text-muted-foreground hover:text-foreground'
                         }`}
                       >
                         <Heart
@@ -524,7 +527,7 @@ export default function BasicExamplePage() {
                       </button>
                       <button
                         onClick={() => snackbar.show('View comments', { severity: 'info' })}
-                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-accent rounded-lg transition-colors text-muted-foreground"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-accent rounded-lg transition-colors text-muted-foreground hover:text-foreground"
                       >
                         <MessageSquare size={18} />
                         <span className="text-sm font-medium">{post.comments}</span>
@@ -535,8 +538,8 @@ export default function BasicExamplePage() {
                         onClick={() => toggleBookmark(post.id)}
                         className={`p-2 rounded-lg transition-all ${
                           bookmarkedPosts.has(post.id)
-                            ? 'bg-amber-500/10 text-amber-500'
-                            : 'hover:bg-accent text-muted-foreground'
+                            ? 'bg-amber-500/15 dark:bg-amber-500/25 text-amber-600 dark:text-amber-400'
+                            : 'hover:bg-accent text-muted-foreground hover:text-foreground'
                         }`}
                         aria-label="Bookmark"
                       >
@@ -547,7 +550,7 @@ export default function BasicExamplePage() {
                       </button>
                       <button
                         onClick={handleShare}
-                        className="p-2 hover:bg-accent rounded-lg transition-colors text-muted-foreground"
+                        className="p-2 hover:bg-accent rounded-lg transition-colors text-muted-foreground hover:text-foreground"
                         aria-label="Share"
                       >
                         <Share2 size={18} />
@@ -560,25 +563,25 @@ export default function BasicExamplePage() {
 
             {/* Additional Content */}
             {Array.from({ length: 5 }).map((_, i) => (
-              <section key={i} className="p-6 border rounded-lg">
-                <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+              <section key={i} className="p-6 border rounded-lg hover:shadow-lg hover:bg-accent/30 hover:border-primary/30 transition-all group">
+                <h3 className="text-lg font-semibold mb-2 flex items-center gap-2 text-foreground">
                   <ShoppingCart size={20} className="text-primary" />
                   Content Section {i + 1}
                 </h3>
-                <p className="text-muted-foreground mb-4">
+                <p className="text-muted-foreground group-hover:text-foreground/80 mb-4 transition-colors">
                   This is additional scrollable content to demonstrate the Scaffold layout behavior.
                   The bottom navigation remains fixed, and the FAB stays accessible throughout scrolling.
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => snackbar.show(`Expanded section ${i + 1}`, { severity: 'info' })}
-                    className="px-3 py-1.5 text-sm border rounded-lg hover:bg-accent transition-colors"
+                    className="px-3 py-1.5 text-sm border rounded-lg hover:bg-accent hover:border-primary transition-all text-foreground"
                   >
                     Learn More
                   </button>
                   <button
                     onClick={() => snackbar.show('Added to collection', { severity: 'success' })}
-                    className="px-3 py-1.5 text-sm border rounded-lg hover:bg-accent transition-colors"
+                    className="px-3 py-1.5 text-sm border rounded-lg hover:bg-accent hover:border-primary transition-all text-foreground"
                   >
                     Add to Collection
                   </button>
@@ -601,39 +604,48 @@ export default function BasicExamplePage() {
       >
         <div className="space-y-6">
           <div>
-            <label className="text-sm font-medium mb-2 block">Theme</label>
-            <select className="w-full p-2.5 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary">
-              <option>Light</option>
-              <option>Dark</option>
-              <option>System</option>
-            </select>
+            <label className="text-sm font-medium mb-2 block text-foreground">Theme</label>
+            <Select
+              value={theme}
+              onChange={(value) => setTheme(value as 'light' | 'dark' | 'system')}
+              options={[
+                { value: 'light', label: 'Light' },
+                { value: 'dark', label: 'Dark' },
+                { value: 'system', label: 'System' },
+              ]}
+              aria-label="Select theme"
+            />
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Language</label>
-            <select className="w-full p-2.5 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary">
-              <option>English</option>
-              <option>中文</option>
-              <option>日本語</option>
-              <option>Español</option>
-              <option>Français</option>
-            </select>
+            <label className="text-sm font-medium mb-2 block text-foreground">Language</label>
+            <Select
+              options={[
+                { value: 'en', label: 'English' },
+                { value: 'zh', label: '中文' },
+                { value: 'ja', label: '日本語' },
+                { value: 'es', label: 'Español' },
+                { value: 'fr', label: 'Français' },
+              ]}
+              placeholder="Select language"
+              aria-label="Select language"
+            />
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Notifications</label>
+            <label className="text-sm font-medium mb-2 block text-foreground">Notifications</label>
             <div className="space-y-2">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" defaultChecked className="w-4 h-4 text-primary" />
-                <span className="text-sm">Email notifications</span>
+                <input type="checkbox" defaultChecked className="w-4 h-4 text-primary accent-primary" />
+                <span className="text-sm text-foreground">Email notifications</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" defaultChecked className="w-4 h-4 text-primary" />
-                <span className="text-sm">Push notifications</span>
+                <input type="checkbox" defaultChecked className="w-4 h-4 text-primary accent-primary" />
+                <span className="text-sm text-foreground">Push notifications</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="w-4 h-4 text-primary" />
-                <span className="text-sm">SMS notifications</span>
+                <input type="checkbox" className="w-4 h-4 text-primary accent-primary" />
+                <span className="text-sm text-foreground">SMS notifications</span>
               </label>
             </div>
           </div>
@@ -642,7 +654,7 @@ export default function BasicExamplePage() {
         <ModalFooter>
           <button
             onClick={() => setModalOpen(false)}
-            className="px-4 py-2 border rounded-lg hover:bg-accent transition-colors"
+            className="px-4 py-2 border rounded-lg hover:bg-accent transition-colors text-foreground"
           >
             Cancel
           </button>
@@ -651,7 +663,7 @@ export default function BasicExamplePage() {
               setModalOpen(false);
               snackbar.show('Settings saved successfully!', { severity: 'success' });
             }}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:brightness-110 transition-all"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-all"
           >
             Save Changes
           </button>
@@ -667,7 +679,7 @@ export default function BasicExamplePage() {
         size="sm"
       >
         <div className="py-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-foreground">
             This will make your content visible to all users. You can always edit or delete it later.
           </p>
         </div>
@@ -675,7 +687,7 @@ export default function BasicExamplePage() {
         <ModalFooter>
           <button
             onClick={() => setConfirmModalOpen(false)}
-            className="px-4 py-2 border rounded-lg hover:bg-accent transition-colors"
+            className="px-4 py-2 border rounded-lg hover:bg-accent transition-colors text-foreground"
           >
             Cancel
           </button>
@@ -684,7 +696,7 @@ export default function BasicExamplePage() {
               setConfirmModalOpen(false);
               snackbar.show('Content uploaded successfully!', { severity: 'success' });
             }}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:brightness-110 transition-all"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-all"
           >
             Upload
           </button>

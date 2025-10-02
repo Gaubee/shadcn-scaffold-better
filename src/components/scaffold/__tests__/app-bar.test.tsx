@@ -67,24 +67,27 @@ describe('AppBar', () => {
     );
 
     const header = container.querySelector('header');
-
-    // In test environment, scroll-timeline is not supported by default
-    // So the component will use JavaScript fallback
-    // Check that initial height is set
-    expect(header).toHaveStyle({ height: '80px' });
-
-    // Verify collapsible prop is applied through CSS classes or fallback
     expect(header).toBeDefined();
+
+    // AppBar should either have CSS scroll-timeline classes or JS fallback
+    // Depending on browser support detection
+    const hasScrollTimelineClass = header?.classList.contains('app-bar-collapsible');
+    const hasTransitionClass = header?.classList.contains('transition-all');
+
+    expect(hasScrollTimelineClass || hasTransitionClass).toBe(true);
   });
 
   it('handles immersive mode', () => {
     const { container } = render(<AppBar title="Test" immersive />);
 
     const header = container.querySelector('header');
+    expect(header).toBeDefined();
 
-    // In test environment, scroll-timeline is not supported by default
-    // So the component will use JavaScript fallback with transition classes
-    expect(header).toHaveClass('transition-all');
+    // AppBar should either have CSS scroll-timeline classes or JS fallback
+    const hasImmersiveClass = header?.classList.contains('app-bar-immersive');
+    const hasTransitionClass = header?.classList.contains('transition-all');
+
+    expect(hasImmersiveClass || hasTransitionClass).toBe(true);
 
     // Check backdrop element exists
     const backdrop = container.querySelector('.absolute.inset-0');

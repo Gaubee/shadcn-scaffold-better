@@ -32,14 +32,14 @@ test.describe('AppBar Component', () => {
 
     // Get initial height
     const appBar = page.locator('header').first();
-    const initialHeight = await appBar.evaluate((el) => el.offsetHeight);
+    const initialHeight = await appBar.evaluate((el) => (el as HTMLElement).offsetHeight);
 
     // Scroll down
     await page.evaluate(() => window.scrollTo(0, 200));
     await page.waitForTimeout(500);
 
     // Check if height changed (for collapsible mode)
-    const scrolledHeight = await appBar.evaluate((el) => el.offsetHeight);
+    const scrolledHeight = await appBar.evaluate((el) => (el as HTMLElement).offsetHeight);
 
     // Height should either stay same or shrink
     expect(scrolledHeight).toBeLessThanOrEqual(initialHeight);

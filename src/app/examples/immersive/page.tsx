@@ -30,16 +30,28 @@ export default function ImmersiveExamplePage() {
   const [liked, setLiked] = React.useState(false);
   const [likes, setLikes] = React.useState(248);
   const [scrollProgress, setScrollProgress] = React.useState(0);
+  const [appBarHeight, setAppBarHeight] = React.useState(80); // Initial expanded height
   const snackbar = useSnackbar();
 
-  // Track scroll progress for parallax effects
+  // Track scroll progress for parallax effects and AppBar height
   React.useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = Math.min(scrollTop / Math.max(docHeight, 1), 1);
       setScrollProgress(progress);
+
+      // Calculate current AppBar height (80px -> 56px over 100px scroll)
+      const scrollThreshold = 100;
+      const heightProgress = Math.min(scrollTop / scrollThreshold, 1);
+      const expandedHeight = 80;
+      const collapsedHeight = 56;
+      const currentHeight = expandedHeight - (expandedHeight - collapsedHeight) * heightProgress;
+      setAppBarHeight(currentHeight);
     };
+
+    // Call immediately to set correct initial height based on current scroll position
+    handleScroll();
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -179,8 +191,11 @@ export default function ImmersiveExamplePage() {
             </div>
           </div>
 
-          {/* Article Metadata Bar */}
-          <div className="sticky top-[56px] z-30 bg-background/95 backdrop-blur-sm border-b">
+          {/* Article Metadata Bar - sticks below AppBar when scrolling */}
+          <div
+            className="sticky bg-background/95 backdrop-blur-sm border-b transition-all duration-300"
+            style={{ top: `${appBarHeight}px`, zIndex: 40 }}
+          >
             <div className="container mx-auto px-4">
               <div className="max-w-3xl mx-auto py-4 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">

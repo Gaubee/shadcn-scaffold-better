@@ -56,7 +56,6 @@ describe('Drawer', () => {
         open={true}
         onOpenChange={onOpenChange}
         showBackdrop={true}
-        closeOnBackdropClick={true}
       >
         Content
       </Drawer>

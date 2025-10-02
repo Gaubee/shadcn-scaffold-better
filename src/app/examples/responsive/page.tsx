@@ -11,6 +11,7 @@ import {
   Modal,
   ModalFooter,
 } from '@/components/scaffold';
+import { Select } from '@/components/ui/select';
 import {
   Menu,
   Home,
@@ -48,6 +49,8 @@ export default function ResponsiveExamplePage() {
   const [favoriteItems, setFavoriteItems] = React.useState<Set<number>>(new Set());
   const [modalOpen, setModalOpen] = React.useState(false);
   const [windowWidth, setWindowWidth] = React.useState(0);
+  const [itemsPerPage, setItemsPerPage] = React.useState('6');
+  const [sortBy, setSortBy] = React.useState('name');
   const snackbar = useSnackbar();
 
   React.useEffect(() => {
@@ -107,7 +110,7 @@ export default function ResponsiveExamplePage() {
             leading={
               <button
                 onClick={() => setDrawerOpen(true)}
-                className="p-2 hover:bg-accent rounded-full md:hidden transition-colors"
+                className="p-2 hover:bg-accent rounded-full md:hidden transition-colors text-foreground"
                 aria-label="Open menu"
               >
                 <Menu size={24} />
@@ -125,14 +128,14 @@ export default function ResponsiveExamplePage() {
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => snackbar.show('Search coming soon', { severity: 'info' })}
-                  className="p-2 hover:bg-accent rounded-full transition-colors"
+                  className="p-2 hover:bg-accent rounded-full transition-colors text-foreground"
                   aria-label="Search"
                 >
                   <Search size={20} />
                 </button>
                 <button
                   onClick={() => setModalOpen(true)}
-                  className="p-2 hover:bg-accent rounded-full transition-colors"
+                  className="p-2 hover:bg-accent rounded-full transition-colors text-foreground"
                   aria-label="Settings"
                 >
                   <Settings size={20} />
@@ -580,7 +583,7 @@ export default function ResponsiveExamplePage() {
       >
         <div className="space-y-6">
           <div>
-            <label className="text-sm font-medium mb-2 block">View Mode</label>
+            <label className="text-sm font-medium mb-2 block text-foreground">View Mode</label>
             <div className="flex gap-2">
               <button
                 onClick={() => setViewMode('grid')}
@@ -604,30 +607,40 @@ export default function ResponsiveExamplePage() {
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Items per Page</label>
-            <select className="w-full p-2.5 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary">
-              <option>6 items</option>
-              <option>12 items</option>
-              <option>24 items</option>
-              <option>48 items</option>
-            </select>
+            <label className="text-sm font-medium mb-2 block text-foreground">Items per Page</label>
+            <Select
+              value={itemsPerPage}
+              onChange={setItemsPerPage}
+              options={[
+                { value: '6', label: '6 items' },
+                { value: '12', label: '12 items' },
+                { value: '24', label: '24 items' },
+                { value: '48', label: '48 items' },
+              ]}
+              aria-label="Select items per page"
+            />
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Sort By</label>
-            <select className="w-full p-2.5 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary">
-              <option>Name</option>
-              <option>Date Modified</option>
-              <option>Size</option>
-              <option>Type</option>
-            </select>
+            <label className="text-sm font-medium mb-2 block text-foreground">Sort By</label>
+            <Select
+              value={sortBy}
+              onChange={setSortBy}
+              options={[
+                { value: 'name', label: 'Name' },
+                { value: 'date', label: 'Date Modified' },
+                { value: 'size', label: 'Size' },
+                { value: 'type', label: 'Type' },
+              ]}
+              aria-label="Select sort order"
+            />
           </div>
         </div>
 
         <ModalFooter>
           <button
             onClick={() => setModalOpen(false)}
-            className="px-4 py-2 border rounded-lg hover:bg-accent transition-colors"
+            className="px-4 py-2 border rounded-lg hover:bg-accent transition-colors text-foreground"
           >
             Cancel
           </button>
@@ -636,7 +649,7 @@ export default function ResponsiveExamplePage() {
               setModalOpen(false);
               snackbar.show('Settings saved!', { severity: 'success' });
             }}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:brightness-110 transition-all"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-all"
           >
             Apply
           </button>
