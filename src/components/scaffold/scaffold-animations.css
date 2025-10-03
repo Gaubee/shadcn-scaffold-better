@@ -1,0 +1,675 @@
+/**
+ * Scaffold CSS Scroll-Driven Animations
+ *
+ * 基于 Chrome Scroll-Driven Animations API 实现的原生滚动动画
+ * Fallback: JavaScript 降级处理在组件中实现
+ *
+ * @see https://developer.chrome.com/docs/css-ui/scroll-driven-animations
+ */
+
+/* ========================================
+   AppBar Animations
+   ======================================== */
+
+/**
+ * AppBar 折叠动画
+ * 滚动时从 expanded height 平滑过渡到 collapsed height
+ */
+@keyframes app-bar-collapse {
+  from {
+    height: var(--app-bar-expanded-height, 64px);
+  }
+  to {
+    height: var(--app-bar-collapsed-height, 56px);
+  }
+}
+
+.app-bar-collapsible {
+  animation: app-bar-collapse linear both;
+  animation-timeline: scroll(root block);
+  animation-range: 0 200px;
+}
+
+/**
+ * AppBar 沉浸式背景动画
+ * 初始透明,滚动时逐渐显示背景和模糊效果
+ */
+@keyframes app-bar-backdrop-fade {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px) saturate(1);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(12px) saturate(1.5);
+  }
+}
+
+.app-bar-backdrop {
+  animation: app-bar-backdrop-fade linear both;
+  animation-timeline: scroll(root block);
+  animation-range: 0 100px;
+}
+
+/**
+ * AppBar 元素动画 - Leading
+ */
+@keyframes app-bar-leading-animate {
+  from {
+    opacity: 0.5;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.app-bar-leading {
+  animation: app-bar-leading-animate linear both;
+  animation-timeline: scroll(root block);
+  animation-range: 0 100px;
+}
+
+/**
+ * AppBar 元素动画 - Title
+ */
+@keyframes app-bar-title-animate {
+  from {
+    opacity: 0.5;
+    transform: translateY(2px);
+    font-size: 1em;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    font-size: 0.875em;
+  }
+}
+
+.app-bar-title {
+  animation: app-bar-title-animate linear both;
+  animation-timeline: scroll(root block);
+  animation-range: 0 100px;
+}
+
+/**
+ * AppBar 元素动画 - Actions
+ */
+@keyframes app-bar-actions-animate {
+  from {
+    opacity: 0.5;
+    transform: translateX(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.app-bar-actions {
+  animation: app-bar-actions-animate linear both;
+  animation-timeline: scroll(root block);
+  animation-range: 0 100px;
+}
+
+/* ========================================
+   Bottom Navigation Bar Animations
+   ======================================== */
+
+/**
+ * BottomNavigationBar 滚动隐藏
+ * 向下滚动时隐藏,向上滚动时显示
+ */
+@keyframes bottom-nav-hide {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+.bottom-nav-hide-on-scroll {
+  animation: bottom-nav-hide linear both;
+  animation-timeline: scroll(root block);
+  /* 使用 alternate 方向来实现双向动画 */
+  animation-direction: alternate;
+  animation-range: 0 100px;
+}
+
+/* ========================================
+   Content Animations
+   ======================================== */
+
+/**
+ * 内容淡入动画 (View Timeline)
+ * 元素进入视口时淡入并上移
+ */
+@keyframes scroll-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scroll-fade-in {
+  animation: scroll-fade-in linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 30%;
+}
+
+/**
+ * 内容缩放动画 (View Timeline)
+ * 元素进入视口时从小变大
+ */
+@keyframes scroll-scale {
+  from {
+    opacity: 0;
+    scale: 0.8;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.scroll-scale {
+  animation: scroll-scale linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 100%;
+}
+
+/**
+ * 内容揭示动画 (View Timeline)
+ * 从左侧滑入并淡入
+ */
+@keyframes scroll-reveal {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.scroll-reveal {
+  animation: scroll-reveal linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 40%;
+}
+
+/**
+ * 视差效果 - 慢速
+ * 背景元素缓慢向上移动
+ */
+@keyframes parallax-slow {
+  to {
+    transform: translateY(20%);
+  }
+}
+
+.parallax-slow {
+  animation: parallax-slow linear both;
+  animation-timeline: scroll(root block);
+}
+
+/**
+ * 视差效果 - 快速
+ * 背景元素快速向下移动
+ */
+@keyframes parallax-fast {
+  to {
+    transform: translateY(-30%);
+  }
+}
+
+.parallax-fast {
+  animation: parallax-fast linear both;
+  animation-timeline: scroll(root block);
+}
+
+/**
+ * 视差效果 - 中速
+ */
+@keyframes parallax-medium {
+  to {
+    transform: translateY(-15%);
+  }
+}
+
+.parallax-medium {
+  animation: parallax-medium linear both;
+  animation-timeline: scroll(root block);
+}
+
+/* ========================================
+   Progress Indicators
+   ======================================== */
+
+/**
+ * 滚动进度条
+ * 从 0% 到 100% 展开
+ */
+@keyframes scroll-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.scroll-progress-bar {
+  transform-origin: left center;
+  animation: scroll-progress linear both;
+  animation-timeline: scroll(root block);
+}
+
+/* ========================================
+   Card & List Animations
+   ======================================== */
+
+/**
+ * 卡片堆叠效果
+ * 卡片在滚动时缩小并附着
+ */
+@keyframes card-stack {
+  to {
+    scale: 0.9;
+    filter: brightness(0.8);
+  }
+}
+
+.card-stack-item {
+  animation: card-stack linear both;
+  animation-timeline: view();
+  animation-range: contain 0% contain 100%;
+}
+
+/**
+ * 列表项进入动画
+ */
+@keyframes list-item-enter {
+  entry 0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  entry 100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.list-item-animate {
+  animation: list-item-enter linear both;
+  animation-timeline: view();
+}
+
+/**
+ * 列表项退出动画
+ */
+@keyframes list-item-exit {
+  exit 0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  exit 100% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+.list-item-exit {
+  animation: list-item-exit linear both;
+  animation-timeline: view();
+}
+
+/* ========================================
+   Image & Media Animations
+   ======================================== */
+
+/**
+ * 图片渐显 + 裁剪效果
+ */
+@keyframes image-reveal {
+  from {
+    opacity: 0;
+    clip-path: inset(0% 60% 0% 50%);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0% 0% 0% 0%);
+  }
+}
+
+.image-reveal {
+  animation: image-reveal linear both;
+  animation-timeline: view();
+  animation-range: entry 25% cover 50%;
+}
+
+/**
+ * 图片缩放进入
+ */
+@keyframes image-zoom-in {
+  from {
+    opacity: 0;
+    scale: 1.2;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.image-zoom-in {
+  animation: image-zoom-in linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 100%;
+}
+
+/* ========================================
+   Text Animations
+   ======================================== */
+
+/**
+ * 文字模糊到清晰
+ */
+@keyframes text-blur-in {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.text-blur-in {
+  animation: text-blur-in linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 100%;
+}
+
+/**
+ * 文字渐变色动画
+ */
+@keyframes text-gradient-shift {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+.text-gradient-animate {
+  background-size: 200% auto;
+  animation: text-gradient-shift linear both;
+  animation-timeline: scroll(root block);
+}
+
+/* ========================================
+   Floating Action Button Animations
+   ======================================== */
+
+/**
+ * FAB 滚动隐藏
+ */
+@keyframes fab-hide {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+}
+
+.fab-hide-on-scroll {
+  animation: fab-hide linear both;
+  animation-timeline: scroll(root block);
+  animation-range: 0 300px;
+}
+
+/**
+ * FAB 脉动效果
+ */
+@keyframes fab-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 20px rgba(var(--primary-rgb), 0);
+  }
+}
+
+.fab-pulse {
+  animation: fab-pulse 2s infinite;
+}
+
+/* ========================================
+   Navigation Rail Animations
+   ======================================== */
+
+/**
+ * NavigationRail 展开/收起
+ */
+@keyframes nav-rail-expand {
+  from {
+    width: 80px;
+  }
+  to {
+    width: 256px;
+  }
+}
+
+.nav-rail-expandable:hover {
+  animation: nav-rail-expand 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ========================================
+   Modal & Dialog Animations
+   ======================================== */
+
+/**
+ * 模态框背景淡入
+ */
+@keyframes modal-overlay-fade-in {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+.modal-overlay-enter {
+  animation: modal-overlay-fade-in 0.2s ease-out;
+}
+
+/**
+ * 模态框内容缩放进入
+ */
+@keyframes modal-content-zoom-in {
+  from {
+    opacity: 0;
+    scale: 0.95;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.modal-content-enter {
+  animation: modal-content-zoom-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   Snackbar Animations
+   ======================================== */
+
+/**
+ * Snackbar 滑入
+ */
+@keyframes snackbar-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.snackbar-enter {
+  animation: snackbar-slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/**
+ * Snackbar 滑出
+ */
+@keyframes snackbar-slide-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%) scale(0.95);
+  }
+}
+
+.snackbar-exit {
+  animation: snackbar-slide-out 0.2s cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* ========================================
+   Utility Animations
+   ======================================== */
+
+/**
+ * 通用淡入
+ */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/**
+ * 通用淡出
+ */
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.fade-out {
+  animation: fade-out 0.2s ease-in;
+}
+
+/**
+ * 旋转进入
+ */
+@keyframes rotate-in {
+  from {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+.rotate-in {
+  animation: rotate-in 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   Performance Optimizations
+   ======================================== */
+
+/**
+ * 为动画元素添加 contain 以优化性能
+ */
+.app-bar-collapsible,
+.app-bar-immersive,
+.scroll-fade-in,
+.scroll-scale,
+.scroll-reveal {
+  contain: layout style paint;
+}
+
+/**
+ * 使用 GPU 加速的属性
+ */
+.parallax-slow,
+.parallax-fast,
+.parallax-medium,
+.card-stack-item {
+  will-change: transform;
+}
+
+/* ========================================
+   Responsive Adjustments
+   ======================================== */
+
+/**
+ * 减弱动画 (Reduced Motion)
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .parallax-slow,
+  .parallax-fast,
+  .parallax-medium {
+    animation: none;
+  }
+}
+
+/**
+ * 容器查询支持
+ */
+@container scaffold (min-width: 768px) {
+  .scroll-fade-in {
+    animation-range: entry 0% cover 40%;
+  }
+}
+
+@container scaffold (min-width: 1024px) {
+  .scroll-reveal {
+    animation-range: entry 0% cover 50%;
+  }
+}

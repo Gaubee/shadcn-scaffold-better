@@ -79,27 +79,61 @@ export const FloatingActionButton = React.forwardRef<
     },
     ref
   ) => {
+    const [supportsScrollTimeline, setSupportsScrollTimeline] = React.useState(false);
     const [isVisible, setIsVisible] = React.useState(true);
     const lastScrollY = React.useRef(0);
 
+    // Check for CSS scroll-driven animations support
     React.useEffect(() => {
-      if (!hideOnScroll) return;
+      if (typeof window === 'undefined') return;
+
+      let isMounted = true;
+
+      import('@/lib/feature-detection').then(({ supports }) => {
+        if (!isMounted) return;
+        const scrollTimelineSupport = supports('scroll-timeline');
+        setSupportsScrollTimeline(scrollTimelineSupport.supported);
+      }).catch(() => {
+        if (!isMounted) return;
+        setSupportsScrollTimeline(false);
+      });
+
+      return () => {
+        isMounted = false;
+      };
+    }, []);
+
+    // JavaScript fallback for scroll hide
+    React.useEffect(() => {
+      if (supportsScrollTimeline || !hideOnScroll) return;
+
+      let rafId: number | null = null;
+      let ticking = false;
 
       const handleScroll = () => {
-        const currentScrollY = window.scrollY;
+        if (ticking) return;
+        ticking = true;
 
-        if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-          setIsVisible(false);
-        } else {
-          setIsVisible(true);
-        }
+        rafId = requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
 
-        lastScrollY.current = currentScrollY;
+          if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+            setIsVisible(false);
+          } else {
+            setIsVisible(true);
+          }
+
+          lastScrollY.current = currentScrollY;
+          ticking = false;
+        });
       };
 
       window.addEventListener('scroll', handleScroll, { passive: true });
-      return () => window.removeEventListener('scroll', handleScroll);
-    }, [hideOnScroll]);
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+        if (rafId !== null) cancelAnimationFrame(rafId);
+      };
+    }, [hideOnScroll, supportsScrollTimeline]);
 
     const positionStyles: Record<string, React.CSSProperties> = {
       'bottom-right': { bottom: offset, right: offset },
@@ -127,7 +161,8 @@ export const FloatingActionButton = React.forwardRef<
           'active:scale-95',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100',
-          !isVisible && 'scale-0 opacity-0',
+          supportsScrollTimeline && hideOnScroll && 'fab-hide-on-scroll',
+          !supportsScrollTimeline && !isVisible && 'scale-0 opacity-0',
           extended ? 'h-12 px-6' : sizeClasses[size],
           elevationClasses[elevation],
           className

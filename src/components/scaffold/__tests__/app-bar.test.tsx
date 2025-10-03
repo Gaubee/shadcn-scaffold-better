@@ -83,15 +83,21 @@ describe('AppBar', () => {
     const header = container.querySelector('header');
     expect(header).toBeDefined();
 
-    // AppBar should either have CSS scroll-timeline classes or JS fallback
-    const hasImmersiveClass = header?.classList.contains('app-bar-immersive');
-    const hasTransitionClass = header?.classList.contains('transition-all');
-
-    expect(hasImmersiveClass || hasTransitionClass).toBe(true);
-
     // Check backdrop element exists
     const backdrop = container.querySelector('.absolute.inset-0');
     expect(backdrop).toBeInTheDocument();
+
+    // Backdrop should have either CSS scroll-timeline class or JS fallback transition
+    const hasBackdropClass = backdrop?.classList.contains('app-bar-backdrop');
+    const hasTransitionClass = backdrop?.classList.contains('transition-all');
+
+    expect(hasBackdropClass || hasTransitionClass).toBe(true);
+
+    // Header should either have CSS scroll-timeline class or JS fallback transition
+    const hasImmersiveClass = header?.classList.contains('app-bar-immersive');
+    const hasHeaderTransitionClass = header?.classList.contains('transition-all');
+
+    expect(hasImmersiveClass || hasHeaderTransitionClass).toBe(true);
   });
 
   it('applies custom className', () => {
