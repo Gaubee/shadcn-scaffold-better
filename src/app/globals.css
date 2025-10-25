@@ -336,7 +336,8 @@
   /* Bottom Navigation Bar scroll-driven animations */
   @supports (animation-timeline: scroll()) {
     @keyframes bottom-nav-hide {
-      0%, 10% {
+      0%,
+      10% {
         transform: translateY(0);
       }
       100% {
@@ -354,17 +355,13 @@
   /* Foldable device support */
   @media (horizontal-viewport-segments: 2) {
     .foldable-device.device-unfolded {
-      grid-template-columns: env(viewport-segment-width 0 0) env(
-          viewport-segment-width 1 0
-        );
+      grid-template-columns: env(viewport-segment-width 0 0) env(viewport-segment-width 1 0);
     }
   }
 
   @media (vertical-viewport-segments: 2) {
     .foldable-device.device-unfolded {
-      grid-template-rows: env(viewport-segment-height 0 0) env(
-          viewport-segment-height 1 0
-        );
+      grid-template-rows: env(viewport-segment-height 0 0) env(viewport-segment-height 1 0);
     }
   }
 

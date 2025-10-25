@@ -53,10 +53,10 @@ shadcn-scaffold/
 遵循现有组件的模式：
 
 ```tsx
-'use client';
+"use client";
 
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface YourComponentProps {
   children?: React.ReactNode;
@@ -64,18 +64,17 @@ export interface YourComponentProps {
   // 其他 props...
 }
 
-export const YourComponent = React.forwardRef<
-  HTMLDivElement,
-  YourComponentProps
->(({ children, className, ...props }, ref) => {
-  return (
-    <div ref={ref} className={cn('base-classes', className)} {...props}>
-      {children}
-    </div>
-  );
-});
+export const YourComponent = React.forwardRef<HTMLDivElement, YourComponentProps>(
+  ({ children, className, ...props }, ref) => {
+    return (
+      <div ref={ref} className={cn("base-classes", className)} {...props}>
+        {children}
+      </div>
+    );
+  },
+);
 
-YourComponent.displayName = 'YourComponent';
+YourComponent.displayName = "YourComponent";
 ```
 
 ### 2. Web-Native 优先原则
@@ -89,14 +88,14 @@ YourComponent.displayName = 'YourComponent';
 使用特性检测系统：
 
 ```tsx
-import { supports, loadPolyfill } from '@/lib/feature-detection';
+import { supports, loadPolyfill } from "@/lib/feature-detection";
 
 // 检测特性支持
-const scrollTimelineSupport = supports('scroll-timeline');
+const scrollTimelineSupport = supports("scroll-timeline");
 
 if (scrollTimelineSupport.polyfillNeeded) {
   // 自动加载垫片
-  await loadPolyfill('scroll-timeline');
+  await loadPolyfill("scroll-timeline");
 }
 ```
 
@@ -111,17 +110,11 @@ if (scrollTimelineSupport.polyfillNeeded) {
 
 ```tsx
 <div
-  className={cn(
-    'base-class',
-    'responsive-class',
-    conditional && 'conditional-class',
-    className
-  )}
+  className={cn("base-class", "responsive-class", conditional && "conditional-class", className)}
   style={{
-    containerType: 'inline-size',
-    containerName: 'component-name',
-  }}
->
+    containerType: "inline-size",
+    containerName: "component-name",
+  }}>
   {/* 内容 */}
 </div>
 ```
@@ -134,10 +127,9 @@ if (scrollTimelineSupport.polyfillNeeded) {
 - 避免使用 `any`，优先使用具体类型
 
 ```tsx
-export interface ComponentProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'outline' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
+export interface ComponentProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: "default" | "outline" | "ghost";
+  size?: "sm" | "md" | "lg";
 }
 
 export type ComponentRef = HTMLDivElement;
@@ -161,21 +153,19 @@ npm run test:coverage
 测试示例：
 
 ```tsx
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { YourComponent } from '../your-component';
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { YourComponent } from "../your-component";
 
-describe('YourComponent', () => {
-  it('renders correctly', () => {
+describe("YourComponent", () => {
+  it("renders correctly", () => {
     render(<YourComponent>Test</YourComponent>);
-    expect(screen.getByText('Test')).toBeInTheDocument();
+    expect(screen.getByText("Test")).toBeInTheDocument();
   });
 
-  it('applies custom className', () => {
-    const { container } = render(
-      <YourComponent className="custom-class">Test</YourComponent>
-    );
-    expect(container.firstChild).toHaveClass('custom-class');
+  it("applies custom className", () => {
+    const { container } = render(<YourComponent className="custom-class">Test</YourComponent>);
+    expect(container.firstChild).toHaveClass("custom-class");
   });
 });
 ```
@@ -203,13 +193,13 @@ npm run build-storybook
 创建 Story：
 
 ```tsx
-import type { Meta, StoryObj } from '@storybook/react';
-import { YourComponent } from './your-component';
+import type { Meta, StoryObj } from "@storybook/react";
+import { YourComponent } from "./your-component";
 
 const meta: Meta<typeof YourComponent> = {
-  title: 'Scaffold/YourComponent',
+  title: "Scaffold/YourComponent",
   component: YourComponent,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -217,7 +207,7 @@ type Story = StoryObj<typeof YourComponent>;
 
 export const Default: Story = {
   args: {
-    children: 'Default content',
+    children: "Default content",
   },
 };
 ```
@@ -237,6 +227,7 @@ export const Default: Story = {
 ```
 
 类型：
+
 - `feat`: 新功能
 - `fix`: 修复 bug
 - `docs`: 文档更新
@@ -266,6 +257,7 @@ Closes #123
 5. 创建 Pull Request
 
 PR 要求：
+
 - ✅ 所有测试通过
 - ✅ 代码覆盖率不下降
 - ✅ 包含必要的文档更新
@@ -298,10 +290,10 @@ React.useEffect(() => {
     });
   };
 
-  window.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener("scroll", handleScroll, { passive: true });
 
   return () => {
-    window.removeEventListener('scroll', handleScroll);
+    window.removeEventListener("scroll", handleScroll);
     if (rafId !== null) cancelAnimationFrame(rafId);
   };
 }, []);
@@ -318,11 +310,7 @@ React.useEffect(() => {
 - ✅ 屏幕阅读器支持
 
 ```tsx
-<button
-  aria-label="Close"
-  aria-pressed={isOpen}
-  onClick={handleClick}
->
+<button aria-label="Close" aria-pressed={isOpen} onClick={handleClick}>
   <X aria-hidden="true" />
 </button>
 ```
@@ -334,7 +322,7 @@ React.useEffect(() => {
 ```tsx
 // ✅ 正确
 React.useEffect(() => {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   // 浏览器特定代码
 }, []);
 
@@ -355,10 +343,10 @@ const width = window.innerWidth; // SSR 时会报错
 对于现代特性，使用特性检测和垫片：
 
 ```tsx
-import { supports, ensureFeatures } from '@/lib/feature-detection';
+import { supports, ensureFeatures } from "@/lib/feature-detection";
 
 // 确保特性可用
-await ensureFeatures(['scroll-timeline', 'container-queries']);
+await ensureFeatures(["scroll-timeline", "container-queries"]);
 ```
 
 ## 文档
@@ -372,7 +360,7 @@ await ensureFeatures(['scroll-timeline', 'container-queries']);
 3. **使用示例**
 4. **Storybook stories**
 
-```tsx
+````tsx
 /**
  * AppBar component for top navigation
  *
@@ -386,7 +374,7 @@ await ensureFeatures(['scroll-timeline', 'container-queries']);
  * ```
  */
 export const AppBar = React.forwardRef<HTMLElement, AppBarProps>(...);
-```
+````
 
 ### 更新 CHANGELOG
 
@@ -396,12 +384,15 @@ export const AppBar = React.forwardRef<HTMLElement, AppBarProps>(...);
 ## [Unreleased]
 
 ### Added
+
 - New feature description
 
 ### Changed
+
 - Changed feature description
 
 ### Fixed
+
 - Bug fix description
 ```
 

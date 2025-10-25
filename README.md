@@ -30,9 +30,11 @@ A Flutter-inspired scaffold component library for React, built with Next.js 15, 
 ## 📦 Components
 
 ### 🎯 Scaffold
+
 Main layout component that orchestrates all parts of the application.
 
 **Features:**
+
 - Automatic responsive behavior (Mobile ↔ Tablet ↔ Desktop)
 - Drawer ↔ NavigationRail automatic switching
 - Configurable breakpoints
@@ -40,9 +42,11 @@ Main layout component that orchestrates all parts of the application.
 - SSR compatible
 
 ### 📊 AppBar
+
 Responsive application bar with advanced scroll effects.
 
 **Features:**
+
 - **Immersive mode** - Transparent → solid on scroll with backdrop blur
 - **Collapsible** - Height shrinks from expanded to collapsed on scroll
 - **CSS Scroll-Driven Animations** - Native browser animations with JS fallback
@@ -51,9 +55,11 @@ Responsive application bar with advanced scroll effects.
 - Leading, title, and actions slots
 
 ### 🎨 Drawer
+
 Side navigation drawer with gesture support.
 
 **Features:**
+
 - Left or right positioning
 - **Swipe-to-close** gesture support (touch-optimized)
 - Backdrop overlay with blur effect
@@ -62,9 +68,11 @@ Side navigation drawer with gesture support.
 - Portal rendering
 
 ### 🧭 BottomNavigationBar
+
 Mobile-friendly bottom navigation with Material Design patterns.
 
 **Features:**
+
 - Icon with optional labels (always/selected/never)
 - **Badge support** - Numeric or text badges
 - **Hide on scroll** - Auto-hide when scrolling down
@@ -73,9 +81,11 @@ Mobile-friendly bottom navigation with Material Design patterns.
 - Up to 5 items recommended
 
 ### 📐 NavigationRail
+
 Persistent side navigation for desktop layouts.
 
 **Features:**
+
 - Vertical navigation bar
 - Optional labels (compact/expanded modes)
 - Header and footer slots
@@ -84,9 +94,11 @@ Persistent side navigation for desktop layouts.
 - Configurable width
 
 ### ➕ FloatingActionButton (FAB)
+
 Prominent action button with extended variant.
 
 **Features:**
+
 - Multiple sizes (small, medium, large)
 - **Extended mode** with label
 - 5 positioning options (corners + bottom-center)
@@ -95,9 +107,11 @@ Prominent action button with extended variant.
 - Icon + optional label
 
 ### 📬 Snackbar
+
 Brief messages and notifications with actions.
 
 **Features:**
+
 - Multiple severities (default, success, warning, error, info)
 - **Auto-hide duration** (configurable)
 - Action button support
@@ -106,9 +120,11 @@ Brief messages and notifications with actions.
 - Queue support for multiple messages
 
 ### 🪟 Modal
+
 Full-featured dialog/modal component.
 
 **Features:**
+
 - Multiple sizes (sm, md, lg, xl, full)
 - Optional backdrop click to close
 - Keyboard support (Escape to close)
@@ -138,31 +154,35 @@ npx shadcn@latest add https://shadcn-scaffold.vercel.app/r/scaffold
 ### Manual Installation
 
 1. **Copy components**
+
 ```bash
 # Copy all scaffold components
 cp -r src/components/scaffold/* your-project/components/scaffold/
 ```
 
 2. **Install dependencies**
+
 ```bash
 npm install clsx tailwind-merge class-variance-authority lucide-react
 ```
 
 3. **Update Tailwind config**
+
 ```js
 // tailwind.config.js
 module.exports = {
   content: [
-    './components/scaffold/**/*.{ts,tsx}',
+    "./components/scaffold/**/*.{ts,tsx}",
     // ... other paths
   ],
-}
+};
 ```
 
 4. **Import global styles**
+
 ```tsx
 // app/layout.tsx
-import '@/components/scaffold/scaffold-animations.css'
+import "@/components/scaffold/scaffold-animations.css";
 ```
 
 ## 📖 Usage
@@ -170,19 +190,13 @@ import '@/components/scaffold/scaffold-animations.css'
 ### Basic Example
 
 ```tsx
-import {
-  Scaffold,
-  AppBar,
-  Drawer,
-  BottomNavigationBar,
-  FloatingActionButton,
-} from '@/components/scaffold';
-import { Menu, Home, Search, Bell, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { Scaffold, AppBar, Drawer, BottomNavigationBar, FloatingActionButton } from "@/components/scaffold";
+import { Menu, Home, Search, Bell, Plus } from "lucide-react";
+import { useState } from "react";
 
 export default function Page() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedTab, setSelectedTab] = useState('home');
+  const [selectedTab, setSelectedTab] = useState("home");
 
   return (
     <Scaffold
@@ -208,21 +222,20 @@ export default function Page() {
       bottomNavigationBar={
         <BottomNavigationBar
           items={[
-            { key: 'home', icon: <Home />, label: 'Home' },
-            { key: 'search', icon: <Search />, label: 'Search' },
-            { key: 'notifications', icon: <Bell />, label: 'Notifications', badge: 3 },
+            { key: "home", icon: <Home />, label: "Home" },
+            { key: "search", icon: <Search />, label: "Search" },
+            {
+              key: "notifications",
+              icon: <Bell />,
+              label: "Notifications",
+              badge: 3,
+            },
           ]}
           value={selectedTab}
           onValueChange={setSelectedTab}
         />
       }
-      floatingActionButton={
-        <FloatingActionButton
-          icon={<Plus />}
-          onClick={() => console.log('FAB clicked')}
-        />
-      }
-    >
+      floatingActionButton={<FloatingActionButton icon={<Plus />} onClick={() => console.log("FAB clicked")} />}>
       {/* Your page content */}
       <div className="p-6">
         <h2>Welcome to shadcn-scaffold!</h2>
@@ -236,8 +249,8 @@ export default function Page() {
 
 ```tsx
 <AppBar
-  immersive          // Transparent → solid on scroll
-  collapsible        // Height shrinks on scroll
+  immersive // Transparent → solid on scroll
+  collapsible // Height shrinks on scroll
   expandedHeight={80}
   collapsedHeight={56}
   elevation={2}
@@ -246,8 +259,12 @@ export default function Page() {
   title={<h1>My App</h1>}
   actions={
     <>
-      <button><Bell /></button>
-      <button><Settings /></button>
+      <button>
+        <Bell />
+      </button>
+      <button>
+        <Settings />
+      </button>
     </>
   }
 />
@@ -257,35 +274,20 @@ export default function Page() {
 
 ```tsx
 <Scaffold
-  responsive                    // Enable responsive behavior
-  responsiveBreakpoint={1024}   // Switch at 1024px
-
+  responsive // Enable responsive behavior
+  responsiveBreakpoint={1024} // Switch at 1024px
   // Mobile: Drawer
   drawer={
     <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
       <NavContent />
     </Drawer>
   }
-
   // Desktop: NavigationRail
-  navigationRail={
-    <NavigationRail
-      items={navItems}
-      value={selected}
-      onValueChange={setSelected}
-    />
-  }
-
+  navigationRail={<NavigationRail items={navItems} value={selected} onValueChange={setSelected} />}
   // Mobile: BottomNavigationBar
   bottomNavigationBar={
-    <BottomNavigationBar
-      items={navItems}
-      value={selected}
-      onValueChange={setSelected}
-      hideOnScroll
-    />
-  }
->
+    <BottomNavigationBar items={navItems} value={selected} onValueChange={setSelected} hideOnScroll />
+  }>
   <YourContent />
 </Scaffold>
 ```
@@ -293,7 +295,7 @@ export default function Page() {
 ### Using Snackbar with Hook
 
 ```tsx
-import { Snackbar, useSnackbar } from '@/components/scaffold';
+import { Snackbar, useSnackbar } from "@/components/scaffold";
 
 function MyComponent() {
   const snackbar = useSnackbar();
@@ -301,13 +303,13 @@ function MyComponent() {
   const handleSave = async () => {
     try {
       await saveData();
-      snackbar.show('Saved successfully!', {
-        severity: 'success',
-        duration: 3000
+      snackbar.show("Saved successfully!", {
+        severity: "success",
+        duration: 3000,
       });
     } catch (error) {
-      snackbar.show('Failed to save', {
-        severity: 'error'
+      snackbar.show("Failed to save", {
+        severity: "error",
       });
     }
   };
@@ -324,7 +326,7 @@ function MyComponent() {
 ### Modal with Footer
 
 ```tsx
-import { Modal, ModalFooter } from '@/components/scaffold';
+import { Modal, ModalFooter } from "@/components/scaffold";
 
 function ConfirmDialog({ open, onOpenChange }) {
   return (
@@ -333,18 +335,12 @@ function ConfirmDialog({ open, onOpenChange }) {
       onOpenChange={onOpenChange}
       title="Confirm Action"
       description="Are you sure you want to proceed?"
-      size="md"
-    >
+      size="md">
       <p>This action cannot be undone.</p>
 
       <ModalFooter>
-        <button onClick={() => onOpenChange(false)}>
-          Cancel
-        </button>
-        <button
-          className="bg-destructive text-destructive-foreground"
-          onClick={handleConfirm}
-        >
+        <button onClick={() => onOpenChange(false)}>Cancel</button>
+        <button className="bg-destructive text-destructive-foreground" onClick={handleConfirm}>
           Confirm
         </button>
       </ModalFooter>
@@ -440,18 +436,21 @@ shadcn-scaffold/
 ## 🌐 Browser Support
 
 ### Full Support (Modern Features)
+
 - ✅ **Chrome 115+** - Native scroll-driven animations
 - ✅ **Edge 115+** - Native scroll-driven animations
 - ✅ **Safari 17+** - Partial native support
 - ✅ **Firefox 115+** - JavaScript fallback
 
 ### Graceful Degradation
+
 - ✅ **Chrome 90+** - JavaScript fallback animations
 - ✅ **Safari 14+** - JavaScript fallback animations
 - ✅ **Firefox 88+** - JavaScript fallback animations
 - ✅ **All modern mobile browsers** - Touch-optimized
 
 The library uses **progressive enhancement**:
+
 1. **HTML** - Basic structure always works
 2. **CSS** - Modern browsers get native animations
 3. **JavaScript** - Fallback for older browsers

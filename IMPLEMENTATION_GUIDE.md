@@ -24,18 +24,12 @@ npx shadcn@latest add https://your-registry.com/r/scaffold.json
 ### 基础使用
 
 ```tsx
-import {
-  Scaffold,
-  AppBar,
-  Drawer,
-  BottomNavigationBar,
-  FloatingActionButton,
-} from '@/components/scaffold';
-import { Menu, Home, Search, User } from 'lucide-react';
+import { Scaffold, AppBar, Drawer, BottomNavigationBar, FloatingActionButton } from "@/components/scaffold";
+import { Menu, Home, Search, User } from "lucide-react";
 
 export default function MyApp() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedNav, setSelectedNav] = useState('home');
+  const [selectedNav, setSelectedNav] = useState("home");
 
   return (
     <Scaffold
@@ -43,7 +37,11 @@ export default function MyApp() {
         <AppBar
           collapsible
           immersive
-          leading={<button onClick={() => setDrawerOpen(true)}><Menu /></button>}
+          leading={
+            <button onClick={() => setDrawerOpen(true)}>
+              <Menu />
+            </button>
+          }
           title={<h1>My App</h1>}
         />
       }
@@ -55,18 +53,15 @@ export default function MyApp() {
       bottomNavigationBar={
         <BottomNavigationBar
           items={[
-            { key: 'home', icon: <Home />, label: 'Home' },
-            { key: 'search', icon: <Search />, label: 'Search' },
-            { key: 'profile', icon: <User />, label: 'Profile' },
+            { key: "home", icon: <Home />, label: "Home" },
+            { key: "search", icon: <Search />, label: "Search" },
+            { key: "profile", icon: <User />, label: "Profile" },
           ]}
           value={selectedNav}
           onValueChange={setSelectedNav}
         />
       }
-      floatingActionButton={
-        <FloatingActionButton icon={<Plus />} onClick={() => {}} />
-      }
-    >
+      floatingActionButton={<FloatingActionButton icon={<Plus />} onClick={() => {}} />}>
       {/* 主内容区域 */}
       <div>Your content here</div>
     </Scaffold>
@@ -124,14 +119,18 @@ Chrome 115+ 引入的原生 CSS API,允许动画直接绑定到滚动位置,运�
 
 ```css
 @keyframes app-bar-collapse {
-  from { height: 80px; }
-  to { height: 56px; }
+  from {
+    height: 80px;
+  }
+  to {
+    height: 56px;
+  }
 }
 
 .app-bar {
   animation: app-bar-collapse linear both;
-  animation-timeline: scroll(root block);  /* 跟踪根滚动容器 */
-  animation-range: 0 200px;                /* 在 0-200px 范围内动画 */
+  animation-timeline: scroll(root block); /* 跟踪根滚动容器 */
+  animation-range: 0 200px; /* 在 0-200px 范围内动画 */
 }
 ```
 
@@ -153,8 +152,8 @@ Chrome 115+ 引入的原生 CSS API,允许动画直接绑定到滚动位置,运�
 
 .card {
   animation: fade-in linear both;
-  animation-timeline: view();              /* 跟踪元素在视口中的位置 */
-  animation-range: entry 0% cover 30%;    /* 从进入到覆盖 30% 时 */
+  animation-timeline: view(); /* 跟踪元素在视口中的位置 */
+  animation-range: entry 0% cover 30%; /* 从进入到覆盖 30% 时 */
 }
 ```
 
@@ -162,11 +161,11 @@ Chrome 115+ 引入的原生 CSS API,允许动画直接绑定到滚动位置,运�
 
 ```typescript
 // 1. 检测支持
-const scrollTimelineSupport = supports('scroll-timeline');
+const scrollTimelineSupport = supports("scroll-timeline");
 
 if (scrollTimelineSupport.supported) {
   // 2a. 使用 CSS 动画
-  element.classList.add('app-bar-collapsible');
+  element.classList.add("app-bar-collapsible");
 } else {
   // 2b. JavaScript 降级
   let rafId: number | null = null;
@@ -184,7 +183,7 @@ if (scrollTimelineSupport.supported) {
     });
   };
 
-  window.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener("scroll", handleScroll, { passive: true });
 }
 ```
 
@@ -196,13 +195,13 @@ if (scrollTimelineSupport.supported) {
 
 ```typescript
 // lib/feature-detection.ts
-const support = supports('scroll-timeline');
+const support = supports("scroll-timeline");
 
 if (support.supported) {
   // 原生支持
 } else if (support.polyfillNeeded) {
   // 需要 polyfill
-  await loadPolyfill('scroll-timeline');
+  await loadPolyfill("scroll-timeline");
 } else {
   // 优雅降级
 }
@@ -210,14 +209,14 @@ if (support.supported) {
 
 #### 支持的特性
 
-| 特性 | 检测方法 | Polyfill |
-|------|---------|----------|
-| `scroll-timeline` | `CSS.supports('animation-timeline: scroll()')` | ❌ (JS Fallback) |
-| `container-queries` | `CSS.supports('container-type: inline-size')` | ✅ |
-| `view-transitions` | `'startViewTransition' in document` | ❌ (Graceful Degradation) |
-| `viewport-segments` | `'segments' in visualViewport` | ❌ |
-| `resize-observer` | `'ResizeObserver' in window` | ✅ |
-| `intersection-observer` | `'IntersectionObserver' in window` | ✅ |
+| 特性                    | 检测方法                                       | Polyfill                  |
+| ----------------------- | ---------------------------------------------- | ------------------------- |
+| `scroll-timeline`       | `CSS.supports('animation-timeline: scroll()')` | ❌ (JS Fallback)          |
+| `container-queries`     | `CSS.supports('container-type: inline-size')`  | ✅                        |
+| `view-transitions`      | `'startViewTransition' in document`            | ❌ (Graceful Degradation) |
+| `viewport-segments`     | `'segments' in visualViewport`                 | ❌                        |
+| `resize-observer`       | `'ResizeObserver' in window`                   | ✅                        |
+| `intersection-observer` | `'IntersectionObserver' in window`             | ✅                        |
 
 #### 使用模式
 
@@ -253,10 +252,10 @@ export function MyComponent() {
 **批量检测**:
 
 ```typescript
-import { ensureFeatures } from '@/lib/feature-detection';
+import { ensureFeatures } from "@/lib/feature-detection";
 
 useEffect(() => {
-  ensureFeatures(['resize-observer', 'intersection-observer'])
+  ensureFeatures(["resize-observer", "intersection-observer"])
     .then(() => setReady(true))
     .catch(console.error);
 }, []);
@@ -289,7 +288,7 @@ interface ScaffoldProps {
   navigationItems?: NavigationItem[];
   navigationValue?: string;
   onNavigationChange?: (value: string) => void;
-  navigationShowLabels?: boolean | 'selected';
+  navigationShowLabels?: boolean | "selected";
 
   // 响应式配置
   responsive?: boolean;
@@ -309,18 +308,17 @@ interface ScaffoldProps {
 ```tsx
 <div
   style={{
-    display: 'grid',
+    display: "grid",
     gridTemplateAreas: `
       "nav header"
       "nav main"
       "nav footer"
     `,
-    gridTemplateRows: 'auto 1fr auto',
-    gridTemplateColumns: '80px 1fr',
-    containerType: 'inline-size',
-    containerName: 'scaffold',
-  }}
->
+    gridTemplateRows: "auto 1fr auto",
+    gridTemplateColumns: "80px 1fr",
+    containerType: "inline-size",
+    containerName: "scaffold",
+  }}>
   {/* header */}
   {/* nav */}
   {/* main */}
@@ -364,18 +362,18 @@ interface AppBarProps {
   immersive?: boolean;
 
   // 高度配置
-  expandedHeight?: number;      // 默认 64px
-  collapsedHeight?: number;     // 默认 56px
+  expandedHeight?: number; // 默认 64px
+  collapsedHeight?: number; // 默认 56px
 
   // 外观
   elevation?: 0 | 1 | 2 | 3 | 4 | 5;
-  position?: 'fixed' | 'sticky' | 'static';
+  position?: "fixed" | "sticky" | "static";
 
   // 内容槽
-  leading?: ReactNode;         // 左侧元素 (如菜单按钮)
-  title?: ReactNode;          // 标题
-  actions?: ReactNode;        // 右侧操作
-  children?: ReactNode;       // 自定义内容
+  leading?: ReactNode; // 左侧元素 (如菜单按钮)
+  title?: ReactNode; // 标题
+  actions?: ReactNode; // 右侧操作
+  children?: ReactNode; // 自定义内容
 
   className?: string;
 }
@@ -445,8 +443,12 @@ interface AppBarProps {
   }
   actions={
     <div className="flex gap-2">
-      <button><Search size={20} /></button>
-      <button><Settings size={20} /></button>
+      <button>
+        <Search size={20} />
+      </button>
+      <button>
+        <Settings size={20} />
+      </button>
     </div>
   }
 />
@@ -467,7 +469,7 @@ interface AppBarProps {
 interface DrawerProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  side?: 'left' | 'right';
+  side?: "left" | "right";
   width?: number | string;
   gestureEnabled?: boolean;
   showBackdrop?: boolean;
@@ -521,9 +523,7 @@ const handleTouchEnd = () => {
   const threshold = drawerWidth * 0.3;
   const velocityThreshold = 0.5;
 
-  const shouldClose =
-    Math.abs(dragOffset) > threshold ||
-    Math.abs(dragVelocity) > velocityThreshold;
+  const shouldClose = Math.abs(dragOffset) > threshold || Math.abs(dragVelocity) > velocityThreshold;
 
   if (shouldClose) {
     onOpenChange?.(false);
@@ -544,8 +544,7 @@ const handleTouchEnd = () => {
   width={280}
   gestureEnabled={true}
   showBackdrop={true}
-  elevation={4}
->
+  elevation={4}>
   <div className="flex flex-col h-full">
     {/* Header */}
     <div className="p-6 border-b">
@@ -581,7 +580,7 @@ interface BottomNavigationBarProps {
   items?: BottomNavigationItem[];
   value?: string;
   onValueChange?: (value: string) => void;
-  showLabels?: boolean | 'selected';  // true | false | 'selected'
+  showLabels?: boolean | "selected"; // true | false | 'selected'
   elevation?: 0 | 1 | 2 | 3 | 4 | 5;
   hideOnScroll?: boolean;
   className?: string;
@@ -602,8 +601,12 @@ interface BottomNavigationItem {
 
 ```css
 @keyframes bottom-nav-hide {
-  from { transform: translateY(0); }
-  to { transform: translateY(100%); }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
 }
 
 .bottom-nav-hide-on-scroll {
@@ -626,17 +629,17 @@ useEffect(() => {
       const currentScrollY = window.scrollY;
 
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsVisible(false);  // 向下滚动且超过阈值,隐藏
+        setIsVisible(false); // 向下滚动且超过阈值,隐藏
       } else if (currentScrollY < lastScrollY) {
-        setIsVisible(true);   // 向上滚动,显示
+        setIsVisible(true); // 向上滚动,显示
       }
 
       lastScrollY = currentScrollY;
     });
   };
 
-  window.addEventListener('scroll', handleScroll, { passive: true });
-  return () => window.removeEventListener('scroll', handleScroll);
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  return () => window.removeEventListener("scroll", handleScroll);
 }, [hideOnScroll, supportsScrollTimeline]);
 ```
 
@@ -645,14 +648,19 @@ useEffect(() => {
 ```tsx
 <BottomNavigationBar
   items={[
-    { key: 'home', icon: <Home />, label: 'Home' },
-    { key: 'search', icon: <Search />, label: 'Search', badge: 3 },
-    { key: 'notifications', icon: <Bell />, label: 'Notifications', badge: '99+' },
-    { key: 'profile', icon: <User />, label: 'Profile' },
+    { key: "home", icon: <Home />, label: "Home" },
+    { key: "search", icon: <Search />, label: "Search", badge: 3 },
+    {
+      key: "notifications",
+      icon: <Bell />,
+      label: "Notifications",
+      badge: "99+",
+    },
+    { key: "profile", icon: <User />, label: "Profile" },
   ]}
   value={selectedNav}
   onValueChange={setSelectedNav}
-  showLabels="selected"  // 仅选中项显示标签
+  showLabels="selected" // 仅选中项显示标签
   elevation={3}
   hideOnScroll={true}
 />
@@ -686,10 +694,10 @@ interface NavigationRailProps {
 ```tsx
 <NavigationRail
   items={[
-    { key: 'home', icon: <Home />, label: 'Home' },
-    { key: 'projects', icon: <Folder />, label: 'Projects' },
-    { key: 'team', icon: <Users />, label: 'Team' },
-    { key: 'settings', icon: <Settings />, label: 'Settings' },
+    { key: "home", icon: <Home />, label: "Home" },
+    { key: "projects", icon: <Folder />, label: "Projects" },
+    { key: "team", icon: <Users />, label: "Team" },
+    { key: "settings", icon: <Settings />, label: "Settings" },
   ]}
   value={selected}
   onValueChange={setSelected}
@@ -714,8 +722,8 @@ interface FloatingActionButtonProps {
   icon: ReactNode;
   onClick?: () => void;
   hideOnScroll?: boolean;
-  size?: 'sm' | 'md' | 'lg';
-  position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
+  size?: "sm" | "md" | "lg";
+  position?: "bottom-right" | "bottom-left" | "top-right" | "top-left";
   elevation?: 0 | 1 | 2 | 3 | 4 | 5;
   className?: string;
 }
@@ -777,7 +785,7 @@ interface SnackbarHook {
 }
 
 interface SnackbarOptions {
-  severity?: 'info' | 'success' | 'warning' | 'error';
+  severity?: "info" | "success" | "warning" | "error";
   duration?: number;
   action?: ReactNode;
 }
@@ -790,8 +798,8 @@ interface SnackbarOptions {
 #### 使用 Passive Event Listeners
 
 ```typescript
-window.addEventListener('scroll', handleScroll, { passive: true });
-window.addEventListener('touchmove', handleTouchMove, { passive: true });
+window.addEventListener("scroll", handleScroll, { passive: true });
+window.addEventListener("touchmove", handleTouchMove, { passive: true });
 ```
 
 #### 使用 requestAnimationFrame
@@ -826,7 +834,7 @@ const handleScroll = () => {
 ```css
 .animated-element {
   will-change: transform;
-  transform: translateZ(0);  /* 强制 GPU 加速 */
+  transform: translateZ(0); /* 强制 GPU 加速 */
 }
 ```
 
@@ -879,12 +887,10 @@ return <Component />;
 #### 自适应导航
 
 ```tsx
-{/* 自动在 BottomNav 和 NavigationRail 之间切换 */}
-<Scaffold
-  navigationItems={items}
-  responsive={true}
-  responsiveBreakpoint={1024}
-/>
+{
+  /* 自动在 BottomNav 和 NavigationRail 之间切换 */
+}
+<Scaffold navigationItems={items} responsive={true} responsiveBreakpoint={1024} />;
 ```
 
 ### 4. 无障碍访问 (A11y)
@@ -914,13 +920,13 @@ return <Component />;
 ```typescript
 useEffect(() => {
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && drawerOpen) {
+    if (e.key === "Escape" && drawerOpen) {
       setDrawerOpen(false);
     }
   };
 
-  document.addEventListener('keydown', handleKeyDown);
-  return () => document.removeEventListener('keydown', handleKeyDown);
+  document.addEventListener("keydown", handleKeyDown);
+  return () => document.removeEventListener("keydown", handleKeyDown);
 }, [drawerOpen]);
 ```
 
@@ -933,7 +939,7 @@ useEffect(() => {
   if (open && drawerRef.current) {
     // 抽屉打开时,聚焦第一个可聚焦元素
     const firstFocusable = drawerRef.current.querySelector(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
     (firstFocusable as HTMLElement)?.focus();
   }
@@ -974,18 +980,18 @@ describe('Scaffold', () => {
 #### E2E 测试
 
 ```typescript
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('should collapse app bar on scroll', async ({ page }) => {
-  await page.goto('/examples/advanced-scroll');
+test("should collapse app bar on scroll", async ({ page }) => {
+  await page.goto("/examples/advanced-scroll");
 
-  const appBar = page.locator('header');
-  const initialHeight = await appBar.evaluate(el => el.offsetHeight);
+  const appBar = page.locator("header");
+  const initialHeight = await appBar.evaluate((el) => el.offsetHeight);
 
   await page.evaluate(() => window.scrollTo(0, 300));
   await page.waitForTimeout(500);
 
-  const collapsedHeight = await appBar.evaluate(el => el.offsetHeight);
+  const collapsedHeight = await appBar.evaluate((el) => el.offsetHeight);
   expect(collapsedHeight).toBeLessThan(initialHeight);
 });
 ```
@@ -1002,8 +1008,8 @@ test('should collapse app bar on scroll', async ({ page }) => {
 
 ```typescript
 // 1. 检查浏览器支持
-const support = supports('scroll-timeline');
-console.log('Scroll Timeline Support:', support);
+const support = supports("scroll-timeline");
+console.log("Scroll Timeline Support:", support);
 
 // 2. 查看 CSS 是否正确加载
 // 确保 scaffold-animations.css 已导入
@@ -1086,7 +1092,7 @@ const handler = () => {
 #### Feature Report
 
 ```typescript
-import { getFeatureReport } from '@/lib/feature-detection';
+import { getFeatureReport } from "@/lib/feature-detection";
 
 // 在控制台查看所有特性支持情况
 console.table(getFeatureReport());
@@ -1096,15 +1102,15 @@ console.table(getFeatureReport());
 
 ```typescript
 // 使用 Performance API
-performance.mark('scroll-start');
+performance.mark("scroll-start");
 
 // ... 滚动处理 ...
 
-performance.mark('scroll-end');
-performance.measure('scroll-duration', 'scroll-start', 'scroll-end');
+performance.mark("scroll-end");
+performance.measure("scroll-duration", "scroll-start", "scroll-end");
 
-const measures = performance.getEntriesByType('measure');
-console.log('Scroll Duration:', measures[0].duration, 'ms');
+const measures = performance.getEntriesByType("measure");
+console.log("Scroll Duration:", measures[0].duration, "ms");
 ```
 
 ## 进阶主题
@@ -1173,10 +1179,7 @@ console.log('Scroll Duration:', measures[0].duration, 'ms');
 // 创建自定义 AppBar
 export function CustomAppBar(props: AppBarProps) {
   return (
-    <AppBar
-      {...props}
-      className={cn('my-custom-appbar', props.className)}
-    >
+    <AppBar {...props} className={cn("my-custom-appbar", props.className)}>
       {/* 自定义内容 */}
     </AppBar>
   );

@@ -1,17 +1,14 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { Check, ChevronDown } from 'lucide-react';
+import * as React from "react";
+import { Check, ChevronDown } from "lucide-react";
 
 // Type definition for customizable select elements
 declare global {
   namespace React {
     namespace JSX {
       interface IntrinsicElements {
-        selectedcontent: React.DetailedHTMLProps<
-          React.HTMLAttributes<HTMLElement>,
-          HTMLElement
-        >;
+        selectedcontent: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
       }
     }
   }
@@ -28,20 +25,20 @@ interface SelectProps {
   options: SelectOption[];
   placeholder?: string;
   className?: string;
-  'aria-label'?: string;
+  "aria-label"?: string;
 }
 
 export function Select({
   value: controlledValue,
   onChange,
   options,
-  placeholder = 'Select an option',
-  className = '',
-  'aria-label': ariaLabel,
+  placeholder = "Select an option",
+  className = "",
+  "aria-label": ariaLabel,
 }: SelectProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [supportsCustomizableSelect, setSupportsCustomizableSelect] = React.useState(false);
-  const [internalValue, setInternalValue] = React.useState<string>('');
+  const [internalValue, setInternalValue] = React.useState<string>("");
   const containerRef = React.useRef<HTMLDivElement>(null);
   const selectRef = React.useRef<HTMLSelectElement>(null);
 
@@ -51,11 +48,11 @@ export function Select({
 
   // Feature detection for customizable select (appearance: base-select)
   React.useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     // Check if CSS.supports exists and test for appearance: base-select
-    if (typeof CSS !== 'undefined' && CSS.supports) {
-      const supported = CSS.supports('appearance', 'base-select');
+    if (typeof CSS !== "undefined" && CSS.supports) {
+      const supported = CSS.supports("appearance", "base-select");
       setSupportsCustomizableSelect(supported);
     }
   }, []);
@@ -70,8 +67,8 @@ export function Select({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, supportsCustomizableSelect]);
 
   // Handle keyboard navigation (fallback mode only)
@@ -79,17 +76,17 @@ export function Select({
     if (supportsCustomizableSelect) return;
 
     switch (event.key) {
-      case 'Escape':
+      case "Escape":
         setIsOpen(false);
         break;
-      case 'Enter':
-      case ' ':
+      case "Enter":
+      case " ":
         if (!isOpen) {
           event.preventDefault();
           setIsOpen(true);
         }
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         event.preventDefault();
         if (!isOpen) {
           setIsOpen(true);
@@ -117,7 +114,7 @@ export function Select({
     onChange?.(newValue);
   };
 
-  const selectedOption = options.find(opt => opt.value === value);
+  const selectedOption = options.find((opt) => opt.value === value);
   const displayValue = selectedOption?.label || placeholder;
 
   // Use native customizable select if supported (Chrome 135+)
@@ -126,11 +123,10 @@ export function Select({
       <div className={`customizable-select-wrapper ${className}`}>
         <select
           ref={selectRef}
-          value={value || ''}
+          value={value || ""}
           onChange={(e) => handleNativeChange(e.target.value)}
           aria-label={ariaLabel}
-          className="customizable-select"
-        >
+          className="customizable-select">
           <button type="button">
             <selectedcontent>{selectedOption?.label || placeholder}</selectedcontent>
             <ChevronDown size={16} />
@@ -223,7 +219,7 @@ export function Select({
           /* Style the checkmark using ::checkmark pseudo-element */
           .customizable-select option::checkmark {
             display: block;
-            content: '';
+            content: "";
             color: hsl(var(--primary));
             font-weight: 600;
           }
@@ -242,22 +238,15 @@ export function Select({
         className="w-full p-2.5 border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-between text-left"
         aria-label={ariaLabel}
         aria-haspopup="listbox"
-        aria-expanded={isOpen}
-      >
-        <span className={selectedOption ? 'text-foreground' : 'text-muted-foreground'}>
-          {displayValue}
-        </span>
-        <ChevronDown
-          size={16}
-          className={`ml-2 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-        />
+        aria-expanded={isOpen}>
+        <span className={selectedOption ? "text-foreground" : "text-muted-foreground"}>{displayValue}</span>
+        <ChevronDown size={16} className={`ml-2 transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen && (
         <div
           className="absolute z-50 w-full mt-1 border rounded-lg bg-background shadow-lg max-h-60 overflow-auto"
-          role="listbox"
-        >
+          role="listbox">
           {options.map((option) => (
             <button
               key={option.value}
@@ -265,12 +254,9 @@ export function Select({
               onClick={() => handleOptionClick(option.value)}
               className="w-full px-3 py-2 hover:bg-accent cursor-pointer text-foreground flex items-center justify-between text-left transition-colors"
               role="option"
-              aria-selected={value === option.value}
-            >
+              aria-selected={value === option.value}>
               <span>{option.label}</span>
-              {value === option.value && (
-                <Check size={16} className="text-primary" />
-              )}
+              {value === option.value && <Check size={16} className="text-primary" />}
             </button>
           ))}
         </div>

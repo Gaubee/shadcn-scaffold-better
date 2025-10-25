@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface DrawerProps {
   children?: React.ReactNode;
@@ -17,7 +17,7 @@ export interface DrawerProps {
   /**
    * Drawer position
    */
-  side?: 'left' | 'right';
+  side?: "left" | "right";
   /**
    * Drawer width
    */
@@ -41,12 +41,12 @@ export interface DrawerProps {
 }
 
 const elevationClasses = {
-  0: '',
-  1: 'shadow-sm',
-  2: 'shadow',
-  3: 'shadow-md',
-  4: 'shadow-lg',
-  5: 'shadow-xl',
+  0: "",
+  1: "shadow-sm",
+  2: "shadow",
+  3: "shadow-md",
+  4: "shadow-lg",
+  5: "shadow-xl",
 };
 
 export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
@@ -56,14 +56,14 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
       className,
       open = false,
       onOpenChange,
-      side = 'left',
+      side = "left",
       width = 280,
       gestureEnabled = true,
       showBackdrop = true,
       elevation = 4,
       duration = 300,
     },
-    ref
+    ref,
   ) => {
     const [isDragging, setIsDragging] = React.useState(false);
     const [dragOffset, setDragOffset] = React.useState(0);
@@ -74,7 +74,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
     const drawerRef = React.useRef<HTMLDivElement>(null);
     const rafIdRef = React.useRef<number | null>(null);
 
-    const widthValue = typeof width === 'number' ? `${width}px` : width;
+    const widthValue = typeof width === "number" ? `${width}px` : width;
 
     const handleTouchStart = React.useCallback(
       (e: React.TouchEvent) => {
@@ -87,7 +87,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
         setIsDragging(true);
         setDragVelocity(0);
       },
-      [gestureEnabled, open]
+      [gestureEnabled, open],
     );
 
     const handleTouchMove = React.useCallback(
@@ -106,16 +106,16 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
           lastXRef.current = touch.clientX;
           lastTimeRef.current = now;
 
-          const widthNum = typeof width === 'number' ? width : 300;
+          const widthNum = typeof width === "number" ? width : 300;
 
           // Only allow dragging in the close direction with resistance
-          if (side === 'left' && diff < 0) {
+          if (side === "left" && diff < 0) {
             // Add rubber band effect - smooth resistance curve
             const progress = Math.min(Math.abs(diff) / widthNum, 1);
             const resistance = 1 - Math.pow(progress, 2) * 0.7;
             setDragOffset(diff * resistance);
             setDragVelocity(velocity);
-          } else if (side === 'right' && diff > 0) {
+          } else if (side === "right" && diff > 0) {
             const progress = Math.min(Math.abs(diff) / widthNum, 1);
             const resistance = 1 - Math.pow(progress, 2) * 0.7;
             setDragOffset(diff * resistance);
@@ -125,19 +125,19 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
           rafIdRef.current = null;
         });
       },
-      [isDragging, gestureEnabled, side, width]
+      [isDragging, gestureEnabled, side, width],
     );
 
     const handleTouchEnd = React.useCallback(() => {
       if (!isDragging) return;
 
-      const threshold = typeof width === 'number' ? width * 0.3 : 80;
+      const threshold = typeof width === "number" ? width * 0.3 : 80;
       const velocityThreshold = 0.5;
 
       // Consider both distance and velocity for closing
       const shouldClose =
-        (side === 'left' && (dragOffset < -threshold || dragVelocity < -velocityThreshold)) ||
-        (side === 'right' && (dragOffset > threshold || dragVelocity > velocityThreshold));
+        (side === "left" && (dragOffset < -threshold || dragVelocity < -velocityThreshold)) ||
+        (side === "right" && (dragOffset > threshold || dragVelocity > velocityThreshold));
 
       if (shouldClose) {
         onOpenChange?.(false);
@@ -160,38 +160,38 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
     // Close drawer on Escape key
     React.useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape' && open) {
+        if (e.key === "Escape" && open) {
           onOpenChange?.(false);
         }
       };
 
-      document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
     }, [open, onOpenChange]);
 
     // Lock body scroll when drawer is open
     React.useEffect(() => {
       if (open) {
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = "hidden";
       } else {
-        document.body.style.overflow = '';
+        document.body.style.overflow = "";
       }
 
       return () => {
-        document.body.style.overflow = '';
+        document.body.style.overflow = "";
       };
     }, [open]);
 
     const drawerTransform = React.useMemo(() => {
       if (!open) {
-        return side === 'left' ? 'translateX(-100%)' : 'translateX(100%)';
+        return side === "left" ? "translateX(-100%)" : "translateX(100%)";
       }
 
       if (isDragging && dragOffset !== 0) {
         return `translateX(${dragOffset}px)`;
       }
 
-      return 'translateX(0)';
+      return "translateX(0)";
     }, [open, isDragging, dragOffset, side]);
 
     // Calculate backdrop opacity based on drag offset
@@ -199,7 +199,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
       if (!open) return 0;
       if (!isDragging || dragOffset === 0) return 1;
 
-      const widthNum = typeof width === 'number' ? width : 300;
+      const widthNum = typeof width === "number" ? width : 300;
       const progress = Math.abs(dragOffset) / widthNum;
       return Math.max(0, 1 - progress);
     }, [open, isDragging, dragOffset, width]);
@@ -210,13 +210,13 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
         {showBackdrop && (
           <div
             className={cn(
-              'fixed inset-0 bg-black z-40',
-              !open && 'pointer-events-none',
-              !isDragging && 'transition-opacity'
+              "fixed inset-0 bg-black z-40",
+              !open && "pointer-events-none",
+              !isDragging && "transition-opacity",
             )}
             style={{
               opacity: open ? backdropOpacity * 0.5 : 0,
-              transitionDuration: isDragging ? '0ms' : `${duration}ms`,
+              transitionDuration: isDragging ? "0ms" : `${duration}ms`,
             }}
             onClick={handleBackdropClick}
             aria-hidden="true"
@@ -227,30 +227,25 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
         <aside
           ref={ref || drawerRef}
           className={cn(
-            'fixed top-0 h-full bg-background z-50',
-            side === 'left' ? 'left-0' : 'right-0',
+            "fixed top-0 h-full bg-background z-50",
+            side === "left" ? "left-0" : "right-0",
             elevationClasses[elevation],
-            className
+            className,
           )}
           style={{
             width: widthValue,
             transform: drawerTransform,
-            transition: isDragging
-              ? 'none'
-              : `transform ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`,
+            transition: isDragging ? "none" : `transform ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`,
           }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          aria-hidden={!open}
-        >
-          <div className="h-full overflow-y-auto overflow-x-hidden">
-            {children}
-          </div>
+          aria-hidden={!open}>
+          <div className="h-full overflow-y-auto overflow-x-hidden">{children}</div>
         </aside>
       </>
     );
-  }
+  },
 );
 
-Drawer.displayName = 'Drawer';
+Drawer.displayName = "Drawer";

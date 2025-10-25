@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 import {
   Scaffold,
   AppBar,
@@ -12,7 +12,7 @@ import {
   useSnackbar,
   Modal,
   ModalFooter,
-} from '@/components/scaffold';
+} from "@/components/scaffold";
 import {
   Home,
   Menu,
@@ -29,7 +29,7 @@ import {
   Calendar,
   FileText,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 
 /**
  * Advanced Dashboard Example
@@ -45,15 +45,25 @@ import {
 export default function DashboardExample() {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [settingsOpen, setSettingsOpen] = React.useState(false);
-  const [activeNav, setActiveNav] = React.useState('home');
+  const [activeNav, setActiveNav] = React.useState("home");
   const [modalOpen, setModalOpen] = React.useState(false);
   const snackbar = useSnackbar();
 
   const navigationItems = [
-    { key: 'home', icon: <Home size={24} />, label: 'Home' },
-    { key: 'analytics', icon: <TrendingUp size={24} />, label: 'Analytics', badge: 3 },
-    { key: 'messages', icon: <MessageSquare size={24} />, label: 'Messages', badge: 12 },
-    { key: 'profile', icon: <User size={24} />, label: 'Profile' },
+    { key: "home", icon: <Home size={24} />, label: "Home" },
+    {
+      key: "analytics",
+      icon: <TrendingUp size={24} />,
+      label: "Analytics",
+      badge: 3,
+    },
+    {
+      key: "messages",
+      icon: <MessageSquare size={24} />,
+      label: "Messages",
+      badge: 12,
+    },
+    { key: "profile", icon: <User size={24} />, label: "Profile" },
   ];
 
   const handleFabClick = () => {
@@ -62,7 +72,7 @@ export default function DashboardExample() {
 
   const handleCreatePost = () => {
     setModalOpen(false);
-    snackbar.show('Post created successfully!', { severity: 'success' });
+    snackbar.show("Post created successfully!", { severity: "success" });
   };
 
   return (
@@ -81,36 +91,26 @@ export default function DashboardExample() {
               <button
                 onClick={() => setDrawerOpen(!drawerOpen)}
                 className="p-2 rounded-lg hover:bg-accent transition-colors"
-                aria-label="Menu"
-              >
+                aria-label="Menu">
                 <Menu size={24} />
               </button>
             }
-            title={
-              <div className="font-bold text-xl">
-                Dashboard
-              </div>
-            }
+            title={<div className="font-bold text-xl">Dashboard</div>}
             actions={
               <>
                 <button
                   className="p-2 rounded-lg hover:bg-accent transition-colors relative"
-                  aria-label="Notifications"
-                >
+                  aria-label="Notifications">
                   <Bell size={22} />
                   <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
                 </button>
-                <button
-                  className="p-2 rounded-lg hover:bg-accent transition-colors"
-                  aria-label="Search"
-                >
+                <button className="p-2 rounded-lg hover:bg-accent transition-colors" aria-label="Search">
                   <Search size={22} />
                 </button>
                 <button
                   onClick={() => setSettingsOpen(!settingsOpen)}
                   className="p-2 rounded-lg hover:bg-accent transition-colors"
-                  aria-label="Settings"
-                >
+                  aria-label="Settings">
                   <Settings size={22} />
                 </button>
               </>
@@ -118,14 +118,7 @@ export default function DashboardExample() {
           />
         }
         drawer={
-          <Drawer
-            open={drawerOpen}
-            onOpenChange={setDrawerOpen}
-            side="left"
-            width={280}
-            gestureEnabled
-            showBackdrop
-          >
+          <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} side="left" width={280} gestureEnabled showBackdrop>
             <div className="p-6">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
@@ -139,18 +132,35 @@ export default function DashboardExample() {
 
               <nav className="space-y-2">
                 {[
-                  { icon: <Home size={20} />, label: 'Dashboard', href: '#' },
-                  { icon: <BarChart size={20} />, label: 'Analytics', href: '#', badge: 3 },
-                  { icon: <Calendar size={20} />, label: 'Schedule', href: '#' },
-                  { icon: <Mail size={20} />, label: 'Messages', href: '#', badge: 12 },
-                  { icon: <FileText size={20} />, label: 'Documents', href: '#' },
-                  { icon: <Heart size={20} />, label: 'Favorites', href: '#' },
+                  { icon: <Home size={20} />, label: "Dashboard", href: "#" },
+                  {
+                    icon: <BarChart size={20} />,
+                    label: "Analytics",
+                    href: "#",
+                    badge: 3,
+                  },
+                  {
+                    icon: <Calendar size={20} />,
+                    label: "Schedule",
+                    href: "#",
+                  },
+                  {
+                    icon: <Mail size={20} />,
+                    label: "Messages",
+                    href: "#",
+                    badge: 12,
+                  },
+                  {
+                    icon: <FileText size={20} />,
+                    label: "Documents",
+                    href: "#",
+                  },
+                  { icon: <Heart size={20} />, label: "Favorites", href: "#" },
                 ].map((item) => (
                   <a
                     key={item.label}
                     href={item.href}
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent transition-colors"
-                  >
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent transition-colors">
                     {item.icon}
                     <span className="flex-1">{item.label}</span>
                     {item.badge && (
@@ -171,16 +181,14 @@ export default function DashboardExample() {
             side="right"
             width={320}
             gestureEnabled
-            showBackdrop
-          >
+            showBackdrop>
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold">Settings</h2>
                 <button
                   onClick={() => setSettingsOpen(false)}
                   className="p-2 rounded-lg hover:bg-accent transition-colors"
-                  aria-label="Close settings"
-                >
+                  aria-label="Close settings">
                   <X size={20} />
                 </button>
               </div>
@@ -241,8 +249,7 @@ export default function DashboardExample() {
             footer={
               <button
                 onClick={() => setSettingsOpen(true)}
-                className="p-2 rounded-lg hover:bg-accent transition-colors"
-              >
+                className="p-2 rounded-lg hover:bg-accent transition-colors">
                 <Settings size={24} />
               </button>
             }
@@ -268,35 +275,49 @@ export default function DashboardExample() {
             onClick={handleFabClick}
             aria-label="Create new post"
           />
-        }
-      >
+        }>
         {/* Main Content with Container Queries */}
         <div className="scaffold-content py-8">
           {/* Hero Section with Scroll Animation */}
           <section className="scroll-fade-in mb-12">
             <h1 className="text-4xl font-bold mb-4">Welcome back, John! 👋</h1>
-            <p className="text-xl text-muted-foreground">
-              Here's what's happening with your projects today.
-            </p>
+            <p className="text-xl text-muted-foreground">Here's what's happening with your projects today.</p>
           </section>
 
           {/* Stats Grid - Responsive using Container Queries */}
           <div className="scaffold-grid grid gap-6 mb-12">
             {[
-              { icon: <TrendingUp size={24} />, label: 'Total Revenue', value: '$45,231', change: '+20.1%' },
-              { icon: <User size={24} />, label: 'Active Users', value: '2,345', change: '+12.5%' },
-              { icon: <MessageSquare size={24} />, label: 'Messages', value: '156', change: '+8.3%' },
-              { icon: <BarChart size={24} />, label: 'Conversions', value: '89.2%', change: '+4.2%' },
+              {
+                icon: <TrendingUp size={24} />,
+                label: "Total Revenue",
+                value: "$45,231",
+                change: "+20.1%",
+              },
+              {
+                icon: <User size={24} />,
+                label: "Active Users",
+                value: "2,345",
+                change: "+12.5%",
+              },
+              {
+                icon: <MessageSquare size={24} />,
+                label: "Messages",
+                value: "156",
+                change: "+8.3%",
+              },
+              {
+                icon: <BarChart size={24} />,
+                label: "Conversions",
+                value: "89.2%",
+                change: "+4.2%",
+              },
             ].map((stat, i) => (
               <div
                 key={stat.label}
                 className="scroll-scale bg-card border rounded-lg p-6 transition-all hover:shadow-lg"
-                style={{ animationDelay: `${i * 100}ms` }}
-              >
+                style={{ animationDelay: `${i * 100}ms` }}>
                 <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 rounded-lg bg-primary/10 text-primary">
-                    {stat.icon}
-                  </div>
+                  <div className="p-3 rounded-lg bg-primary/10 text-primary">{stat.icon}</div>
                   <span className="text-sm font-medium text-green-600">{stat.change}</span>
                 </div>
                 <h3 className="text-2xl font-bold mb-1">{stat.value}</h3>
@@ -310,10 +331,7 @@ export default function DashboardExample() {
             <h2 className="text-2xl font-bold mb-6">Recent Activity</h2>
             <div className="space-y-4">
               {Array.from({ length: 10 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-card border rounded-lg p-4 hover:shadow-md transition-all"
-                >
+                <div key={i} className="bg-card border rounded-lg p-4 hover:shadow-md transition-all">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
                       <User size={20} className="text-primary" />
@@ -323,9 +341,7 @@ export default function DashboardExample() {
                       <p className="text-sm text-muted-foreground truncate">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {i + 1} hours ago
-                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">{i + 1} hours ago</p>
                     </div>
                   </div>
                 </div>
@@ -341,8 +357,7 @@ export default function DashboardExample() {
         onOpenChange={setModalOpen}
         title="Create New Post"
         description="Share your thoughts with your audience"
-        size="lg"
-      >
+        size="lg">
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2">Title</label>
@@ -365,14 +380,12 @@ export default function DashboardExample() {
         <ModalFooter>
           <button
             onClick={() => setModalOpen(false)}
-            className="px-4 py-2 text-sm font-medium rounded-lg hover:bg-accent transition-colors"
-          >
+            className="px-4 py-2 text-sm font-medium rounded-lg hover:bg-accent transition-colors">
             Cancel
           </button>
           <button
             onClick={handleCreatePost}
-            className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
-          >
+            className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity">
             Create Post
           </button>
         </ModalFooter>

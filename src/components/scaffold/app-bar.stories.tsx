@@ -1,22 +1,22 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { AppBar } from './app-bar';
-import { Menu, Search, MoreVertical, Home } from 'lucide-react';
+import type { Meta, StoryObj } from "@storybook/react";
+import { AppBar } from "./app-bar";
+import { Menu, Search, MoreVertical, Home } from "lucide-react";
 
 const meta = {
-  title: 'Components/AppBar',
+  title: "Components/AppBar",
   component: AppBar,
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     elevation: {
-      control: { type: 'select' },
+      control: { type: "select" },
       options: [0, 1, 2, 3, 4, 5],
     },
     position: {
-      control: { type: 'select' },
-      options: ['fixed', 'sticky', 'static'],
+      control: { type: "select" },
+      options: ["fixed", "sticky", "static"],
     },
   },
 } satisfies Meta<typeof AppBar>;
@@ -26,13 +26,13 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    title: 'Application',
+    title: "Application",
   },
 };
 
 export const WithLeading: Story = {
   args: {
-    title: 'Application',
+    title: "Application",
     leading: (
       <button className="p-2 hover:bg-accent rounded-md">
         <Menu className="w-6 h-6" />
@@ -43,7 +43,7 @@ export const WithLeading: Story = {
 
 export const WithActions: Story = {
   args: {
-    title: 'Application',
+    title: "Application",
     leading: (
       <button className="p-2 hover:bg-accent rounded-md">
         <Menu className="w-6 h-6" />
@@ -64,7 +64,7 @@ export const WithActions: Story = {
 
 export const Collapsible: Story = {
   args: {
-    title: 'Scroll to see collapse effect',
+    title: "Scroll to see collapse effect",
     collapsible: true,
     expandedHeight: 80,
     collapsedHeight: 56,
@@ -78,7 +78,7 @@ export const Collapsible: Story = {
     (Story) => (
       <div>
         <Story />
-        <div style={{ height: '200vh', padding: '20px' }}>
+        <div style={{ height: "200vh", padding: "20px" }}>
           <h2>Scroll down to see the AppBar collapse</h2>
           <p>The AppBar will shrink from 80px to 56px as you scroll.</p>
         </div>
@@ -89,9 +89,9 @@ export const Collapsible: Story = {
 
 export const Immersive: Story = {
   args: {
-    title: 'Scroll for immersive effect',
+    title: "Scroll for immersive effect",
     immersive: true,
-    position: 'sticky',
+    position: "sticky",
     leading: (
       <button className="p-2 hover:bg-accent rounded-md">
         <Home className="w-6 h-6" />
@@ -107,10 +107,10 @@ export const Immersive: Story = {
     (Story) => (
       <div>
         <Story />
-        <div style={{ height: '200vh', padding: '20px' }}>
+        <div style={{ height: "200vh", padding: "20px" }}>
           <h2>Scroll to see the immersive effect</h2>
           <p>The AppBar will become more opaque and add blur as you scroll.</p>
-          <div style={{ marginTop: '40px', lineHeight: '1.8' }}>
+          <div style={{ marginTop: "40px", lineHeight: "1.8" }}>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
             <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
@@ -123,8 +123,8 @@ export const Immersive: Story = {
 
 export const FixedPosition: Story = {
   args: {
-    title: 'Fixed AppBar',
-    position: 'fixed',
+    title: "Fixed AppBar",
+    position: "fixed",
     elevation: 3,
     leading: (
       <button className="p-2 hover:bg-accent rounded-md">
@@ -136,7 +136,7 @@ export const FixedPosition: Story = {
     (Story) => (
       <div>
         <Story />
-        <div style={{ height: '200vh', padding: '80px 20px 20px' }}>
+        <div style={{ height: "200vh", padding: "80px 20px 20px" }}>
           <h2>Fixed Position AppBar</h2>
           <p>This AppBar stays fixed at the top of the viewport while scrolling.</p>
         </div>
@@ -147,7 +147,7 @@ export const FixedPosition: Story = {
 
 export const NoElevation: Story = {
   args: {
-    title: 'No Shadow',
+    title: "No Shadow",
     elevation: 0,
     leading: (
       <button className="p-2 hover:bg-accent rounded-md">
@@ -159,7 +159,7 @@ export const NoElevation: Story = {
 
 export const HighElevation: Story = {
   args: {
-    title: 'High Elevation',
+    title: "High Elevation",
     elevation: 5,
     leading: (
       <button className="p-2 hover:bg-accent rounded-md">

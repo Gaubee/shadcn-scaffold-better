@@ -15,64 +15,58 @@ export interface FeatureSupport {
 }
 
 export type FeatureName =
-  | 'scroll-timeline'
-  | 'container-queries'
-  | 'view-transitions'
-  | 'viewport-segments'
-  | 'resize-observer'
-  | 'intersection-observer'
-  | 'superellipse-corners'
-  | 'backdrop-filter';
+  | "scroll-timeline"
+  | "container-queries"
+  | "view-transitions"
+  | "viewport-segments"
+  | "resize-observer"
+  | "intersection-observer"
+  | "superellipse-corners"
+  | "backdrop-filter";
 
 /**
  * Feature detection registry
  * Maps feature names to detection functions
  */
 const featureDetectors: Record<FeatureName, () => boolean> = {
-  'scroll-timeline': () => {
-    if (typeof window === 'undefined' || typeof CSS === 'undefined') return false;
-    return (
-      CSS.supports('animation-timeline: scroll()') ||
-      'scrollTimeline' in document.documentElement.style
-    );
+  "scroll-timeline": () => {
+    if (typeof window === "undefined" || typeof CSS === "undefined") return false;
+    return CSS.supports("animation-timeline: scroll()") || "scrollTimeline" in document.documentElement.style;
   },
 
-  'container-queries': () => {
-    if (typeof window === 'undefined' || typeof CSS === 'undefined') return false;
-    return CSS.supports('container-type: inline-size');
+  "container-queries": () => {
+    if (typeof window === "undefined" || typeof CSS === "undefined") return false;
+    return CSS.supports("container-type: inline-size");
   },
 
-  'view-transitions': () => {
-    if (typeof window === 'undefined' || typeof document === 'undefined') return false;
-    return 'startViewTransition' in document;
+  "view-transitions": () => {
+    if (typeof window === "undefined" || typeof document === "undefined") return false;
+    return "startViewTransition" in document;
   },
 
-  'viewport-segments': () => {
-    if (typeof window === 'undefined') return false;
-    return 'visualViewport' in window && 'segments' in (window.visualViewport || {});
+  "viewport-segments": () => {
+    if (typeof window === "undefined") return false;
+    return "visualViewport" in window && "segments" in (window.visualViewport || {});
   },
 
-  'resize-observer': () => {
-    if (typeof window === 'undefined') return false;
-    return 'ResizeObserver' in window;
+  "resize-observer": () => {
+    if (typeof window === "undefined") return false;
+    return "ResizeObserver" in window;
   },
 
-  'intersection-observer': () => {
-    if (typeof window === 'undefined') return false;
-    return 'IntersectionObserver' in window;
+  "intersection-observer": () => {
+    if (typeof window === "undefined") return false;
+    return "IntersectionObserver" in window;
   },
 
-  'superellipse-corners': () => {
-    if (typeof window === 'undefined' || typeof CSS === 'undefined') return false;
-    return CSS.supports('corner-shape', 'superellipse(2)');
+  "superellipse-corners": () => {
+    if (typeof window === "undefined" || typeof CSS === "undefined") return false;
+    return CSS.supports("corner-shape", "superellipse(2)");
   },
 
-  'backdrop-filter': () => {
-    if (typeof window === 'undefined' || typeof CSS === 'undefined') return false;
-    return (
-      CSS.supports('backdrop-filter', 'blur(10px)') ||
-      CSS.supports('-webkit-backdrop-filter', 'blur(10px)')
-    );
+  "backdrop-filter": () => {
+    if (typeof window === "undefined" || typeof CSS === "undefined") return false;
+    return CSS.supports("backdrop-filter", "blur(10px)") || CSS.supports("-webkit-backdrop-filter", "blur(10px)");
   },
 };
 
@@ -82,21 +76,21 @@ const featureDetectors: Record<FeatureName, () => boolean> = {
  */
 interface PolyfillConfig {
   url: string;
-  type?: 'script' | 'module';
+  type?: "script" | "module";
   globalCheck?: () => boolean;
 }
 
 const polyfillConfigs: Partial<Record<FeatureName, PolyfillConfig>> = {
-  'resize-observer': {
+  "resize-observer": {
     // Use UMD build instead of ES module
-    url: 'https://unpkg.com/@juggle/resize-observer@3.4.0/dist/ResizeObserver.js',
-    type: 'script',
-    globalCheck: () => typeof window !== 'undefined' && 'ResizeObserver' in window,
+    url: "https://unpkg.com/@juggle/resize-observer@3.4.0/dist/ResizeObserver.js",
+    type: "script",
+    globalCheck: () => typeof window !== "undefined" && "ResizeObserver" in window,
   },
-  'intersection-observer': {
-    url: 'https://unpkg.com/intersection-observer@0.12.2/intersection-observer.js',
-    type: 'script',
-    globalCheck: () => typeof window !== 'undefined' && 'IntersectionObserver' in window,
+  "intersection-observer": {
+    url: "https://unpkg.com/intersection-observer@0.12.2/intersection-observer.js",
+    type: "script",
+    globalCheck: () => typeof window !== "undefined" && "IntersectionObserver" in window,
   },
 };
 
@@ -209,14 +203,14 @@ export async function loadPolyfill(feature: FeatureName): Promise<void> {
   }
 
   return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.id = scriptId;
     script.src = polyfillConfig.url;
     script.async = true;
 
     // Set type if specified (for ES modules)
-    if (polyfillConfig.type === 'module') {
-      script.type = 'module';
+    if (polyfillConfig.type === "module") {
+      script.type = "module";
     }
 
     script.onload = () => {
@@ -228,9 +222,7 @@ export async function loadPolyfill(feature: FeatureName): Promise<void> {
             featureCache.delete(feature);
             resolve();
           } else {
-            const error = new Error(
-              `Polyfill loaded but ${feature} still not available`
-            );
+            const error = new Error(`Polyfill loaded but ${feature} still not available`);
             console.error(error);
             reject(error);
           }
@@ -243,9 +235,7 @@ export async function loadPolyfill(feature: FeatureName): Promise<void> {
     };
 
     script.onerror = (event) => {
-      const error = new Error(
-        `Failed to load polyfill for ${feature} from ${polyfillConfig.url}`
-      );
+      const error = new Error(`Failed to load polyfill for ${feature} from ${polyfillConfig.url}`);
       console.error(error, event);
       // Remove failed script
       const failedScript = document.getElementById(scriptId);
@@ -290,7 +280,7 @@ export async function ensureFeatures(features: FeatureName[]): Promise<void> {
  * @returns Support information
  */
 export function useFeatureSupport(feature: FeatureName): FeatureSupport {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return { supported: false, polyfillNeeded: false };
   }
 

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 import {
   Scaffold,
   AppBar,
@@ -9,7 +9,7 @@ import {
   FloatingActionButton,
   Snackbar,
   useSnackbar,
-} from '@/components/scaffold';
+} from "@/components/scaffold";
 import {
   Menu,
   Home,
@@ -23,11 +23,11 @@ import {
   TrendingUp,
   Eye,
   MousePointer2,
-} from 'lucide-react';
+} from "lucide-react";
 
 export default function AdvancedScrollExamplePage() {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const [selectedNav, setSelectedNav] = React.useState('home');
+  const [selectedNav, setSelectedNav] = React.useState("home");
   const [scrollProgress, setScrollProgress] = React.useState(0);
   const snackbar = useSnackbar();
 
@@ -38,15 +38,15 @@ export default function AdvancedScrollExamplePage() {
       setScrollProgress((currentScroll / scrollHeight) * 100);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navigationItems = [
-    { key: 'home', icon: <Home size={24} />, label: 'Home' },
-    { key: 'explore', icon: <Compass size={24} />, label: 'Explore' },
-    { key: 'favorites', icon: <Heart size={24} />, label: 'Favorites' },
-    { key: 'profile', icon: <User size={24} />, label: 'Profile' },
+    { key: "home", icon: <Home size={24} />, label: "Home" },
+    { key: "explore", icon: <Compass size={24} />, label: "Explore" },
+    { key: "favorites", icon: <Heart size={24} />, label: "Favorites" },
+    { key: "profile", icon: <User size={24} />, label: "Profile" },
   ];
 
   return (
@@ -63,8 +63,7 @@ export default function AdvancedScrollExamplePage() {
               <button
                 onClick={() => setDrawerOpen(true)}
                 className="p-2 hover:bg-accent rounded-full transition-colors"
-                aria-label="Open menu"
-              >
+                aria-label="Open menu">
                 <Menu size={24} />
               </button>
             }
@@ -80,21 +79,14 @@ export default function AdvancedScrollExamplePage() {
             actions={
               <div className="flex items-center gap-2">
                 <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
-                  <span className="text-xs font-medium text-primary">
-                    {scrollProgress.toFixed(0)}%
-                  </span>
+                  <span className="text-xs font-medium text-primary">{scrollProgress.toFixed(0)}%</span>
                 </div>
               </div>
             }
           />
         }
         drawer={
-          <Drawer
-            open={drawerOpen}
-            onOpenChange={setDrawerOpen}
-            gestureEnabled
-            elevation={4}
-          >
+          <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} gestureEnabled elevation={4}>
             <div className="flex flex-col h-full">
               <div className="p-6 border-b bg-gradient-to-br from-primary/10 to-purple-500/10">
                 <div className="flex items-center gap-3">
@@ -118,11 +110,8 @@ export default function AdvancedScrollExamplePage() {
                         setDrawerOpen(false);
                       }}
                       className={`w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 transition-all ${
-                        selectedNav === item.key
-                          ? 'bg-primary text-primary-foreground shadow-md'
-                          : 'hover:bg-accent'
-                      }`}
-                    >
+                        selectedNav === item.key ? "bg-primary text-primary-foreground shadow-md" : "hover:bg-accent"
+                      }`}>
                       {item.icon}
                       <span>{item.label}</span>
                     </button>
@@ -134,10 +123,11 @@ export default function AdvancedScrollExamplePage() {
                 <button
                   onClick={() => {
                     setDrawerOpen(false);
-                    snackbar.show('Documentation coming soon', { severity: 'info' });
+                    snackbar.show("Documentation coming soon", {
+                      severity: "info",
+                    });
                   }}
-                  className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:brightness-110 transition-all text-sm font-medium"
-                >
+                  className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:brightness-110 transition-all text-sm font-medium">
                   View Documentation
                 </button>
               </div>
@@ -157,12 +147,11 @@ export default function AdvancedScrollExamplePage() {
         floatingActionButton={
           <FloatingActionButton
             icon={<ArrowUp size={24} />}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             hideOnScroll={false}
             elevation={4}
           />
-        }
-      >
+        }>
         {/* Progress Bar */}
         <div className="fixed top-0 left-0 right-0 h-1 bg-muted/30 z-50">
           <div
@@ -221,53 +210,52 @@ export default function AdvancedScrollExamplePage() {
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {[
                 {
-                  title: 'Collapsible AppBar',
-                  description: 'Header smoothly shrinks on scroll, saving valuable screen space while maintaining accessibility.',
-                  color: 'blue',
+                  title: "Collapsible AppBar",
+                  description:
+                    "Header smoothly shrinks on scroll, saving valuable screen space while maintaining accessibility.",
+                  color: "blue",
                   icon: <ArrowUp size={32} />,
                 },
                 {
-                  title: 'Immersive Mode',
-                  description: 'Transparent header becomes solid with backdrop blur as you scroll, creating depth and focus.',
-                  color: 'purple',
+                  title: "Immersive Mode",
+                  description:
+                    "Transparent header becomes solid with backdrop blur as you scroll, creating depth and focus.",
+                  color: "purple",
                   icon: <Sparkles size={32} />,
                 },
                 {
-                  title: 'Hide on Scroll',
-                  description: 'Navigation bars intelligently hide when scrolling down, maximizing content visibility.',
-                  color: 'green',
+                  title: "Hide on Scroll",
+                  description: "Navigation bars intelligently hide when scrolling down, maximizing content visibility.",
+                  color: "green",
                   icon: <Eye size={32} />,
                 },
                 {
-                  title: 'Parallax Effects',
-                  description: 'Background elements move at different speeds, adding depth and visual interest.',
-                  color: 'amber',
+                  title: "Parallax Effects",
+                  description: "Background elements move at different speeds, adding depth and visual interest.",
+                  color: "amber",
                   icon: <TrendingUp size={32} />,
                 },
                 {
-                  title: 'View Animations',
-                  description: 'Elements fade in and scale as they enter the viewport, drawing attention naturally.',
-                  color: 'red',
+                  title: "View Animations",
+                  description: "Elements fade in and scale as they enter the viewport, drawing attention naturally.",
+                  color: "red",
                   icon: <Zap size={32} />,
                 },
                 {
-                  title: 'Progressive Enhancement',
-                  description: 'Modern browsers get CSS animations, older browsers get JavaScript fallbacks seamlessly.',
-                  color: 'cyan',
+                  title: "Progressive Enhancement",
+                  description:
+                    "Modern browsers get CSS animations, older browsers get JavaScript fallbacks seamlessly.",
+                  color: "cyan",
                   icon: <Plus size={32} />,
                 },
               ].map((feature, index) => (
-                <div
-                  key={index}
-                  className="p-8 border rounded-2xl hover:shadow-2xl transition-all group scroll-scale"
-                >
-                  <div className={`w-16 h-16 bg-${feature.color}-500/10 rounded-2xl flex items-center justify-center text-${feature.color}-500 mb-6 group-hover:scale-110 transition-transform`}>
+                <div key={index} className="p-8 border rounded-2xl hover:shadow-2xl transition-all group scroll-scale">
+                  <div
+                    className={`w-16 h-16 bg-${feature.color}-500/10 rounded-2xl flex items-center justify-center text-${feature.color}-500 mb-6 group-hover:scale-110 transition-transform`}>
                     {feature.icon}
                   </div>
                   <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {feature.description}
-                  </p>
+                  <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                 </div>
               ))}
             </div>
@@ -294,7 +282,8 @@ export default function AdvancedScrollExamplePage() {
                     CSS Scroll-Timeline API
                   </h3>
                   <p className="text-muted-foreground mb-4">
-                    Modern browsers use the native CSS animation-timeline property to drive animations based on scroll position:
+                    Modern browsers use the native CSS animation-timeline property to drive animations based on scroll
+                    position:
                   </p>
                   <pre className="bg-muted/50 p-4 rounded-xl overflow-x-auto text-sm">
                     <code>{`@keyframes app-bar-collapse {
@@ -350,16 +339,12 @@ if (!supported) {
 
             <div className="space-y-8">
               {[1, 2, 3, 4, 5].map((section) => (
-                <div
-                  key={section}
-                  className="p-8 border rounded-2xl scroll-fade-in hover:shadow-xl transition-all"
-                >
+                <div key={section} className="p-8 border rounded-2xl scroll-fade-in hover:shadow-xl transition-all">
                   <h3 className="text-2xl font-bold mb-4">Section {section}</h3>
                   <p className="text-muted-foreground leading-relaxed mb-4">
-                    Keep scrolling to observe how different components react to your scroll position.
-                    The AppBar at the top shrinks and becomes more opaque, the bottom navigation
-                    hides when scrolling down and reappears when scrolling up, and content elements
-                    fade in as they enter the viewport.
+                    Keep scrolling to observe how different components react to your scroll position. The AppBar at the
+                    top shrinks and becomes more opaque, the bottom navigation hides when scrolling down and reappears
+                    when scrolling up, and content elements fade in as they enter the viewport.
                   </p>
                   <div className="h-32 bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 rounded-xl" />
                 </div>
@@ -372,30 +357,22 @@ if (!supported) {
         <section className="bg-gradient-to-br from-primary/10 via-purple-500/10 to-primary/5 py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 scroll-fade-in">
-                Why CSS Scroll-Driven Animations?
-              </h2>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 scroll-fade-in">Why CSS Scroll-Driven Animations?</h2>
               <div className="grid gap-6 md:grid-cols-3 mt-12">
                 <div className="p-6 bg-background/80 backdrop-blur-sm border rounded-2xl scroll-scale">
                   <div className="text-4xl mb-4">⚡</div>
                   <h3 className="text-xl font-bold mb-2">60fps Performance</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Runs on GPU, smoother than JavaScript
-                  </p>
+                  <p className="text-sm text-muted-foreground">Runs on GPU, smoother than JavaScript</p>
                 </div>
                 <div className="p-6 bg-background/80 backdrop-blur-sm border rounded-2xl scroll-scale">
                   <div className="text-4xl mb-4">🎨</div>
                   <h3 className="text-xl font-bold mb-2">Declarative</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Write less code, maintain easier
-                  </p>
+                  <p className="text-sm text-muted-foreground">Write less code, maintain easier</p>
                 </div>
                 <div className="p-6 bg-background/80 backdrop-blur-sm border rounded-2xl scroll-scale">
                   <div className="text-4xl mb-4">📱</div>
                   <h3 className="text-xl font-bold mb-2">Battery Friendly</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Lower CPU usage on mobile devices
-                  </p>
+                  <p className="text-sm text-muted-foreground">Lower CPU usage on mobile devices</p>
                 </div>
               </div>
             </div>
@@ -405,23 +382,23 @@ if (!supported) {
         {/* Footer CTA */}
         <section className="container mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto text-center scroll-fade-in">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to Build?
-            </h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Build?</h2>
             <p className="text-xl text-muted-foreground mb-8">
               Start creating beautiful, performant scroll experiences today
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <button
-                onClick={() => snackbar.show('Documentation opening...', { severity: 'info' })}
-                className="px-8 py-4 bg-primary text-primary-foreground rounded-xl hover:brightness-110 transition-all shadow-lg text-lg font-medium"
-              >
+                onClick={() =>
+                  snackbar.show("Documentation opening...", {
+                    severity: "info",
+                  })
+                }
+                className="px-8 py-4 bg-primary text-primary-foreground rounded-xl hover:brightness-110 transition-all shadow-lg text-lg font-medium">
                 View Documentation
               </button>
               <button
-                onClick={() => window.location.href = '/examples/responsive'}
-                className="px-8 py-4 border rounded-xl hover:bg-accent transition-all text-lg font-medium"
-              >
+                onClick={() => (window.location.href = "/examples/responsive")}
+                className="px-8 py-4 border rounded-xl hover:bg-accent transition-all text-lg font-medium">
                 More Examples
               </button>
             </div>

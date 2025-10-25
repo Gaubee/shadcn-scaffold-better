@@ -445,7 +445,8 @@
  * FAB 脉动效果
  */
 @keyframes fab-pulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4);
   }
   50% {

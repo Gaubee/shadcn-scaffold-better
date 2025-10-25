@@ -1,9 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Drawer } from '../drawer';
-import { useState } from 'react';
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Drawer } from "../drawer";
+import { useState } from "react";
 
-function TestDrawer({ side = 'left' }: { side?: 'left' | 'right' }) {
+function TestDrawer({ side = "left" }: { side?: "left" | "right" }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -16,49 +16,45 @@ function TestDrawer({ side = 'left' }: { side?: 'left' | 'right' }) {
   );
 }
 
-describe('Drawer', () => {
-  it('renders drawer when open', () => {
+describe("Drawer", () => {
+  it("renders drawer when open", () => {
     render(<Drawer open={true}>Drawer Content</Drawer>);
-    expect(screen.getByText('Drawer Content')).toBeInTheDocument();
+    expect(screen.getByText("Drawer Content")).toBeInTheDocument();
   });
 
-  it('does not render drawer when closed', () => {
+  it("does not render drawer when closed", () => {
     const { container } = render(<Drawer open={false}>Drawer Content</Drawer>);
-    const drawer = container.querySelector('aside');
-    expect(drawer).toHaveStyle({ transform: 'translateX(-100%)' });
+    const drawer = container.querySelector("aside");
+    expect(drawer).toHaveStyle({ transform: "translateX(-100%)" });
   });
 
-  it('handles open state change', () => {
+  it("handles open state change", () => {
     render(<TestDrawer />);
 
-    const openButton = screen.getByText('Open Drawer');
+    const openButton = screen.getByText("Open Drawer");
     fireEvent.click(openButton);
 
-    expect(screen.getByTestId('drawer-content')).toBeInTheDocument();
+    expect(screen.getByTestId("drawer-content")).toBeInTheDocument();
   });
 
-  it('shows backdrop when showBackdrop is true', () => {
+  it("shows backdrop when showBackdrop is true", () => {
     const { container } = render(
       <Drawer open={true} showBackdrop={true}>
         Content
-      </Drawer>
+      </Drawer>,
     );
 
     const backdrop = container.querySelector('[aria-hidden="true"]');
     expect(backdrop).toBeInTheDocument();
-    expect(backdrop).toHaveClass('bg-black');
+    expect(backdrop).toHaveClass("bg-black");
   });
 
-  it('closes on backdrop click', () => {
+  it("closes on backdrop click", () => {
     const onOpenChange = vi.fn();
     const { container } = render(
-      <Drawer
-        open={true}
-        onOpenChange={onOpenChange}
-        showBackdrop={true}
-      >
+      <Drawer open={true} onOpenChange={onOpenChange} showBackdrop={true}>
         Content
-      </Drawer>
+      </Drawer>,
     );
 
     const backdrop = container.querySelector('[aria-hidden="true"]');
@@ -68,68 +64,66 @@ describe('Drawer', () => {
     }
   });
 
-  it('applies correct side positioning', () => {
+  it("applies correct side positioning", () => {
     const { container, rerender } = render(
       <Drawer open={true} side="left">
         Content
-      </Drawer>
+      </Drawer>,
     );
 
-    let drawer = container.querySelector('aside');
-    expect(drawer).toHaveClass('left-0');
+    let drawer = container.querySelector("aside");
+    expect(drawer).toHaveClass("left-0");
 
     rerender(
       <Drawer open={true} side="right">
         Content
-      </Drawer>
+      </Drawer>,
     );
 
-    drawer = container.querySelector('aside');
-    expect(drawer).toHaveClass('right-0');
+    drawer = container.querySelector("aside");
+    expect(drawer).toHaveClass("right-0");
   });
 
-  it('applies custom width', () => {
+  it("applies custom width", () => {
     const { container } = render(
       <Drawer open={true} width={320}>
         Content
-      </Drawer>
+      </Drawer>,
     );
 
-    const drawer = container.querySelector('aside');
-    expect(drawer).toHaveStyle({ width: '320px' });
+    const drawer = container.querySelector("aside");
+    expect(drawer).toHaveStyle({ width: "320px" });
   });
 
-  it('handles elevation prop', () => {
+  it("handles elevation prop", () => {
     const { container } = render(
       <Drawer open={true} elevation={3}>
         Content
-      </Drawer>
+      </Drawer>,
     );
 
-    const drawer = container.querySelector('aside');
-    expect(drawer).toHaveClass('shadow-md');
+    const drawer = container.querySelector("aside");
+    expect(drawer).toHaveClass("shadow-md");
   });
 
-  it('closes on Escape key', () => {
+  it("closes on Escape key", () => {
     const onOpenChange = vi.fn();
     render(
       <Drawer open={true} onOpenChange={onOpenChange}>
         Content
-      </Drawer>
+      </Drawer>,
     );
 
-    fireEvent.keyDown(document, { key: 'Escape' });
+    fireEvent.keyDown(document, { key: "Escape" });
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
-  it('locks body scroll when open', () => {
-    const { rerender } = render(
-      <Drawer open={false}>Content</Drawer>
-    );
+  it("locks body scroll when open", () => {
+    const { rerender } = render(<Drawer open={false}>Content</Drawer>);
 
-    expect(document.body.style.overflow).toBe('');
+    expect(document.body.style.overflow).toBe("");
 
     rerender(<Drawer open={true}>Content</Drawer>);
-    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.body.style.overflow).toBe("hidden");
   });
 });

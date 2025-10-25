@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface ModalProps {
   children?: React.ReactNode;
@@ -37,7 +37,7 @@ export interface ModalProps {
   /**
    * Modal size
    */
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  size?: "sm" | "md" | "lg" | "xl" | "full";
   /**
    * Custom backdrop className
    */
@@ -45,11 +45,11 @@ export interface ModalProps {
 }
 
 const sizeClasses = {
-  sm: 'max-w-sm',
-  md: 'max-w-md',
-  lg: 'max-w-lg',
-  xl: 'max-w-xl',
-  full: 'max-w-full mx-4',
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-lg",
+  xl: "max-w-xl",
+  full: "max-w-full mx-4",
 };
 
 export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
@@ -64,21 +64,21 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
       showClose = true,
       closeOnBackdropClick = true,
       closeOnEscape = true,
-      size = 'md',
+      size = "md",
       backdropClassName,
     },
-    ref
+    ref,
   ) => {
     // Lock body scroll when modal is open
     React.useEffect(() => {
       if (open) {
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = "hidden";
       } else {
-        document.body.style.overflow = '';
+        document.body.style.overflow = "";
       }
 
       return () => {
-        document.body.style.overflow = '';
+        document.body.style.overflow = "";
       };
     }, [open]);
 
@@ -87,13 +87,13 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
       if (!closeOnEscape || !open) return;
 
       const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
+        if (e.key === "Escape") {
           onOpenChange?.(false);
         }
       };
 
-      document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
     }, [open, closeOnEscape, onOpenChange]);
 
     if (!open) return null;
@@ -103,9 +103,9 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
         {/* Backdrop */}
         <div
           className={cn(
-            'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm',
-            'animate-in fade-in duration-200',
-            backdropClassName
+            "fixed inset-0 z-50 bg-black/50 backdrop-blur-sm",
+            "animate-in fade-in duration-200",
+            backdropClassName,
           )}
           onClick={closeOnBackdropClick ? () => onOpenChange?.(false) : undefined}
           aria-hidden="true"
@@ -116,19 +116,17 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
-          aria-labelledby={title ? 'modal-title' : undefined}
-          aria-describedby={description ? 'modal-description' : undefined}
-        >
+          aria-labelledby={title ? "modal-title" : undefined}
+          aria-describedby={description ? "modal-description" : undefined}>
           <div
             ref={ref}
             className={cn(
-              'relative w-full bg-background rounded-lg shadow-lg',
-              'animate-in zoom-in-95 duration-200',
+              "relative w-full bg-background rounded-lg shadow-lg",
+              "animate-in zoom-in-95 duration-200",
               sizeClasses[size],
-              className
+              className,
             )}
-            onClick={(e) => e.stopPropagation()}
-          >
+            onClick={(e) => e.stopPropagation()}>
             {/* Header */}
             {(title || description || showClose) && (
               <div className="relative px-6 pt-6 pb-4">
@@ -137,45 +135,27 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
                     type="button"
                     onClick={() => onOpenChange?.(false)}
                     className={cn(
-                      'absolute right-4 top-4 p-1 rounded-md',
-                      'text-muted-foreground',
-                      'transition-colors',
-                      'hover:bg-accent hover:text-accent-foreground',
-                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+                      "absolute right-4 top-4 p-1 rounded-md",
+                      "text-muted-foreground",
+                      "transition-colors",
+                      "hover:bg-accent hover:text-accent-foreground",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     )}
-                    aria-label="Close"
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M15 5L5 15M5 5L15 15"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      />
+                    aria-label="Close">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     </svg>
                   </button>
                 )}
 
                 {title && (
-                  <h2
-                    id="modal-title"
-                    className="text-lg font-semibold text-foreground pr-8"
-                  >
+                  <h2 id="modal-title" className="text-lg font-semibold text-foreground pr-8">
                     {title}
                   </h2>
                 )}
 
                 {description && (
-                  <p
-                    id="modal-description"
-                    className="mt-2 text-sm text-muted-foreground"
-                  >
+                  <p id="modal-description" className="mt-2 text-sm text-muted-foreground">
                     {description}
                   </p>
                 )}
@@ -188,10 +168,10 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
         </div>
       </>
     );
-  }
+  },
 );
 
-Modal.displayName = 'Modal';
+Modal.displayName = "Modal";
 
 // Modal Footer component for actions
 export interface ModalFooterProps {
@@ -199,20 +179,12 @@ export interface ModalFooterProps {
   className?: string;
 }
 
-export const ModalFooter = React.forwardRef<HTMLDivElement, ModalFooterProps>(
-  ({ children, className }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          'flex items-center justify-end gap-2 pt-4 border-t',
-          className
-        )}
-      >
-        {children}
-      </div>
-    );
-  }
-);
+export const ModalFooter = React.forwardRef<HTMLDivElement, ModalFooterProps>(({ children, className }, ref) => {
+  return (
+    <div ref={ref} className={cn("flex items-center justify-end gap-2 pt-4 border-t", className)}>
+      {children}
+    </div>
+  );
+});
 
-ModalFooter.displayName = 'ModalFooter';
+ModalFooter.displayName = "ModalFooter";

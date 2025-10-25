@@ -39,18 +39,11 @@
       "type": "registry:ui"
     }
   ],
-  "dependencies": [
-    "class-variance-authority",
-    "clsx",
-    "tailwind-merge",
-    "lucide-react"
-  ],
+  "dependencies": ["class-variance-authority", "clsx", "tailwind-merge", "lucide-react"],
   "registryDependencies": [],
   "tailwind": {
     "config": {
-      "content": [
-        "./src/components/scaffold/**/*.{js,ts,jsx,tsx,mdx}"
-      ]
+      "content": ["./src/components/scaffold/**/*.{js,ts,jsx,tsx,mdx}"]
     }
   }
 }

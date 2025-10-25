@@ -32,13 +32,13 @@
 
 **参考资料：**
 
--https://context7.com/websites/ui_shadcn/llms.txt?tokens=172873
--https://context7.com/websites/developer_chrome/llms.txt?tokens=3413830
--https://context7.com/websites/flutter_dev/llms.txt?tokens=4386188
--https://context7.com/websites/react-spectrum_adobe_com-react-aria-getting-started.html/llms.txt
--https://context7.com/websites/tailwindcss/llms.txt?topic=vite
--GitHub - tailwindlabs/tailwindcss-container-queries: A plugin for Tailwind CSS v3.2+ that provides u
--https://developer.chrome.com/docs/css-ui/scroll-driven-animations
+- https://context7.com/websites/ui_shadcn/llms.txt?tokens=172873
+- https://context7.com/websites/developer_chrome/llms.txt?tokens=3413830
+- https://context7.com/websites/flutter_dev/llms.txt?tokens=4386188
+- https://context7.com/websites/react-spectrum_adobe_com-react-aria-getting-started.html/llms.txt
+- https://context7.com/websites/tailwindcss/llms.txt?topic=vite
+- GitHub - tailwindlabs/tailwindcss-container-queries: A plugin for Tailwind CSS v3.2+ that provides u
+- https://developer.chrome.com/docs/css-ui/scroll-driven-animations
 
 **最终产物：**
 

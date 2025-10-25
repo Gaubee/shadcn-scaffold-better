@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { cn } from '@/lib/utils';
-import { supports } from '@/lib/feature-detection';
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { supports } from "@/lib/feature-detection";
 
 export interface AppBarProps {
   children?: React.ReactNode;
@@ -30,7 +30,7 @@ export interface AppBarProps {
   /**
    * Position type
    */
-  position?: 'fixed' | 'sticky' | 'static';
+  position?: "fixed" | "sticky" | "static";
   /**
    * Leading element (e.g., menu button)
    */
@@ -46,12 +46,12 @@ export interface AppBarProps {
 }
 
 const elevationClasses = {
-  0: '',
-  1: 'shadow-sm',
-  2: 'shadow',
-  3: 'shadow-md',
-  4: 'shadow-lg',
-  5: 'shadow-xl',
+  0: "",
+  1: "shadow-sm",
+  2: "shadow",
+  3: "shadow-md",
+  4: "shadow-lg",
+  5: "shadow-xl",
 };
 
 export const AppBar = React.forwardRef<HTMLElement, AppBarProps>(
@@ -64,12 +64,12 @@ export const AppBar = React.forwardRef<HTMLElement, AppBarProps>(
       expandedHeight = 64,
       collapsedHeight = 56,
       elevation = 2,
-      position = 'sticky',
+      position = "sticky",
       leading,
       title,
       actions,
     },
-    ref
+    ref,
   ) => {
     const [supportsScrollTimeline, setSupportsScrollTimeline] = React.useState(false);
     const [scrollY, setScrollY] = React.useState(0);
@@ -78,9 +78,9 @@ export const AppBar = React.forwardRef<HTMLElement, AppBarProps>(
 
     // Check for CSS scroll-driven animations support using feature detection
     React.useEffect(() => {
-      if (typeof window === 'undefined') return;
+      if (typeof window === "undefined") return;
 
-      const scrollTimelineSupport = supports('scroll-timeline');
+      const scrollTimelineSupport = supports("scroll-timeline");
       setSupportsScrollTimeline(scrollTimelineSupport.supported);
     }, []);
 
@@ -107,9 +107,9 @@ export const AppBar = React.forwardRef<HTMLElement, AppBarProps>(
         });
       };
 
-      window.addEventListener('scroll', handleScroll, { passive: true });
+      window.addEventListener("scroll", handleScroll, { passive: true });
       return () => {
-        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener("scroll", handleScroll);
         if (rafId !== null) cancelAnimationFrame(rafId);
       };
     }, [collapsible, immersive, supportsScrollTimeline]);
@@ -120,38 +120,36 @@ export const AppBar = React.forwardRef<HTMLElement, AppBarProps>(
 
     const currentHeight = React.useMemo(() => {
       if (!supportsScrollTimeline && collapsible) {
-        return isCollapsed
-          ? collapsedHeight
-          : expandedHeight - (expandedHeight - collapsedHeight) * easeOutQuart;
+        return isCollapsed ? collapsedHeight : expandedHeight - (expandedHeight - collapsedHeight) * easeOutQuart;
       }
       return expandedHeight;
     }, [supportsScrollTimeline, collapsible, isCollapsed, collapsedHeight, expandedHeight, easeOutQuart]);
 
     const opacity = React.useMemo(
       () => (!supportsScrollTimeline && immersive ? Math.min(scrollY / 100, 1) : 1),
-      [supportsScrollTimeline, immersive, scrollY]
+      [supportsScrollTimeline, immersive, scrollY],
     );
 
     const backdropBlur = React.useMemo(
       () => (!supportsScrollTimeline && immersive ? Math.min(scrollY / 50, 1) : 1),
-      [supportsScrollTimeline, immersive, scrollY]
+      [supportsScrollTimeline, immersive, scrollY],
     );
 
     const scale = React.useMemo(
-      () => (!supportsScrollTimeline && immersive ? 1 - (scrollProgress * 0.02) : 1),
-      [supportsScrollTimeline, immersive, scrollProgress]
+      () => (!supportsScrollTimeline && immersive ? 1 - scrollProgress * 0.02 : 1),
+      [supportsScrollTimeline, immersive, scrollProgress],
     );
 
     const positionClasses = {
-      fixed: 'fixed top-0 left-0 right-0 z-50',
-      sticky: 'sticky top-0 z-50',
-      static: 'relative',
+      fixed: "fixed top-0 left-0 right-0 z-50",
+      sticky: "sticky top-0 z-50",
+      static: "relative",
     };
 
     return (
       <header
         ref={(node) => {
-          if (typeof ref === 'function') {
+          if (typeof ref === "function") {
             ref(node);
           } else if (ref) {
             ref.current = node;
@@ -161,60 +159,67 @@ export const AppBar = React.forwardRef<HTMLElement, AppBarProps>(
           }
         }}
         className={cn(
-          'w-full',
+          "w-full",
           positionClasses[position],
           elevationClasses[elevation],
           // Apply CSS-driven animation classes when supported
-          supportsScrollTimeline && collapsible && 'app-bar-collapsible',
-          supportsScrollTimeline && immersive && 'app-bar-immersive',
+          supportsScrollTimeline && collapsible && "app-bar-collapsible",
+          supportsScrollTimeline && immersive && "app-bar-immersive",
           // Fallback transition for browsers without support
-          !supportsScrollTimeline && 'transition-all duration-300 ease-in-out',
-          className
+          !supportsScrollTimeline && "transition-all duration-300 ease-in-out",
+          className,
         )}
         style={{
           // CSS custom properties for scroll-driven animations
-          ...(supportsScrollTimeline && {
-            '--app-bar-expanded-height': `${expandedHeight}px`,
-            '--app-bar-collapsed-height': `${collapsedHeight}px`,
-          } as React.CSSProperties),
+          ...(supportsScrollTimeline &&
+            ({
+              "--app-bar-expanded-height": `${expandedHeight}px`,
+              "--app-bar-collapsed-height": `${collapsedHeight}px`,
+            } as React.CSSProperties)),
           // JS fallback styles
           ...(!supportsScrollTimeline && {
             height: `${currentHeight}px`,
             transform: immersive ? `scale(${scale})` : undefined,
-            transformOrigin: 'top center',
+            transformOrigin: "top center",
           }),
-        }}
-      >
+        }}>
         <div
           className={cn(
-            'absolute inset-0 bg-background',
-            supportsScrollTimeline && immersive && 'app-bar-backdrop',
-            !supportsScrollTimeline && immersive && 'backdrop-blur-md transition-all duration-300'
+            "absolute inset-0 bg-background",
+            supportsScrollTimeline && immersive && "app-bar-backdrop",
+            !supportsScrollTimeline && immersive && "backdrop-blur-md transition-all duration-300",
           )}
-          style={!supportsScrollTimeline ? {
-            opacity: immersive ? opacity : 1,
-            backdropFilter: immersive
-              ? `blur(${backdropBlur * 12}px) saturate(${1 + backdropBlur * 0.5})`
-              : undefined,
-            WebkitBackdropFilter: immersive
-              ? `blur(${backdropBlur * 12}px) saturate(${1 + backdropBlur * 0.5})`
-              : undefined,
-          } : undefined}
+          style={
+            !supportsScrollTimeline
+              ? {
+                  opacity: immersive ? opacity : 1,
+                  backdropFilter: immersive
+                    ? `blur(${backdropBlur * 12}px) saturate(${1 + backdropBlur * 0.5})`
+                    : undefined,
+                  WebkitBackdropFilter: immersive
+                    ? `blur(${backdropBlur * 12}px) saturate(${1 + backdropBlur * 0.5})`
+                    : undefined,
+                }
+              : undefined
+          }
         />
 
         <div className="relative h-full px-4 flex items-center justify-between gap-4">
           {leading && (
             <div
               className={cn(
-                'flex-shrink-0 flex items-center',
-                supportsScrollTimeline && immersive && 'app-bar-leading',
-                !supportsScrollTimeline && 'transition-all duration-300'
+                "flex-shrink-0 flex items-center",
+                supportsScrollTimeline && immersive && "app-bar-leading",
+                !supportsScrollTimeline && "transition-all duration-300",
               )}
-              style={!supportsScrollTimeline && immersive ? {
-                opacity: 0.5 + opacity * 0.5,
-                transform: `translateX(${-scrollProgress * 4}px)`,
-              } : undefined}
-            >
+              style={
+                !supportsScrollTimeline && immersive
+                  ? {
+                      opacity: 0.5 + opacity * 0.5,
+                      transform: `translateX(${-scrollProgress * 4}px)`,
+                    }
+                  : undefined
+              }>
               {leading}
             </div>
           )}
@@ -222,16 +227,19 @@ export const AppBar = React.forwardRef<HTMLElement, AppBarProps>(
           {title && (
             <div
               className={cn(
-                'flex-1 overflow-hidden',
-                supportsScrollTimeline && immersive && 'app-bar-title',
-                !supportsScrollTimeline && 'transition-all duration-300',
-                !supportsScrollTimeline && isCollapsed && 'text-sm'
+                "flex-1 overflow-hidden",
+                supportsScrollTimeline && immersive && "app-bar-title",
+                !supportsScrollTimeline && "transition-all duration-300",
+                !supportsScrollTimeline && isCollapsed && "text-sm",
               )}
-              style={!supportsScrollTimeline && immersive ? {
-                opacity: 0.5 + opacity * 0.5,
-                transform: `translateY(${scrollProgress * 2}px)`,
-              } : undefined}
-            >
+              style={
+                !supportsScrollTimeline && immersive
+                  ? {
+                      opacity: 0.5 + opacity * 0.5,
+                      transform: `translateY(${scrollProgress * 2}px)`,
+                    }
+                  : undefined
+              }>
               {title}
             </div>
           )}
@@ -239,15 +247,18 @@ export const AppBar = React.forwardRef<HTMLElement, AppBarProps>(
           {actions && (
             <div
               className={cn(
-                'flex-shrink-0 flex items-center gap-2',
-                supportsScrollTimeline && immersive && 'app-bar-actions',
-                !supportsScrollTimeline && 'transition-all duration-300'
+                "flex-shrink-0 flex items-center gap-2",
+                supportsScrollTimeline && immersive && "app-bar-actions",
+                !supportsScrollTimeline && "transition-all duration-300",
               )}
-              style={!supportsScrollTimeline && immersive ? {
-                opacity: 0.5 + opacity * 0.5,
-                transform: `translateX(${scrollProgress * 4}px)`,
-              } : undefined}
-            >
+              style={
+                !supportsScrollTimeline && immersive
+                  ? {
+                      opacity: 0.5 + opacity * 0.5,
+                      transform: `translateX(${scrollProgress * 4}px)`,
+                    }
+                  : undefined
+              }>
               {actions}
             </div>
           )}
@@ -256,7 +267,7 @@ export const AppBar = React.forwardRef<HTMLElement, AppBarProps>(
         </div>
       </header>
     );
-  }
+  },
 );
 
-AppBar.displayName = 'AppBar';
+AppBar.displayName = "AppBar";

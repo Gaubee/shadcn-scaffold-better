@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { cn } from '@/lib/utils';
-import type { AppBarProps } from './app-bar';
-import type { DrawerProps } from './drawer';
-import type { BottomNavigationBarProps, BottomNavigationItem } from './bottom-navigation-bar';
-import type { NavigationRailProps, NavigationRailItem } from './navigation-rail';
-import type { FloatingActionButtonProps } from './floating-action-button';
-import { BottomNavigationBar } from './bottom-navigation-bar';
-import { NavigationRail } from './navigation-rail';
-import { supports, loadPolyfill } from '@/lib/feature-detection';
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import type { AppBarProps } from "./app-bar";
+import type { DrawerProps } from "./drawer";
+import type { BottomNavigationBarProps, BottomNavigationItem } from "./bottom-navigation-bar";
+import type { NavigationRailProps, NavigationRailItem } from "./navigation-rail";
+import type { FloatingActionButtonProps } from "./floating-action-button";
+import { BottomNavigationBar } from "./bottom-navigation-bar";
+import { NavigationRail } from "./navigation-rail";
+import { supports, loadPolyfill } from "@/lib/feature-detection";
 
 /**
  * Unified navigation item type (compatible with both BottomNavigationBar and NavigationRail)
@@ -64,7 +64,7 @@ export interface ScaffoldProps {
    * - false: Never show labels
    * - 'selected': Only show label for selected item
    */
-  navigationShowLabels?: boolean | 'selected';
+  navigationShowLabels?: boolean | "selected";
   /**
    * Floating action button
    */
@@ -98,16 +98,16 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
       onNavigationChange,
       navigationShowLabels = true,
       floatingActionButton,
-      backgroundColor = 'bg-background',
+      backgroundColor = "bg-background",
       responsive = true,
       responsiveBreakpoint = 1024,
     },
-    ref
+    ref,
   ) => {
     // Always start with false to match SSR, then update after mount
     const [isDesktop, setIsDesktop] = React.useState(false);
     const [isFoldable, setIsFoldable] = React.useState(false);
-    const [foldState, setFoldState] = React.useState<'folded' | 'unfolded'>('unfolded');
+    const [foldState, setFoldState] = React.useState<"folded" | "unfolded">("unfolded");
     const [mounted, setMounted] = React.useState(false);
 
     // Set mounted flag after hydration
@@ -138,11 +138,11 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
 
           // Detect foldable devices using viewport segments with feature detection
           try {
-            const viewportSegmentsSupport = supports('viewport-segments');
+            const viewportSegmentsSupport = supports("viewport-segments");
             if (viewportSegmentsSupport.supported) {
               setIsFoldable(true);
               const segments = (window as any).visualViewport?.segments;
-              setFoldState(segments && segments.length > 1 ? 'unfolded' : 'folded');
+              setFoldState(segments && segments.length > 1 ? "unfolded" : "folded");
             } else {
               setIsFoldable(false);
             }
@@ -155,7 +155,7 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
       };
 
       // Use feature detection for ResizeObserver
-      const resizeObserverSupport = supports('resize-observer');
+      const resizeObserverSupport = supports("resize-observer");
 
       const setupObserver = () => {
         if (!isMounted) return; // Skip setup if unmounted
@@ -178,11 +178,11 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
         } else {
           // Fallback to resize event
           checkBreakpoint();
-          window.addEventListener('resize', checkBreakpoint);
+          window.addEventListener("resize", checkBreakpoint);
 
           // Store cleanup function
           cleanup = () => {
-            window.removeEventListener('resize', checkBreakpoint);
+            window.removeEventListener("resize", checkBreakpoint);
             if (rafId !== null) {
               cancelAnimationFrame(rafId);
               rafId = null;
@@ -193,7 +193,7 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
 
       // Load polyfill if needed
       if (resizeObserverSupport.polyfillNeeded) {
-        loadPolyfill('resize-observer')
+        loadPolyfill("resize-observer")
           .then(() => {
             if (isMounted) setupObserver();
           })
@@ -233,7 +233,7 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
     const autoNavigationRail = React.useMemo(() => {
       if (!navigationItems) return null;
       // NavigationRail only supports boolean for showLabels, so convert 'selected' to true
-      const railShowLabels = navigationShowLabels === 'selected' ? true : navigationShowLabels;
+      const railShowLabels = navigationShowLabels === "selected" ? true : navigationShowLabels;
       return (
         <NavigationRail
           items={navigationItems}
@@ -268,71 +268,62 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
       <div
         ref={ref}
         className={cn(
-          'min-h-screen scaffold-responsive',
+          "min-h-screen scaffold-responsive",
           backgroundColor,
-          isFoldable && 'foldable-device',
-          isFoldable && foldState === 'unfolded' && 'device-unfolded',
-          className
+          isFoldable && "foldable-device",
+          isFoldable && foldState === "unfolded" && "device-unfolded",
+          className,
         )}
-        style={{
-          display: 'grid',
-          gridTemplateAreas: hasNavRail
-            ? `"nav header"
+        style={
+          {
+            display: "grid",
+            gridTemplateAreas: hasNavRail
+              ? `"nav header"
                "nav main"
                "nav footer"`
-            : `"header"
+              : `"header"
                "main"
                "footer"`,
-          gridTemplateRows: 'auto 1fr auto',
-          gridTemplateColumns: hasNavRail ? `${navRailWidth}px 1fr` : '1fr',
-          containerType: 'inline-size',
-          containerName: 'scaffold',
-        } as React.CSSProperties}
-      >
+            gridTemplateRows: "auto 1fr auto",
+            gridTemplateColumns: hasNavRail ? `${navRailWidth}px 1fr` : "1fr",
+            containerType: "inline-size",
+            containerName: "scaffold",
+          } as React.CSSProperties
+        }>
         {/* AppBar - rendered first to ensure proper z-index stacking */}
         {appBar && (
           <div
             className="scaffold-header"
             style={{
-              gridArea: 'header',
+              gridArea: "header",
               // Only apply sticky positioning if AppBar uses sticky position (default)
               // This allows AppBar's position prop to work correctly
-              ...((!appBar.props.position || appBar.props.position === 'sticky') && {
-                position: 'sticky',
+              ...((!appBar.props.position || appBar.props.position === "sticky") && {
+                position: "sticky",
                 top: 0,
                 zIndex: 50,
               }),
-            }}
-          >
+            }}>
             {appBar}
           </div>
         )}
 
         {/* Navigation Rail */}
-        {showNavigationRail && (
-          <div style={{ gridArea: 'nav' }}>
-            {finalNavigationRail}
-          </div>
-        )}
+        {showNavigationRail && <div style={{ gridArea: "nav" }}>{finalNavigationRail}</div>}
 
         {/* Main Content */}
         <main
-          className={cn('transition-all duration-300')}
+          className={cn("transition-all duration-300")}
           style={{
-            gridArea: 'main',
-            paddingBottom: hasBottomNav ? '64px' : undefined,
+            gridArea: "main",
+            paddingBottom: hasBottomNav ? "64px" : undefined,
             minHeight: 0, // Fix for grid overflow
-          }}
-        >
+          }}>
           {children}
         </main>
 
         {/* Bottom Navigation Bar */}
-        {showBottomNav && (
-          <div style={{ gridArea: 'footer' }}>
-            {finalBottomNav}
-          </div>
-        )}
+        {showBottomNav && <div style={{ gridArea: "footer" }}>{finalBottomNav}</div>}
 
         {/* Floating Action Button */}
         {floatingActionButton}
@@ -344,7 +335,7 @@ export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
         {endDrawer}
       </div>
     );
-  }
+  },
 );
 
-Scaffold.displayName = 'Scaffold';
+Scaffold.displayName = "Scaffold";

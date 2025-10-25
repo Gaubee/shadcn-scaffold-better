@@ -1,268 +1,250 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Modal, ModalFooter } from '../modal';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { Modal, ModalFooter } from "../modal";
 
-describe('Modal', () => {
+describe("Modal", () => {
   beforeEach(() => {
     // Reset body overflow style before each test
-    document.body.style.overflow = '';
+    document.body.style.overflow = "";
   });
 
   afterEach(() => {
     // Clean up after tests
-    document.body.style.overflow = '';
+    document.body.style.overflow = "";
   });
 
-  it('does not render when open is false', () => {
+  it("does not render when open is false", () => {
     render(
       <Modal open={false} title="Test Modal">
         Content
-      </Modal>
+      </Modal>,
     );
 
-    expect(screen.queryByText('Test Modal')).not.toBeInTheDocument();
-    expect(screen.queryByText('Content')).not.toBeInTheDocument();
+    expect(screen.queryByText("Test Modal")).not.toBeInTheDocument();
+    expect(screen.queryByText("Content")).not.toBeInTheDocument();
   });
 
-  it('renders when open is true', () => {
+  it("renders when open is true", () => {
     render(
       <Modal open={true} title="Test Modal">
         Content
-      </Modal>
+      </Modal>,
     );
 
-    expect(screen.getByText('Test Modal')).toBeInTheDocument();
-    expect(screen.getByText('Content')).toBeInTheDocument();
+    expect(screen.getByText("Test Modal")).toBeInTheDocument();
+    expect(screen.getByText("Content")).toBeInTheDocument();
   });
 
-  it('renders title and description', () => {
+  it("renders title and description", () => {
     render(
-      <Modal
-        open={true}
-        title="Modal Title"
-        description="Modal Description"
-      >
+      <Modal open={true} title="Modal Title" description="Modal Description">
         Content
-      </Modal>
+      </Modal>,
     );
 
-    expect(screen.getByText('Modal Title')).toBeInTheDocument();
-    expect(screen.getByText('Modal Description')).toBeInTheDocument();
+    expect(screen.getByText("Modal Title")).toBeInTheDocument();
+    expect(screen.getByText("Modal Description")).toBeInTheDocument();
   });
 
-  it('renders close button by default', () => {
+  it("renders close button by default", () => {
     render(
       <Modal open={true} title="Test">
         Content
-      </Modal>
+      </Modal>,
     );
 
-    const closeButton = screen.getByLabelText('Close');
+    const closeButton = screen.getByLabelText("Close");
     expect(closeButton).toBeInTheDocument();
   });
 
-  it('hides close button when showClose is false', () => {
+  it("hides close button when showClose is false", () => {
     render(
       <Modal open={true} title="Test" showClose={false}>
         Content
-      </Modal>
+      </Modal>,
     );
 
-    expect(screen.queryByLabelText('Close')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Close")).not.toBeInTheDocument();
   });
 
-  it('calls onOpenChange when close button is clicked', () => {
+  it("calls onOpenChange when close button is clicked", () => {
     const handleOpenChange = vi.fn();
     render(
       <Modal open={true} title="Test" onOpenChange={handleOpenChange}>
         Content
-      </Modal>
+      </Modal>,
     );
 
-    const closeButton = screen.getByLabelText('Close');
+    const closeButton = screen.getByLabelText("Close");
     fireEvent.click(closeButton);
 
     expect(handleOpenChange).toHaveBeenCalledWith(false);
   });
 
-  it('calls onOpenChange when backdrop is clicked', () => {
+  it("calls onOpenChange when backdrop is clicked", () => {
     const handleOpenChange = vi.fn();
     const { container } = render(
       <Modal open={true} title="Test" onOpenChange={handleOpenChange}>
         Content
-      </Modal>
+      </Modal>,
     );
 
     // Click the backdrop (first div with fixed class)
-    const backdrop = container.querySelector('.fixed.inset-0.bg-black\\/50');
+    const backdrop = container.querySelector(".fixed.inset-0.bg-black\\/50");
     fireEvent.click(backdrop!);
 
     expect(handleOpenChange).toHaveBeenCalledWith(false);
   });
 
-  it('does not close on backdrop click when closeOnBackdropClick is false', () => {
+  it("does not close on backdrop click when closeOnBackdropClick is false", () => {
     const handleOpenChange = vi.fn();
     const { container } = render(
-      <Modal
-        open={true}
-        title="Test"
-        closeOnBackdropClick={false}
-        onOpenChange={handleOpenChange}
-      >
+      <Modal open={true} title="Test" closeOnBackdropClick={false} onOpenChange={handleOpenChange}>
         Content
-      </Modal>
+      </Modal>,
     );
 
-    const backdrop = container.querySelector('.fixed.inset-0.bg-black\\/50');
+    const backdrop = container.querySelector(".fixed.inset-0.bg-black\\/50");
     fireEvent.click(backdrop!);
 
     expect(handleOpenChange).not.toHaveBeenCalled();
   });
 
-  it('closes on Escape key by default', () => {
+  it("closes on Escape key by default", () => {
     const handleOpenChange = vi.fn();
     render(
       <Modal open={true} title="Test" onOpenChange={handleOpenChange}>
         Content
-      </Modal>
+      </Modal>,
     );
 
-    fireEvent.keyDown(document, { key: 'Escape' });
+    fireEvent.keyDown(document, { key: "Escape" });
 
     expect(handleOpenChange).toHaveBeenCalledWith(false);
   });
 
-  it('does not close on Escape when closeOnEscape is false', () => {
+  it("does not close on Escape when closeOnEscape is false", () => {
     const handleOpenChange = vi.fn();
     render(
-      <Modal
-        open={true}
-        title="Test"
-        closeOnEscape={false}
-        onOpenChange={handleOpenChange}
-      >
+      <Modal open={true} title="Test" closeOnEscape={false} onOpenChange={handleOpenChange}>
         Content
-      </Modal>
+      </Modal>,
     );
 
-    fireEvent.keyDown(document, { key: 'Escape' });
+    fireEvent.keyDown(document, { key: "Escape" });
 
     expect(handleOpenChange).not.toHaveBeenCalled();
   });
 
-  it('locks body scroll when open', () => {
+  it("locks body scroll when open", () => {
     const { rerender } = render(
       <Modal open={false} title="Test">
         Content
-      </Modal>
+      </Modal>,
     );
 
-    expect(document.body.style.overflow).toBe('');
+    expect(document.body.style.overflow).toBe("");
 
     rerender(
       <Modal open={true} title="Test">
         Content
-      </Modal>
+      </Modal>,
     );
 
-    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.body.style.overflow).toBe("hidden");
   });
 
-  it('restores body scroll when closed', async () => {
+  it("restores body scroll when closed", async () => {
     const { rerender } = render(
       <Modal open={true} title="Test">
         Content
-      </Modal>
+      </Modal>,
     );
 
-    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.body.style.overflow).toBe("hidden");
 
     rerender(
       <Modal open={false} title="Test">
         Content
-      </Modal>
+      </Modal>,
     );
 
     await waitFor(() => {
-      expect(document.body.style.overflow).toBe('');
+      expect(document.body.style.overflow).toBe("");
     });
   });
 
-  it('applies different sizes', () => {
+  it("applies different sizes", () => {
     const { container, rerender } = render(
       <Modal open={true} size="sm">
         Content
-      </Modal>
+      </Modal>,
     );
 
-    let modal = container.querySelector('.bg-background.rounded-lg');
-    expect(modal).toHaveClass('max-w-sm');
+    let modal = container.querySelector(".bg-background.rounded-lg");
+    expect(modal).toHaveClass("max-w-sm");
 
     rerender(
       <Modal open={true} size="lg">
         Content
-      </Modal>
+      </Modal>,
     );
-    modal = container.querySelector('.bg-background.rounded-lg');
-    expect(modal).toHaveClass('max-w-lg');
+    modal = container.querySelector(".bg-background.rounded-lg");
+    expect(modal).toHaveClass("max-w-lg");
 
     rerender(
       <Modal open={true} size="full">
         Content
-      </Modal>
+      </Modal>,
     );
-    modal = container.querySelector('.bg-background.rounded-lg');
-    expect(modal).toHaveClass('max-w-full');
+    modal = container.querySelector(".bg-background.rounded-lg");
+    expect(modal).toHaveClass("max-w-full");
   });
 
-  it('applies custom className', () => {
+  it("applies custom className", () => {
     const { container } = render(
       <Modal open={true} className="custom-modal">
         Content
-      </Modal>
+      </Modal>,
     );
 
-    const modal = container.querySelector('.bg-background.rounded-lg');
-    expect(modal).toHaveClass('custom-modal');
+    const modal = container.querySelector(".bg-background.rounded-lg");
+    expect(modal).toHaveClass("custom-modal");
   });
 
-  it('applies custom backdrop className', () => {
+  it("applies custom backdrop className", () => {
     const { container } = render(
       <Modal open={true} backdropClassName="custom-backdrop">
         Content
-      </Modal>
+      </Modal>,
     );
 
-    const backdrop = container.querySelector('.fixed.inset-0.bg-black\\/50');
-    expect(backdrop).toHaveClass('custom-backdrop');
+    const backdrop = container.querySelector(".fixed.inset-0.bg-black\\/50");
+    expect(backdrop).toHaveClass("custom-backdrop");
   });
 
-  it('has proper ARIA attributes', () => {
+  it("has proper ARIA attributes", () => {
     render(
-      <Modal
-        open={true}
-        title="Accessible Modal"
-        description="This is a description"
-      >
+      <Modal open={true} title="Accessible Modal" description="This is a description">
         Content
-      </Modal>
+      </Modal>,
     );
 
-    const dialog = screen.getByRole('dialog');
-    expect(dialog).toHaveAttribute('aria-modal', 'true');
-    expect(dialog).toHaveAttribute('aria-labelledby', 'modal-title');
-    expect(dialog).toHaveAttribute('aria-describedby', 'modal-description');
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveAttribute("aria-modal", "true");
+    expect(dialog).toHaveAttribute("aria-labelledby", "modal-title");
+    expect(dialog).toHaveAttribute("aria-describedby", "modal-description");
   });
 
-  it('prevents click propagation from modal content', () => {
+  it("prevents click propagation from modal content", () => {
     const handleBackdropClick = vi.fn();
     const { container } = render(
       <Modal open={true} onOpenChange={handleBackdropClick}>
         <div data-testid="modal-content">Content</div>
-      </Modal>
+      </Modal>,
     );
 
-    const modalContent = screen.getByTestId('modal-content');
+    const modalContent = screen.getByTestId("modal-content");
     fireEvent.click(modalContent);
 
     // Should not trigger backdrop click handler
@@ -270,38 +252,38 @@ describe('Modal', () => {
   });
 });
 
-describe('ModalFooter', () => {
-  it('renders children', () => {
+describe("ModalFooter", () => {
+  it("renders children", () => {
     render(
       <ModalFooter>
         <button>Cancel</button>
         <button>Confirm</button>
-      </ModalFooter>
+      </ModalFooter>,
     );
 
-    expect(screen.getByText('Cancel')).toBeInTheDocument();
-    expect(screen.getByText('Confirm')).toBeInTheDocument();
+    expect(screen.getByText("Cancel")).toBeInTheDocument();
+    expect(screen.getByText("Confirm")).toBeInTheDocument();
   });
 
-  it('applies custom className', () => {
+  it("applies custom className", () => {
     const { container } = render(
       <ModalFooter className="custom-footer">
         <button>OK</button>
-      </ModalFooter>
+      </ModalFooter>,
     );
 
-    const footer = container.querySelector('.border-t');
-    expect(footer).toHaveClass('custom-footer');
+    const footer = container.querySelector(".border-t");
+    expect(footer).toHaveClass("custom-footer");
   });
 
-  it('has flex layout for action buttons', () => {
+  it("has flex layout for action buttons", () => {
     const { container } = render(
       <ModalFooter>
         <button>OK</button>
-      </ModalFooter>
+      </ModalFooter>,
     );
 
-    const footer = container.querySelector('.border-t');
-    expect(footer).toHaveClass('flex', 'items-center', 'justify-end', 'gap-2');
+    const footer = container.querySelector(".border-t");
+    expect(footer).toHaveClass("flex", "items-center", "justify-end", "gap-2");
   });
 });

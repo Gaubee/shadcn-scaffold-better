@@ -36,9 +36,11 @@
 ## 📦 组件
 
 ### 🎯 Scaffold
+
 整合应用所有部分的主布局组件。
 
 **特性：**
+
 - 自动响应式行为（移动端 ↔ 平板 ↔ 桌面）
 - Drawer ↔ NavigationRail 自动切换
 - 可配置断点
@@ -46,9 +48,11 @@
 - SSR 兼容
 
 ### 📊 AppBar
+
 具有高级滚动效果的响应式应用栏。
 
 **特性：**
+
 - **沉浸式模式** - 滚动时从透明到实色渐变，带背景模糊
 - **可折叠** - 滚动时高度从展开状态缩小到折叠状态
 - **CSS 滚动驱动动画** - 原生浏览器动画，带 JS 降级方案
@@ -57,9 +61,11 @@
 - Leading、标题和操作插槽
 
 ### 🎨 Drawer
+
 支持手势的侧边抽屉导航。
 
 **特性：**
+
 - 左侧或右侧定位
 - **滑动关闭**手势支持（触摸优化）
 - 带模糊效果的背景遮罩
@@ -68,9 +74,11 @@
 - Portal 渲染
 
 ### 🧭 BottomNavigationBar
+
 Material Design 风格的移动端底部导航。
 
 **特性：**
+
 - 图标 + 可选标签（始终/选中时/从不）
 - **徽章支持** - 数字或文字徽章
 - **滚动隐藏** - 向下滚动时自动隐藏
@@ -79,9 +87,11 @@ Material Design 风格的移动端底部导航。
 - 推荐最多 5 个项目
 
 ### 📐 NavigationRail
+
 桌面端持久化侧边导航。
 
 **特性：**
+
 - 垂直导航栏
 - 可选标签（紧凑/展开模式）
 - 头部和底部插槽
@@ -90,9 +100,11 @@ Material Design 风格的移动端底部导航。
 - 可配置宽度
 
 ### ➕ FloatingActionButton（FAB）
+
 带扩展变体的醒目操作按钮。
 
 **特性：**
+
 - 多种尺寸（小、中、大）
 - **扩展模式**带标签
 - 5 种定位选项（四角 + 底部居中）
@@ -101,9 +113,11 @@ Material Design 风格的移动端底部导航。
 - 图标 + 可选标签
 
 ### 📬 Snackbar
+
 带可选操作的简短消息提示。
 
 **特性：**
+
 - 多种状态（默认、成功、警告、错误、信息）
 - **自动隐藏时长**（可配置）
 - 操作按钮支持
@@ -112,9 +126,11 @@ Material Design 风格的移动端底部导航。
 - 多消息队列支持
 
 ### 🪟 Modal
+
 功能完整的对话框/模态框组件。
 
 **特性：**
+
 - 多种尺寸（sm、md、lg、xl、full）
 - 可选的点击遮罩关闭
 - 键盘支持（Escape 关闭）
@@ -144,31 +160,35 @@ npx shadcn@latest add https://shadcn-scaffold.vercel.app/r/scaffold
 ### 手动安装
 
 1. **复制组件**
+
 ```bash
 # 复制所有 scaffold 组件
 cp -r src/components/scaffold/* your-project/components/scaffold/
 ```
 
 2. **安装依赖**
+
 ```bash
 npm install clsx tailwind-merge class-variance-authority lucide-react
 ```
 
 3. **更新 Tailwind 配置**
+
 ```js
 // tailwind.config.js
 module.exports = {
   content: [
-    './components/scaffold/**/*.{ts,tsx}',
+    "./components/scaffold/**/*.{ts,tsx}",
     // ... 其他路径
   ],
-}
+};
 ```
 
 4. **导入全局样式**
+
 ```tsx
 // app/layout.tsx
-import '@/components/scaffold/scaffold-animations.css'
+import "@/components/scaffold/scaffold-animations.css";
 ```
 
 ## 📖 使用方法
@@ -176,19 +196,13 @@ import '@/components/scaffold/scaffold-animations.css'
 ### 基础示例
 
 ```tsx
-import {
-  Scaffold,
-  AppBar,
-  Drawer,
-  BottomNavigationBar,
-  FloatingActionButton,
-} from '@/components/scaffold';
-import { Menu, Home, Search, Bell, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { Scaffold, AppBar, Drawer, BottomNavigationBar, FloatingActionButton } from "@/components/scaffold";
+import { Menu, Home, Search, Bell, Plus } from "lucide-react";
+import { useState } from "react";
 
 export default function Page() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedTab, setSelectedTab] = useState('home');
+  const [selectedTab, setSelectedTab] = useState("home");
 
   return (
     <Scaffold
@@ -214,21 +228,15 @@ export default function Page() {
       bottomNavigationBar={
         <BottomNavigationBar
           items={[
-            { key: 'home', icon: <Home />, label: '首页' },
-            { key: 'search', icon: <Search />, label: '搜索' },
-            { key: 'notifications', icon: <Bell />, label: '通知', badge: 3 },
+            { key: "home", icon: <Home />, label: "首页" },
+            { key: "search", icon: <Search />, label: "搜索" },
+            { key: "notifications", icon: <Bell />, label: "通知", badge: 3 },
           ]}
           value={selectedTab}
           onValueChange={setSelectedTab}
         />
       }
-      floatingActionButton={
-        <FloatingActionButton
-          icon={<Plus />}
-          onClick={() => console.log('FAB 点击')}
-        />
-      }
-    >
+      floatingActionButton={<FloatingActionButton icon={<Plus />} onClick={() => console.log("FAB 点击")} />}>
       {/* 页面内容 */}
       <div className="p-6">
         <h2>欢迎使用 shadcn-scaffold！</h2>
@@ -242,8 +250,8 @@ export default function Page() {
 
 ```tsx
 <AppBar
-  immersive          // 滚动时从透明到实色
-  collapsible        // 滚动时高度缩小
+  immersive // 滚动时从透明到实色
+  collapsible // 滚动时高度缩小
   expandedHeight={80}
   collapsedHeight={56}
   elevation={2}
@@ -252,8 +260,12 @@ export default function Page() {
   title={<h1>我的应用</h1>}
   actions={
     <>
-      <button><Bell /></button>
-      <button><Settings /></button>
+      <button>
+        <Bell />
+      </button>
+      <button>
+        <Settings />
+      </button>
     </>
   }
 />
@@ -263,35 +275,20 @@ export default function Page() {
 
 ```tsx
 <Scaffold
-  responsive                    // 启用响应式行为
-  responsiveBreakpoint={1024}   // 在 1024px 切换
-
+  responsive // 启用响应式行为
+  responsiveBreakpoint={1024} // 在 1024px 切换
   // 移动端：Drawer
   drawer={
     <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
       <NavContent />
     </Drawer>
   }
-
   // 桌面端：NavigationRail
-  navigationRail={
-    <NavigationRail
-      items={navItems}
-      value={selected}
-      onValueChange={setSelected}
-    />
-  }
-
+  navigationRail={<NavigationRail items={navItems} value={selected} onValueChange={setSelected} />}
   // 移动端：BottomNavigationBar
   bottomNavigationBar={
-    <BottomNavigationBar
-      items={navItems}
-      value={selected}
-      onValueChange={setSelected}
-      hideOnScroll
-    />
-  }
->
+    <BottomNavigationBar items={navItems} value={selected} onValueChange={setSelected} hideOnScroll />
+  }>
   <YourContent />
 </Scaffold>
 ```
@@ -299,7 +296,7 @@ export default function Page() {
 ### 使用 Snackbar Hook
 
 ```tsx
-import { Snackbar, useSnackbar } from '@/components/scaffold';
+import { Snackbar, useSnackbar } from "@/components/scaffold";
 
 function MyComponent() {
   const snackbar = useSnackbar();
@@ -307,13 +304,13 @@ function MyComponent() {
   const handleSave = async () => {
     try {
       await saveData();
-      snackbar.show('保存成功！', {
-        severity: 'success',
-        duration: 3000
+      snackbar.show("保存成功！", {
+        severity: "success",
+        duration: 3000,
       });
     } catch (error) {
-      snackbar.show('保存失败', {
-        severity: 'error'
+      snackbar.show("保存失败", {
+        severity: "error",
       });
     }
   };
@@ -330,27 +327,16 @@ function MyComponent() {
 ### 带 Footer 的 Modal
 
 ```tsx
-import { Modal, ModalFooter } from '@/components/scaffold';
+import { Modal, ModalFooter } from "@/components/scaffold";
 
 function ConfirmDialog({ open, onOpenChange }) {
   return (
-    <Modal
-      open={open}
-      onOpenChange={onOpenChange}
-      title="确认操作"
-      description="您确定要继续吗？"
-      size="md"
-    >
+    <Modal open={open} onOpenChange={onOpenChange} title="确认操作" description="您确定要继续吗？" size="md">
       <p>此操作无法撤销。</p>
 
       <ModalFooter>
-        <button onClick={() => onOpenChange(false)}>
-          取消
-        </button>
-        <button
-          className="bg-destructive text-destructive-foreground"
-          onClick={handleConfirm}
-        >
+        <button onClick={() => onOpenChange(false)}>取消</button>
+        <button className="bg-destructive text-destructive-foreground" onClick={handleConfirm}>
           确认
         </button>
       </ModalFooter>
@@ -446,18 +432,21 @@ shadcn-scaffold/
 ## 🌐 浏览器支持
 
 ### 完整支持（现代特性）
+
 - ✅ **Chrome 115+** - 原生滚动驱动动画
 - ✅ **Edge 115+** - 原生滚动驱动动画
 - ✅ **Safari 17+** - 部分原生支持
 - ✅ **Firefox 115+** - JavaScript 降级方案
 
 ### 优雅降级
+
 - ✅ **Chrome 90+** - JavaScript 降级动画
 - ✅ **Safari 14+** - JavaScript 降级动画
 - ✅ **Firefox 88+** - JavaScript 降级动画
 - ✅ **所有现代移动浏览器** - 触摸优化
 
 库使用**渐进增强**：
+
 1. **HTML** - 基础结构始终可用
 2. **CSS** - 现代浏览器获得原生动画
 3. **JavaScript** - 旧浏览器降级方案
