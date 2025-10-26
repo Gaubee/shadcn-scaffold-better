@@ -13,6 +13,7 @@ const config: Config = {
   jsxBracketSameLine: true,
   jsxSingleQuote: false,
   bracketSameLine: true,
+  plugins: ["prettier-plugin-organize-imports", "prettier-plugin-tailwindcss"],
 };
 
 export default config;

@@ -1,341 +1,313 @@
 "use client";
 
-import * as React from "react";
+import { useContainerBreakpoint } from "@/hooks/use-container-breakpoint";
 import { cn } from "@/lib/utils";
-import type { AppBarProps } from "./app-bar";
-import type { DrawerProps } from "./drawer";
-import type { BottomNavigationBarProps, BottomNavigationItem } from "./bottom-navigation-bar";
-import type { NavigationRailProps, NavigationRailItem } from "./navigation-rail";
-import type { FloatingActionButtonProps } from "./floating-action-button";
-import { BottomNavigationBar } from "./bottom-navigation-bar";
-import { NavigationRail } from "./navigation-rail";
-import { supports, loadPolyfill } from "@/lib/feature-detection";
+import * as React from "react";
+import { useMergeRefs } from "react-best-merge-refs";
 
-/**
- * Unified navigation item type (compatible with both BottomNavigationBar and NavigationRail)
- */
-export interface NavigationItem {
-  key: string;
-  icon: React.ReactNode;
-  label: string;
-  badge?: string | number;
-  disabled?: boolean;
-}
+import { Portal as ContextMenuPortal } from "@radix-ui/react-context-menu";
+import { Portal as DialogPortal } from "@radix-ui/react-dialog";
+import { Portal as DropdownMenuPortal } from "@radix-ui/react-dropdown-menu";
+import { Portal as HoverCardPortal } from "@radix-ui/react-hover-card";
+import { Portal as MenubarPortal } from "@radix-ui/react-menubar";
+import { Portal as PopoverPortal } from "@radix-ui/react-popover";
+import { Portal as SelectPortal } from "@radix-ui/react-select";
+import { Portal as DrawerPortal } from "vaul";
 
 export interface ScaffoldProps {
-  children: React.ReactNode;
-  className?: string;
   /**
-   * AppBar component configuration
+   * AppBar slot - can be a ReactNode or a function that returns ReactNode
    */
-  appBar?: React.ReactElement<AppBarProps>;
+  appBar?: ScaffoldSolt;
+  // /**
+  //  * Drawer slot (left side)
+  //  */
+  // drawer?: ScaffoldSolt<[]>;
+  // /**
+  //  * End drawer slot (right side)
+  //  */
+  // endDrawer?: ScaffoldSolt<[]>;
   /**
-   * Drawer component configuration
+   * Navigation rail slot
    */
-  drawer?: React.ReactElement<DrawerProps>;
+  navigationBar?: ScaffoldSolt<{ position: NavigationBarPosition }>;
   /**
-   * End drawer (right side) component configuration
+   * Floating action button slot
    */
-  endDrawer?: React.ReactElement<DrawerProps>;
+  floatingActionButton?: ScaffoldSolt;
+
   /**
-   * Bottom navigation bar component
+   * Custom protal - A list of custom portal wrappers.
+   *
+   * --- USAGE CONTRACT ---
+   * Each wrapper function receives `{ children, container }` and must return a React element.
+   *
+   * To avoid breaking the Scaffold's grid layout, custom wrappers MUST adhere to one of the following rules:
+   *
+   * 1. **Be a 'true' portal**: The component should not render any wrapping DOM element in its own location (e.g., Radix UI's Portal components). This is the PREFERRED method.
+   *
+   * 2. **Use `display: contents`**: If the wrapper must render a DOM element (e.g., a `div`), that element MUST use `display: contents`. This makes the wrapper visually disappear, allowing its children to participate directly in the grid layout.
+   *
+   * @example
+   * // GOOD: A true portal wrapper
+   * const GoodWrapper = ({ children, container }) => <SomePortal container={container}>{children}</SomePortal>;
+   *
+   * // GOOD: A structural wrapper using `display: contents`
+   * const GoodStructuralWrapper = ({ children, container }) => <div className="contents">{children}</div>;
+   *
+   * // BAD: This will break the layout!
+   * const BadWrapper = ({ children, container }) => <div>{children}</div>;
    */
-  bottomNavigationBar?: React.ReactElement<BottomNavigationBarProps>;
+  portalWrappers?: PortalWrapper[];
+
+  children?: ScaffoldSolt;
+
   /**
-   * Navigation rail component (alternative to drawer for desktop)
+   * 注入导航状态
    */
-  navigationRail?: React.ReactElement<NavigationRailProps>;
+  navigationState?: NavigationState;
   /**
-   * Adaptive navigation items (auto-switch between BottomNavigationBar and NavigationRail based on screen size)
-   * When provided, bottomNavigationBar and navigationRail props are ignored
+   * 导航状态变更
    */
-  navigationItems?: NavigationItem[];
-  /**
-   * Current selected navigation item key (used with navigationItems)
-   */
-  navigationValue?: string;
-  /**
-   * Callback when navigation selection changes (used with navigationItems)
-   */
-  onNavigationChange?: (value: string) => void;
-  /**
-   * Whether to show labels in navigation (used with navigationItems)
-   * - true: Always show labels
-   * - false: Never show labels
-   * - 'selected': Only show label for selected item
-   */
-  navigationShowLabels?: boolean | "selected";
-  /**
-   * Floating action button
-   */
-  floatingActionButton?: React.ReactElement<FloatingActionButtonProps>;
-  /**
-   * Background color class
-   */
-  backgroundColor?: string;
-  /**
-   * Whether to use responsive layout (auto-switch between drawer and navigation rail)
-   */
-  responsive?: boolean;
-  /**
-   * Breakpoint for responsive layout (in pixels)
-   */
-  responsiveBreakpoint?: number;
+  onNavigationChange?: OnNavigationChange;
+}
+export type NavigationBarPosition = "rail" | "bottom";
+export interface ScaffoldContext {
+  breakpoint: ScaffoldBreakpoint;
+}
+export type ScaffoldBreakpoint = null | "mobile" | "tablet" | "desktop";
+
+type SoltRender<Args extends unknown[] = unknown[]> = (...args: Args) => React.ReactNode;
+
+type SoltRenderParams<T> = T extends SoltRender<infer Args> ? Args : never;
+
+type ScaffoldSolt<CtxExt extends object = {}> = SoltRender<[ScaffoldContext & CtxExt]> | React.ReactNode;
+
+// Helper function to render slots that can be either ReactNode or a function returning ReactNode
+const renderSlot = <T extends React.ReactNode | SoltRender<any[]>>(slot: T, ...args: SoltRenderParams<T>) => {
+  if (typeof slot === "function") {
+    return slot(...args);
+  }
+  return slot as React.ReactNode;
+};
+
+type ScaffoldComponentProps = ScaffoldProps & React.ComponentPropsWithRef<"div">;
+
+type PortalWrapper = (props: { children: React.ReactNode; container: HTMLDivElement }) => React.ReactNode;
+
+const wrappedChildren = (
+  portalWrappers: PortalWrapper[],
+  container: HTMLDivElement | null,
+  children: React.ReactNode,
+) => {
+  if (!container) return children;
+  // reduceRight 从数组末尾开始，确保数组第一项在最外层
+  return portalWrappers.reduceRight(
+    (acc, wrapper) => wrapper({ children: acc, container: container }),
+    children, // 初始值是你的主要内容
+  );
+};
+
+const buildInPortalWrappers = [
+  //
+  DialogPortal,
+  MenubarPortal,
+  PopoverPortal,
+  ContextMenuPortal,
+  DropdownMenuPortal,
+  DrawerPortal,
+  SelectPortal,
+  HoverCardPortal,
+].map((Portal) => {
+  const wrapper: PortalWrapper = ({ children, container }) => {
+    return <Portal container={container}>{children}</Portal>;
+  };
+  return wrapper;
+});
+
+// 我们用泛型来允许用户为每个 Pane 定义自己的参数类型
+export type PaneParams = Record<PaneName, any>;
+
+export type PaneName = "rail" | "list" | "detail" | "tail";
+
+export interface NavigationState<T extends PaneParams = PaneParams> {
+  /** 当前在移动端/堆叠视图中激活的面板 */
+  activePane: PaneName;
+
+  /** 每个面板各自的内部状态参数 */
+  panes: {
+    rail?: T["rail"];
+    list?: T["list"];
+    detail?: T["detail"];
+    tail?: T["tail"];
+  };
 }
 
-export const Scaffold = React.forwardRef<HTMLDivElement, ScaffoldProps>(
-  (
-    {
-      children,
-      className,
-      appBar,
-      drawer,
-      endDrawer,
-      bottomNavigationBar,
-      navigationRail,
-      navigationItems,
-      navigationValue,
-      onNavigationChange,
-      navigationShowLabels = true,
-      floatingActionButton,
-      backgroundColor = "bg-background",
-      responsive = true,
-      responsiveBreakpoint = 1024,
-    },
-    ref,
-  ) => {
-    // Always start with false to match SSR, then update after mount
-    const [isDesktop, setIsDesktop] = React.useState(false);
-    const [isFoldable, setIsFoldable] = React.useState(false);
-    const [foldState, setFoldState] = React.useState<"folded" | "unfolded">("unfolded");
-    const [mounted, setMounted] = React.useState(false);
+/** 描述导航变更的原因 */
+export interface NavigationChangeReason {
+  type: "forward" | "back"; // 'forward' 是前进, 'back' 是返回
+  fromPane?: PaneName;
+  toPane: PaneName;
+}
 
-    // Set mounted flag after hydration
-    React.useEffect(() => {
-      setMounted(true);
-    }, []);
+// 回调函数的类型
+export type OnNavigationChange = (newState: NavigationState, reason: NavigationChangeReason) => void;
 
-    React.useEffect(() => {
-      if (!responsive) return;
+export const Scaffold: React.FC<ScaffoldComponentProps> = ({
+  ref,
+  children,
+  className,
+  appBar,
+  // drawer,
+  // endDrawer,
+  // bottomNavigationBar,
+  // navigationRail,
+  navigationBar,
+  floatingActionButton,
+  portalWrappers,
+}) => {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const indicatorRef = React.useRef<HTMLDivElement>(null);
+  const breakpoint = useContainerBreakpoint(containerRef, indicatorRef);
 
-      let rafId: number | null = null;
-      let ticking = false;
-      let cleanup: (() => void) | null = null;
-      let isMounted = true;
+  /**
+     Breakpoint prefix	Minimum width	CSS
+     sm	40rem (640px)	@media (width >= 40rem) { ... }
+     md	48rem (768px)	@media (width >= 48rem) { ... }
+     lg	64rem (1024px)	@media (width >= 64rem) { ... }
+     xl	80rem (1280px)	@media (width >= 80rem) { ... }
+     2xl	96rem (1536px)	@media (width >= 96rem) { ... }
+     */
+  const context: ScaffoldContext = {
+    breakpoint:
+      breakpoint === "xl" || breakpoint === "2xl"
+        ? "desktop"
+        : breakpoint === "md" || breakpoint === "lg"
+          ? "tablet"
+          : breakpoint === "sm"
+            ? "mobile"
+            : null,
+  }; // Render all slots
+  const appBarContent = renderSlot(appBar, context);
+  // const drawerContent = renderSlot(drawer);
+  // const endDrawerContent = renderSlot(endDrawer);
+  // const bottomNavContent = renderSlot(bottomNavigationBar);
+  // const navigationRailContent = renderSlot(navigationRail);
+  const navigationBarPosition = React.useRef<NavigationBarPosition | "">("");
 
-      const checkBreakpoint = () => {
-        if (!isMounted || ticking) return;
-        ticking = true;
+  if (breakpoint) {
+    navigationBarPosition.current = context.breakpoint === "mobile" ? "bottom" : "rail";
+  }
+  const navigationBarContent = navigationBarPosition.current
+    ? renderSlot(navigationBar, { ...context, position: navigationBarPosition.current })
+    : null;
+  const fabContent = renderSlot(floatingActionButton, context);
+  const childrenContent = renderSlot(children, context);
 
-        rafId = requestAnimationFrame(() => {
-          if (!isMounted) {
-            ticking = false;
-            return;
-          }
+  // const desktopGridTemplateAreas = `"rail header header tail" "rail list detail tail" "rail footer footer tail"`;
+  // const tabletGridTemplateAreas = `"rail header header" "rail list detail" "rail footer footer"`;
+  // const mobileGridTemplateAreas = `"header" "main" "footer"`;
 
-          const width = window.innerWidth;
-          setIsDesktop(width >= responsiveBreakpoint);
+  return (
+    <div
+      ref={useMergeRefs({ ref, containerRef })}
+      className={cn(
+        "h-screen w-screen",
+        "h-dvh w-dvw",
+        // Container queries support for responsive components
+        "@container grid",
 
-          // Detect foldable devices using viewport segments with feature detection
-          try {
-            const viewportSegmentsSupport = supports("viewport-segments");
-            if (viewportSegmentsSupport.supported) {
-              setIsFoldable(true);
-              const segments = (window as any).visualViewport?.segments;
-              setFoldState(segments && segments.length > 1 ? "unfolded" : "folded");
-            } else {
-              setIsFoldable(false);
-            }
-          } catch {
-            setIsFoldable(false);
-          }
+        // 移动端 (默认)
+        `grid-cols-1`,
+        `grid-rows-[auto_1fr_auto]`,
+        `[grid-template-areas:"header"_"main"_"bottom"]`,
 
-          ticking = false;
-        });
-      };
+        // 平板端 (md:@) - 当容器宽度 >= md断点值 (e.g., 768px)
+        `md:grid-cols-[auto_1fr_2fr]`,
+        `md:[grid-template-areas:"rail_header_header"_"rail_list_detail"_"rail_footer_footer"]`,
 
-      // Use feature detection for ResizeObserver
-      const resizeObserverSupport = supports("resize-observer");
-
-      const setupObserver = () => {
-        if (!isMounted) return; // Skip setup if unmounted
-
-        if (resizeObserverSupport.supported || window.ResizeObserver) {
-          const resizeObserver = new ResizeObserver(checkBreakpoint);
-          resizeObserver.observe(document.documentElement);
-
-          // Initial check
-          checkBreakpoint();
-
-          // Store cleanup function
-          cleanup = () => {
-            resizeObserver.disconnect();
-            if (rafId !== null) {
-              cancelAnimationFrame(rafId);
-              rafId = null;
-            }
-          };
-        } else {
-          // Fallback to resize event
-          checkBreakpoint();
-          window.addEventListener("resize", checkBreakpoint);
-
-          // Store cleanup function
-          cleanup = () => {
-            window.removeEventListener("resize", checkBreakpoint);
-            if (rafId !== null) {
-              cancelAnimationFrame(rafId);
-              rafId = null;
-            }
-          };
-        }
-      };
-
-      // Load polyfill if needed
-      if (resizeObserverSupport.polyfillNeeded) {
-        loadPolyfill("resize-observer")
-          .then(() => {
-            if (isMounted) setupObserver();
-          })
-          .catch(() => {
-            if (isMounted) setupObserver();
-          });
-      } else {
-        setupObserver();
-      }
-
-      // Return cleanup function that will be called on unmount or dependency change
-      return () => {
-        isMounted = false;
-        if (cleanup) {
-          cleanup();
-        }
-        if (rafId !== null) {
-          cancelAnimationFrame(rafId);
-        }
-      };
-    }, [responsive, responsiveBreakpoint]);
-
-    // Auto-generate navigation components from navigationItems if provided
-    const autoBottomNav = React.useMemo(() => {
-      if (!navigationItems) return null;
-      return (
-        <BottomNavigationBar
-          items={navigationItems}
-          value={navigationValue}
-          onValueChange={onNavigationChange}
-          showLabels={navigationShowLabels}
-          elevation={3}
-        />
-      );
-    }, [navigationItems, navigationValue, onNavigationChange, navigationShowLabels]);
-
-    const autoNavigationRail = React.useMemo(() => {
-      if (!navigationItems) return null;
-      // NavigationRail only supports boolean for showLabels, so convert 'selected' to true
-      const railShowLabels = navigationShowLabels === "selected" ? true : navigationShowLabels;
-      return (
-        <NavigationRail
-          items={navigationItems}
-          value={navigationValue}
-          onValueChange={onNavigationChange}
-          showLabels={railShowLabels}
-          elevation={2}
-        />
-      );
-    }, [navigationItems, navigationValue, onNavigationChange, navigationShowLabels]);
-
-    // Use auto-generated navigation if navigationItems is provided, otherwise use provided components
-    const finalBottomNav = navigationItems ? autoBottomNav : bottomNavigationBar;
-    const finalNavigationRail = navigationItems ? autoNavigationRail : navigationRail;
-
-    // Determine which navigation to show
-    const showNavigationRail = responsive && isDesktop && finalNavigationRail;
-    const showDrawer = drawer && (!responsive || !isDesktop);
-    // Only hide bottomNavigationBar on desktop if navigationRail is available as alternative
-    const showBottomNav = finalBottomNav && (!responsive || !isDesktop || !finalNavigationRail);
-
-    // Calculate content padding based on active components
-    const hasBottomNav = !!showBottomNav;
-    const hasNavRail = !!showNavigationRail;
-
-    // Get navigation rail width if present
-    const navRailWidth = showNavigationRail
-      ? (finalNavigationRail as React.ReactElement<NavigationRailProps>)?.props?.width || 80
-      : 0;
-
-    return (
+        // 桌面端 (xl:@) - 当容器宽度 >= xl断点值 (e.g., 1280px)
+        `xl:grid-cols-[auto_2fr_3fr_2fr]`,
+        `xl:[grid-template-areas:"rail_header_header_tail"_"rail_list_detail_tail"_"rail_footer_footer_tail"]`,
+        className,
+      )}>
+      {/* --- Breakpoint 指示器元素 --- */}
       <div
-        ref={ref}
-        className={cn(
-          "min-h-screen scaffold-responsive",
-          backgroundColor,
-          isFoldable && "foldable-device",
-          isFoldable && foldState === "unfolded" && "device-unfolded",
-          className,
-        )}
-        style={
-          {
-            display: "grid",
-            gridTemplateAreas: hasNavRail
-              ? `"nav header"
-               "nav main"
-               "nav footer"`
-              : `"header"
-               "main"
-               "footer"`,
-            gridTemplateRows: "auto 1fr auto",
-            gridTemplateColumns: hasNavRail ? `${navRailWidth}px 1fr` : "1fr",
-            containerType: "inline-size",
-            containerName: "scaffold",
-          } as React.CSSProperties
-        }>
-        {/* AppBar - rendered first to ensure proper z-index stacking */}
-        {appBar && (
-          <div
-            className="scaffold-header"
+        ref={indicatorRef}
+        className="sm:@before:content-['sm'] md:@before:content-['md'] lg:@before:content-['lg'] xl:@before:content-['xl'] 2xl:@before:content-['2xl'] invisible absolute -z-10 before:content-['']"
+      />
+      {wrappedChildren(
+        [...buildInPortalWrappers, ...(portalWrappers ?? [])],
+        containerRef.current,
+        <>
+          {/* AppBar */}
+          {appBarContent && (
+            <header className="contents" style={{ gridArea: "header" }}>
+              {appBarContent}
+            </header>
+          )}
+
+          {/* Navigation Rail */}
+          {navigationBarContent && (
+            <aside className="contents" style={{ gridArea: navigationBarPosition.current }}>
+              {navigationBarContent}
+            </aside>
+          )}
+          {/* Main Content */}
+
+          <main
+            className="overflow-auto scroll-smooth"
             style={{
-              gridArea: "header",
-              // Only apply sticky positioning if AppBar uses sticky position (default)
-              // This allows AppBar's position prop to work correctly
-              ...((!appBar.props.position || appBar.props.position === "sticky") && {
-                position: "sticky",
-                top: 0,
-                zIndex: 50,
-              }),
+              gridArea: "main",
             }}>
-            {appBar}
-          </div>
-        )}
-
-        {/* Navigation Rail */}
-        {showNavigationRail && <div style={{ gridArea: "nav" }}>{finalNavigationRail}</div>}
-
-        {/* Main Content */}
-        <main
-          className={cn("transition-all duration-300")}
-          style={{
-            gridArea: "main",
-            paddingBottom: hasBottomNav ? "64px" : undefined,
-            minHeight: 0, // Fix for grid overflow
-          }}>
-          {children}
-        </main>
-
-        {/* Bottom Navigation Bar */}
-        {showBottomNav && <div style={{ gridArea: "footer" }}>{finalBottomNav}</div>}
-
-        {/* Floating Action Button */}
-        {floatingActionButton}
-
-        {/* Drawer (left) - rendered after grid content for proper z-index stacking */}
-        {showDrawer && drawer}
-
-        {/* End Drawer (right) */}
-        {endDrawer}
-      </div>
-    );
-  },
-);
+            {childrenContent}
+          </main>
+          {/* Floating Action Button */}
+          <div className="contents place-content-end">{fabContent}</div>
+        </>,
+      )}
+    </div>
+  );
+};
 
 Scaffold.displayName = "Scaffold";
+
+function useContainerBreakpoint<TContainer extends HTMLElement, TIndicator extends HTMLElement>(
+  containerRef: React.RefObject<TContainer | null>,
+  indicatorRef: React.RefObject<TIndicator | null>,
+): string | undefined {
+  const [activeBreakpoint, setActiveBreakpoint] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    const containerElement = containerRef.current;
+    const indicatorElement = indicatorRef.current;
+
+    // 确保两个元素都已挂载到 DOM
+    if (!containerElement || !indicatorElement) {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      // 使用 getComputedStyle 读取伪元素上的 content 属性
+      // 这是最可靠的方法
+      const indicatorContent = window.getComputedStyle(indicatorElement, "::before").getPropertyValue("content");
+
+      // getComputedStyle 会返回带引号的字符串，例如 `"md"`，我们需要去掉引号
+      const breakpointName = indicatorContent.replace(/['"]/g, "");
+
+      if (breakpointName !== activeBreakpoint) {
+        setActiveBreakpoint(breakpointName === "none" ? undefined : breakpointName);
+      }
+    });
+
+    // 监听容器元素的尺寸变化
+    observer.observe(containerElement);
+
+    // 组件卸载时停止监听
+    return () => {
+      observer.disconnect();
+    };
+  }, [containerRef, indicatorRef, activeBreakpoint]);
+
+  return activeBreakpoint;
+}

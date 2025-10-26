@@ -20,4 +20,4 @@ export { Modal, ModalFooter } from "./modal";
 export type { ModalProps, ModalFooterProps } from "./modal";
 
 export { Scaffold } from "./scaffold";
-export type { ScaffoldProps, NavigationItem } from "./scaffold";
+export type { ScaffoldProps } from "./scaffold";

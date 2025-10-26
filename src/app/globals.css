@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "../components/scaffold/scaffold-animations.css";
 
 @custom-variant dark (&:is(.dark *));
 

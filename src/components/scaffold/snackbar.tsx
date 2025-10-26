@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { cn } from "@/lib/utils";
+import * as React from "react";
 
 export interface SnackbarProps {
   /**
@@ -94,8 +94,8 @@ export const Snackbar = React.forwardRef<HTMLDivElement, SnackbarProps>(
         className={cn(
           "fixed z-50",
           "flex items-center gap-3",
-          "min-w-[288px] max-w-[568px]",
-          "px-4 py-3 rounded-lg",
+          "max-w-[568px] min-w-[288px]",
+          "rounded-lg px-4 py-3",
           "shadow-lg",
           "animate-in slide-in-from-bottom-5 duration-300",
           severityClasses[severity],
@@ -113,10 +113,10 @@ export const Snackbar = React.forwardRef<HTMLDivElement, SnackbarProps>(
             }}
             className={cn(
               "text-sm font-semibold uppercase",
-              "px-2 py-1 rounded",
+              "rounded px-2 py-1",
               "transition-colors",
               "hover:bg-black/10 active:bg-black/20",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50",
+              "focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none",
             )}>
             {action.label}
           </button>
@@ -126,10 +126,10 @@ export const Snackbar = React.forwardRef<HTMLDivElement, SnackbarProps>(
           type="button"
           onClick={() => onOpenChange?.(false)}
           className={cn(
-            "ml-auto p-1 rounded",
+            "ml-auto rounded p-1",
             "transition-colors",
             "hover:bg-black/10 active:bg-black/20",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50",
+            "focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none",
           )}
           aria-label="Close">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
