@@ -1,23 +1,23 @@
 "use client";
 
-import * as React from "react";
-import { Scaffold, AppBar, FloatingActionButton, Snackbar, useSnackbar } from "@/components/scaffold";
+import { AppBar, FloatingActionButton, Scaffold, Snackbar, useSnackbar } from "@/components/scaffold";
 import {
   ArrowLeft,
-  Share,
+  Award,
   Bookmark,
-  Plus,
+  ChevronDown,
+  Clock,
+  Eye,
   Heart,
   MessageCircle,
-  Eye,
-  Clock,
-  User,
+  Plus,
+  Share,
   Tag,
   TrendingUp,
+  User,
   Zap,
-  Award,
-  ChevronDown,
 } from "lucide-react";
+import * as React from "react";
 
 export default function ImmersiveExamplePage() {
   const [bookmarked, setBookmarked] = React.useState(false);
@@ -73,7 +73,7 @@ export default function ImmersiveExamplePage() {
   return (
     <>
       <Scaffold
-        appBar={
+        header={
           <AppBar
             immersive
             collapsible
@@ -82,25 +82,25 @@ export default function ImmersiveExamplePage() {
             leading={
               <button
                 onClick={() => window.history.back()}
-                className="p-2 hover:bg-accent rounded-full transition-colors"
+                className="hover:bg-accent rounded-full p-2 transition-colors"
                 aria-label="Go back">
                 <ArrowLeft size={24} />
               </button>
             }
-            title={<h1 className="text-xl font-bold truncate">Immersive Design Patterns</h1>}
+            title={<h1 className="truncate text-xl font-bold">Immersive Design Patterns</h1>}
             actions={
               <div className="flex items-center gap-1">
                 <button
                   onClick={toggleBookmark}
-                  className={`p-2 rounded-full transition-all ${
-                    bookmarked ? "text-amber-500 bg-amber-500/10" : "hover:bg-accent"
+                  className={`rounded-full p-2 transition-all ${
+                    bookmarked ? "bg-amber-500/10 text-amber-500" : "hover:bg-accent"
                   }`}
                   aria-label="Bookmark article">
                   <Bookmark size={20} fill={bookmarked ? "currentColor" : "none"} />
                 </button>
                 <button
                   onClick={handleShare}
-                  className="p-2 hover:bg-accent rounded-full transition-colors"
+                  className="hover:bg-accent rounded-full p-2 transition-colors"
                   aria-label="Share article">
                   <Share size={20} />
                 </button>
@@ -121,7 +121,7 @@ export default function ImmersiveExamplePage() {
         <div className="relative">
           {/* Hero Section with Parallax */}
           <div
-            className="relative h-[70vh] bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 flex items-center justify-center overflow-hidden"
+            className="relative flex h-[70vh] items-center justify-center overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500"
             style={{
               transform: `translateY(${scrollProgress * 100}px)`,
             }}>
@@ -138,7 +138,7 @@ export default function ImmersiveExamplePage() {
 
             {/* Hero Content */}
             <div
-              className="relative text-center text-white p-8 max-w-4xl"
+              className="relative max-w-4xl p-8 text-center text-white"
               style={{
                 opacity: 1 - scrollProgress * 2,
                 transform: `translateY(${scrollProgress * -50}px) scale(${1 - scrollProgress * 0.1})`,
@@ -147,8 +147,8 @@ export default function ImmersiveExamplePage() {
                 <Zap className="text-yellow-300" size={32} />
                 <Award className="text-yellow-300" size={28} />
               </div>
-              <h1 className="text-6xl font-bold mb-6 drop-shadow-lg">Immersive Design</h1>
-              <p className="text-2xl mb-8 opacity-90 drop-shadow">
+              <h1 className="mb-6 text-6xl font-bold drop-shadow-lg">Immersive Design</h1>
+              <p className="mb-8 text-2xl opacity-90 drop-shadow">
                 Experience scroll-driven animations and transformations
               </p>
               <button
@@ -158,7 +158,7 @@ export default function ImmersiveExamplePage() {
                     behavior: "smooth",
                   })
                 }
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white/20 backdrop-blur-md text-white rounded-full hover:bg-white/30 transition-all shadow-2xl">
+                className="inline-flex items-center gap-2 rounded-full bg-white/20 px-8 py-4 text-white shadow-2xl backdrop-blur-md transition-all hover:bg-white/30">
                 <span className="font-medium">Explore Features</span>
                 <ChevronDown className="animate-bounce" size={20} />
               </button>
@@ -166,19 +166,19 @@ export default function ImmersiveExamplePage() {
 
             {/* Scroll indicator */}
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-              <div className="w-6 h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
-                <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" />
+              <div className="flex h-10 w-6 items-start justify-center rounded-full border-2 border-white/50 p-2">
+                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-white" />
               </div>
             </div>
           </div>
 
           {/* Article Metadata Bar - sticks below AppBar when scrolling */}
           <div
-            className="sticky bg-background/95 backdrop-blur-sm border-b transition-all duration-300"
+            className="bg-background/95 sticky border-b backdrop-blur-sm transition-all duration-300"
             style={{ top: `${appBarHeight}px`, zIndex: 40 }}>
             <div className="container mx-auto px-4">
-              <div className="max-w-3xl mx-auto py-4 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 py-4">
+                <div className="text-muted-foreground flex items-center gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <User size={16} />
                     <span>Alex Rivera</span>
@@ -195,7 +195,7 @@ export default function ImmersiveExamplePage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={toggleLike}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all ${
+                    className={`flex items-center gap-2 rounded-full px-3 py-1.5 transition-all ${
                       liked ? "bg-red-500/10 text-red-500" : "bg-muted hover:bg-accent text-muted-foreground"
                     }`}>
                     <Heart size={16} fill={liked ? "currentColor" : "none"} />
@@ -207,7 +207,7 @@ export default function ImmersiveExamplePage() {
                         severity: "info",
                       })
                     }
-                    className="flex items-center gap-2 px-3 py-1.5 bg-muted hover:bg-accent rounded-full transition-colors text-muted-foreground">
+                    className="bg-muted hover:bg-accent text-muted-foreground flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors">
                     <MessageCircle size={16} />
                     <span className="text-sm font-medium">42</span>
                   </button>
@@ -218,16 +218,16 @@ export default function ImmersiveExamplePage() {
 
           {/* Main Content */}
           <div className="container mx-auto px-4 py-12">
-            <div className="max-w-3xl mx-auto space-y-8">
+            <div className="mx-auto max-w-3xl space-y-8">
               {/* Introduction */}
               <section>
-                <h2 className="text-4xl font-bold mb-6">The Power of Immersive Design</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+                <h2 className="mb-6 text-4xl font-bold">The Power of Immersive Design</h2>
+                <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
                   This page demonstrates the immersive AppBar feature, a powerful design pattern that creates a seamless
                   connection between your hero content and navigation. As you scroll, watch the AppBar gradually become
                   opaque with a sophisticated backdrop blur effect.
                 </p>
-                <div className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 rounded-xl border">
+                <div className="rounded-xl border bg-gradient-to-r from-blue-50 to-purple-50 p-6 dark:from-blue-950 dark:to-purple-950">
                   <p className="text-sm leading-relaxed">
                     <strong className="text-primary">Pro Tip:</strong> The immersive mode is perfect for content-heavy
                     pages where you want to maximize screen real estate while maintaining easy access to navigation
@@ -238,15 +238,15 @@ export default function ImmersiveExamplePage() {
 
               {/* Key Features */}
               <section>
-                <h3 className="text-3xl font-bold mb-6 flex items-center gap-3">
+                <h3 className="mb-6 flex items-center gap-3 text-3xl font-bold">
                   <TrendingUp className="text-primary" size={32} />
                   Key Features
                 </h3>
                 <div className="grid gap-4">
-                  <div className="p-6 border rounded-xl hover:shadow-lg transition-all">
-                    <h4 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                      <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                        <span className="text-blue-500 font-bold">1</span>
+                  <div className="rounded-xl border p-6 transition-all hover:shadow-lg">
+                    <h4 className="mb-2 flex items-center gap-2 text-lg font-semibold">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10">
+                        <span className="font-bold text-blue-500">1</span>
                       </div>
                       Immersive Mode
                     </h4>
@@ -256,10 +256,10 @@ export default function ImmersiveExamplePage() {
                     </p>
                   </div>
 
-                  <div className="p-6 border rounded-xl hover:shadow-lg transition-all">
-                    <h4 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                      <div className="w-8 h-8 bg-purple-500/10 rounded-lg flex items-center justify-center">
-                        <span className="text-purple-500 font-bold">2</span>
+                  <div className="rounded-xl border p-6 transition-all hover:shadow-lg">
+                    <h4 className="mb-2 flex items-center gap-2 text-lg font-semibold">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/10">
+                        <span className="font-bold text-purple-500">2</span>
                       </div>
                       Collapsible Height
                     </h4>
@@ -269,10 +269,10 @@ export default function ImmersiveExamplePage() {
                     </p>
                   </div>
 
-                  <div className="p-6 border rounded-xl hover:shadow-lg transition-all">
-                    <h4 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                      <div className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center">
-                        <span className="text-green-500 font-bold">3</span>
+                  <div className="rounded-xl border p-6 transition-all hover:shadow-lg">
+                    <h4 className="mb-2 flex items-center gap-2 text-lg font-semibold">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-500/10">
+                        <span className="font-bold text-green-500">3</span>
                       </div>
                       Backdrop Blur
                     </h4>
@@ -282,10 +282,10 @@ export default function ImmersiveExamplePage() {
                     </p>
                   </div>
 
-                  <div className="p-6 border rounded-xl hover:shadow-lg transition-all">
-                    <h4 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                      <div className="w-8 h-8 bg-amber-500/10 rounded-lg flex items-center justify-center">
-                        <span className="text-amber-500 font-bold">4</span>
+                  <div className="rounded-xl border p-6 transition-all hover:shadow-lg">
+                    <h4 className="mb-2 flex items-center gap-2 text-lg font-semibold">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10">
+                        <span className="font-bold text-amber-500">4</span>
                       </div>
                       Hide on Scroll FAB
                     </h4>
@@ -299,12 +299,12 @@ export default function ImmersiveExamplePage() {
 
               {/* Use Cases */}
               <section>
-                <h3 className="text-3xl font-bold mb-6">Perfect Use Cases</h3>
-                <p className="text-lg text-muted-foreground mb-6">
+                <h3 className="mb-6 text-3xl font-bold">Perfect Use Cases</h3>
+                <p className="text-muted-foreground mb-6 text-lg">
                   This pattern excels in scenarios where you want to create an immersive, distraction-free reading
                   experience:
                 </p>
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid gap-4 md:grid-cols-2">
                   {[
                     {
                       icon: <Tag size={20} />,
@@ -327,14 +327,14 @@ export default function ImmersiveExamplePage() {
                       desc: "Immersive image browsing",
                     },
                   ].map((item, i) => (
-                    <div key={i} className="p-5 border rounded-lg hover:shadow-md transition-all group">
+                    <div key={i} className="group rounded-lg border p-5 transition-all hover:shadow-md">
                       <div className="flex items-start gap-3">
-                        <div className="p-2 bg-primary/10 rounded-lg text-primary group-hover:scale-110 transition-transform">
+                        <div className="bg-primary/10 text-primary rounded-lg p-2 transition-transform group-hover:scale-110">
                           {item.icon}
                         </div>
                         <div>
-                          <h4 className="font-semibold mb-1">{item.title}</h4>
-                          <p className="text-sm text-muted-foreground">{item.desc}</p>
+                          <h4 className="mb-1 font-semibold">{item.title}</h4>
+                          <p className="text-muted-foreground text-sm">{item.desc}</p>
                         </div>
                       </div>
                     </div>
@@ -344,13 +344,13 @@ export default function ImmersiveExamplePage() {
 
               {/* Implementation */}
               <section>
-                <h3 className="text-3xl font-bold mb-6">Implementation</h3>
+                <h3 className="mb-6 text-3xl font-bold">Implementation</h3>
                 <p className="text-muted-foreground mb-4">
                   Creating an immersive experience is straightforward with Scaffold UI. Here's the code that powers this
                   page:
                 </p>
                 <div className="relative">
-                  <pre className="bg-muted/50 backdrop-blur-sm p-6 rounded-xl overflow-x-auto border">
+                  <pre className="bg-muted/50 overflow-x-auto rounded-xl border p-6 backdrop-blur-sm">
                     <code className="text-sm">{`<AppBar
   immersive
   collapsible
@@ -374,7 +374,7 @@ export default function ImmersiveExamplePage() {
                         severity: "success",
                       })
                     }
-                    className="absolute top-4 right-4 px-3 py-1.5 bg-primary text-primary-foreground text-sm rounded-lg hover:brightness-110 transition-all">
+                    className="bg-primary text-primary-foreground absolute top-4 right-4 rounded-lg px-3 py-1.5 text-sm transition-all hover:brightness-110">
                     Copy
                   </button>
                 </div>
@@ -382,11 +382,11 @@ export default function ImmersiveExamplePage() {
 
               {/* Technical Details */}
               <section>
-                <h3 className="text-3xl font-bold mb-6">Technical Deep Dive</h3>
+                <h3 className="mb-6 text-3xl font-bold">Technical Deep Dive</h3>
                 <div className="space-y-6">
                   <div>
-                    <h4 className="text-xl font-semibold mb-3">Performance Optimizations</h4>
-                    <p className="text-muted-foreground leading-relaxed mb-4">
+                    <h4 className="mb-3 text-xl font-semibold">Performance Optimizations</h4>
+                    <p className="text-muted-foreground mb-4 leading-relaxed">
                       The immersive AppBar uses requestAnimationFrame to throttle scroll events, ensuring smooth 60fps
                       animations even on lower-end devices. All transforms and opacity changes use GPU-accelerated CSS
                       properties.
@@ -394,8 +394,8 @@ export default function ImmersiveExamplePage() {
                   </div>
 
                   <div>
-                    <h4 className="text-xl font-semibold mb-3">Easing Functions</h4>
-                    <p className="text-muted-foreground leading-relaxed mb-4">
+                    <h4 className="mb-3 text-xl font-semibold">Easing Functions</h4>
+                    <p className="text-muted-foreground mb-4 leading-relaxed">
                       We use a cubic-bezier easing function (ease-out-quart) for natural-feeling transitions. The scroll
                       progress is calculated with careful consideration for different viewport sizes and content
                       heights.
@@ -403,7 +403,7 @@ export default function ImmersiveExamplePage() {
                   </div>
 
                   <div>
-                    <h4 className="text-xl font-semibold mb-3">Accessibility Considerations</h4>
+                    <h4 className="mb-3 text-xl font-semibold">Accessibility Considerations</h4>
                     <p className="text-muted-foreground leading-relaxed">
                       The AppBar maintains proper contrast ratios throughout its transition, and all interactive
                       elements remain keyboard-accessible. Screen readers receive appropriate ARIA labels for state
@@ -415,26 +415,26 @@ export default function ImmersiveExamplePage() {
 
               {/* Additional Content Sections */}
               {Array.from({ length: 6 }).map((_, i) => (
-                <section key={i} className="p-8 border rounded-xl bg-gradient-to-br from-background to-muted/30">
-                  <h3 className="text-2xl font-bold mb-4">Advanced Topic {i + 1}: Dynamic Scroll Effects</h3>
-                  <p className="text-muted-foreground leading-relaxed mb-4">
+                <section key={i} className="from-background to-muted/30 rounded-xl border bg-gradient-to-br p-8">
+                  <h3 className="mb-4 text-2xl font-bold">Advanced Topic {i + 1}: Dynamic Scroll Effects</h3>
+                  <p className="text-muted-foreground mb-4 leading-relaxed">
                     This section demonstrates how the immersive AppBar maintains perfect readability throughout the
                     entire scroll journey. The backdrop blur intensifies gradually, creating a seamless visual hierarchy
                     that guides the reader's attention.
                   </p>
-                  <p className="text-muted-foreground leading-relaxed mb-4">
+                  <p className="text-muted-foreground mb-4 leading-relaxed">
                     Notice how the FAB behavior complements the AppBar animations. When scrolling down, both elements
                     gracefully recede to maximize content visibility. When scrolling up, they smoothly reappear,
                     anticipating your need for navigation.
                   </p>
-                  <div className="flex gap-2 mt-6">
+                  <div className="mt-6 flex gap-2">
                     <button
                       onClick={() =>
                         snackbar.show(`Exploring topic ${i + 1}`, {
                           severity: "info",
                         })
                       }
-                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:brightness-110 transition-all">
+                      className="bg-primary text-primary-foreground rounded-lg px-4 py-2 transition-all hover:brightness-110">
                       Learn More
                     </button>
                     <button
@@ -443,7 +443,7 @@ export default function ImmersiveExamplePage() {
                           severity: "success",
                         })
                       }
-                      className="px-4 py-2 border rounded-lg hover:bg-accent transition-all">
+                      className="hover:bg-accent rounded-lg border px-4 py-2 transition-all">
                       Save for Later
                     </button>
                   </div>
@@ -452,24 +452,24 @@ export default function ImmersiveExamplePage() {
 
               {/* Conclusion */}
               <section className="py-12 text-center">
-                <h3 className="text-3xl font-bold mb-6">Ready to Build?</h3>
-                <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+                <h3 className="mb-6 text-3xl font-bold">Ready to Build?</h3>
+                <p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-lg">
                   Start creating immersive experiences in your own applications. The Scaffold UI library makes it easy
                   to implement these advanced patterns with minimal code.
                 </p>
-                <div className="flex flex-wrap gap-4 justify-center">
+                <div className="flex flex-wrap justify-center gap-4">
                   <button
                     onClick={() =>
                       snackbar.show("Opening documentation...", {
                         severity: "info",
                       })
                     }
-                    className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:brightness-110 transition-all shadow-lg">
+                    className="bg-primary text-primary-foreground rounded-lg px-6 py-3 shadow-lg transition-all hover:brightness-110">
                     View Documentation
                   </button>
                   <button
                     onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                    className="px-6 py-3 border rounded-lg hover:bg-accent transition-all">
+                    className="hover:bg-accent rounded-lg border px-6 py-3 transition-all">
                     Back to Top
                   </button>
                 </div>

@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { Scaffold } from "../scaffold";
+import { describe, expect, it } from "vitest";
 import { AppBar } from "../app-bar";
 import { Drawer } from "../drawer";
+import { Scaffold } from "../scaffold";
 
 describe("Scaffold", () => {
   it("renders children", () => {
@@ -16,7 +16,7 @@ describe("Scaffold", () => {
 
   it("renders with AppBar", () => {
     render(
-      <Scaffold appBar={<AppBar title="Test App" />}>
+      <Scaffold header={<AppBar title="Test App" />}>
         <div>Content</div>
       </Scaffold>,
     );

@@ -1,29 +1,29 @@
 "use client";
 
-import * as React from "react";
 import {
-  Scaffold,
   AppBar,
-  Drawer,
   BottomNavigationBar,
+  Drawer,
   FloatingActionButton,
+  Scaffold,
   Snackbar,
   useSnackbar,
 } from "@/components/scaffold";
 import {
-  Menu,
-  Home,
-  Compass,
-  Heart,
-  User,
-  Plus,
   ArrowUp,
-  Sparkles,
-  Zap,
-  TrendingUp,
+  Compass,
   Eye,
+  Heart,
+  Home,
+  Menu,
   MousePointer2,
+  Plus,
+  Sparkles,
+  TrendingUp,
+  User,
+  Zap,
 } from "lucide-react";
+import * as React from "react";
 
 export default function AdvancedScrollExamplePage() {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -52,7 +52,7 @@ export default function AdvancedScrollExamplePage() {
   return (
     <>
       <Scaffold
-        appBar={
+        header={
           <AppBar
             collapsible
             immersive
@@ -62,7 +62,7 @@ export default function AdvancedScrollExamplePage() {
             leading={
               <button
                 onClick={() => setDrawerOpen(true)}
-                className="p-2 hover:bg-accent rounded-full transition-colors"
+                className="hover:bg-accent rounded-full p-2 transition-colors"
                 aria-label="Open menu">
                 <Menu size={24} />
               </button>
@@ -72,14 +72,14 @@ export default function AdvancedScrollExamplePage() {
                 <Sparkles className="text-primary" size={24} />
                 <div>
                   <h1 className="text-xl font-bold">Scroll Animations</h1>
-                  <p className="text-xs text-muted-foreground">CSS-Driven Magic</p>
+                  <p className="text-muted-foreground text-xs">CSS-Driven Magic</p>
                 </div>
               </div>
             }
             actions={
               <div className="flex items-center gap-2">
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
-                  <span className="text-xs font-medium text-primary">{scrollProgress.toFixed(0)}%</span>
+                <div className="bg-primary/10 hidden items-center gap-2 rounded-full px-3 py-1 sm:flex">
+                  <span className="text-primary text-xs font-medium">{scrollProgress.toFixed(0)}%</span>
                 </div>
               </div>
             }
@@ -87,20 +87,20 @@ export default function AdvancedScrollExamplePage() {
         }
         drawer={
           <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} gestureEnabled elevation={4}>
-            <div className="flex flex-col h-full">
-              <div className="p-6 border-b bg-gradient-to-br from-primary/10 to-purple-500/10">
+            <div className="flex h-full flex-col">
+              <div className="from-primary/10 border-b bg-gradient-to-br to-purple-500/10 p-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-purple-600 rounded-full flex items-center justify-center">
+                  <div className="from-primary flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br to-purple-600">
                     <Sparkles className="text-primary-foreground" size={24} />
                   </div>
                   <div>
                     <h3 className="font-semibold">Scroll Demo</h3>
-                    <p className="text-xs text-muted-foreground">Web-Native Animations</p>
+                    <p className="text-muted-foreground text-xs">Web-Native Animations</p>
                   </div>
                 </div>
               </div>
 
-              <nav className="flex-1 p-4 overflow-y-auto">
+              <nav className="flex-1 overflow-y-auto p-4">
                 <div className="space-y-1">
                   {navigationItems.map((item) => (
                     <button
@@ -109,7 +109,7 @@ export default function AdvancedScrollExamplePage() {
                         setSelectedNav(item.key);
                         setDrawerOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 transition-all ${
+                      className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left transition-all ${
                         selectedNav === item.key ? "bg-primary text-primary-foreground shadow-md" : "hover:bg-accent"
                       }`}>
                       {item.icon}
@@ -119,7 +119,7 @@ export default function AdvancedScrollExamplePage() {
                 </div>
               </nav>
 
-              <div className="p-4 border-t">
+              <div className="border-t p-4">
                 <button
                   onClick={() => {
                     setDrawerOpen(false);
@@ -127,7 +127,7 @@ export default function AdvancedScrollExamplePage() {
                       severity: "info",
                     });
                   }}
-                  className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:brightness-110 transition-all text-sm font-medium">
+                  className="bg-primary text-primary-foreground w-full rounded-lg px-4 py-2 text-sm font-medium transition-all hover:brightness-110">
                   View Documentation
                 </button>
               </div>
@@ -153,39 +153,39 @@ export default function AdvancedScrollExamplePage() {
           />
         }>
         {/* Progress Bar */}
-        <div className="fixed top-0 left-0 right-0 h-1 bg-muted/30 z-50">
+        <div className="bg-muted/30 fixed top-0 right-0 left-0 z-50 h-1">
           <div
-            className="h-full bg-gradient-to-r from-primary to-purple-600 transition-all duration-150"
+            className="from-primary h-full bg-gradient-to-r to-purple-600 transition-all duration-150"
             style={{ width: `${scrollProgress}%` }}
           />
         </div>
 
         {/* Hero Section */}
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-primary/5 to-purple-500/5">
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl parallax-slow" />
-            <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl parallax-fast" />
+        <section className="from-background via-primary/5 relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br to-purple-500/5">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="bg-primary/10 parallax-slow absolute top-1/4 left-1/4 h-64 w-64 rounded-full blur-3xl" />
+            <div className="parallax-fast absolute right-1/4 bottom-1/3 h-96 w-96 rounded-full bg-purple-500/10 blur-3xl" />
           </div>
 
-          <div className="container mx-auto px-4 py-20 text-center relative z-10">
-            <div className="max-w-4xl mx-auto space-y-8 scroll-fade-in">
-              <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-purple-600 to-primary bg-clip-text text-transparent">
+          <div className="relative z-10 container mx-auto px-4 py-20 text-center">
+            <div className="scroll-fade-in mx-auto max-w-4xl space-y-8">
+              <h1 className="from-primary to-primary bg-gradient-to-r via-purple-600 bg-clip-text text-5xl font-bold text-transparent md:text-7xl">
                 CSS Scroll-Driven Animations
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-muted-foreground mx-auto max-w-2xl text-xl md:text-2xl">
                 Experience buttery-smooth animations powered by native CSS, with graceful JavaScript fallbacks
               </p>
-              <div className="flex flex-wrap gap-4 justify-center pt-4">
-                <div className="px-6 py-3 bg-primary/10 rounded-full text-primary font-medium">
-                  <Zap className="inline mr-2" size={20} />
+              <div className="flex flex-wrap justify-center gap-4 pt-4">
+                <div className="bg-primary/10 text-primary rounded-full px-6 py-3 font-medium">
+                  <Zap className="mr-2 inline" size={20} />
                   60fps Performance
                 </div>
-                <div className="px-6 py-3 bg-purple-500/10 rounded-full text-purple-600 font-medium">
-                  <TrendingUp className="inline mr-2" size={20} />
+                <div className="rounded-full bg-purple-500/10 px-6 py-3 font-medium text-purple-600">
+                  <TrendingUp className="mr-2 inline" size={20} />
                   Progressive Enhancement
                 </div>
-                <div className="px-6 py-3 bg-blue-500/10 rounded-full text-blue-600 font-medium">
-                  <Eye className="inline mr-2" size={20} />
+                <div className="rounded-full bg-blue-500/10 px-6 py-3 font-medium text-blue-600">
+                  <Eye className="mr-2 inline" size={20} />
                   Visually Stunning
                 </div>
               </div>
@@ -199,10 +199,10 @@ export default function AdvancedScrollExamplePage() {
 
         {/* Features Grid */}
         <section className="container mx-auto px-4 py-20">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16 scroll-fade-in">
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">Web-Native Excellence</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <div className="mx-auto max-w-6xl">
+            <div className="scroll-fade-in mb-16 text-center">
+              <h2 className="mb-4 text-4xl font-bold md:text-5xl">Web-Native Excellence</h2>
+              <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
                 Built with modern CSS features for maximum performance and minimal JavaScript
               </p>
             </div>
@@ -249,12 +249,12 @@ export default function AdvancedScrollExamplePage() {
                   icon: <Plus size={32} />,
                 },
               ].map((feature, index) => (
-                <div key={index} className="p-8 border rounded-2xl hover:shadow-2xl transition-all group scroll-scale">
+                <div key={index} className="group scroll-scale rounded-2xl border p-8 transition-all hover:shadow-2xl">
                   <div
-                    className={`w-16 h-16 bg-${feature.color}-500/10 rounded-2xl flex items-center justify-center text-${feature.color}-500 mb-6 group-hover:scale-110 transition-transform`}>
+                    className={`h-16 w-16 bg-${feature.color}-500/10 flex items-center justify-center rounded-2xl text-${feature.color}-500 mb-6 transition-transform group-hover:scale-110`}>
                     {feature.icon}
                   </div>
-                  <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
+                  <h3 className="mb-3 text-2xl font-bold">{feature.title}</h3>
                   <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                 </div>
               ))}
@@ -265,19 +265,19 @@ export default function AdvancedScrollExamplePage() {
         {/* Technical Details */}
         <section className="bg-muted/30 py-20">
           <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-16 scroll-fade-in">
-                <h2 className="text-4xl md:text-5xl font-bold mb-4">How It Works</h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <div className="mx-auto max-w-6xl">
+              <div className="scroll-fade-in mb-16 text-center">
+                <h2 className="mb-4 text-4xl font-bold md:text-5xl">How It Works</h2>
+                <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
                   Leveraging cutting-edge CSS features with smart fallbacks
                 </p>
               </div>
 
               <div className="grid gap-8 lg:grid-cols-2">
-                <div className="p-8 bg-background border rounded-2xl scroll-reveal">
-                  <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                      <span className="font-bold text-primary">1</span>
+                <div className="bg-background scroll-reveal rounded-2xl border p-8">
+                  <h3 className="mb-4 flex items-center gap-3 text-2xl font-bold">
+                    <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
+                      <span className="text-primary font-bold">1</span>
                     </div>
                     CSS Scroll-Timeline API
                   </h3>
@@ -285,7 +285,7 @@ export default function AdvancedScrollExamplePage() {
                     Modern browsers use the native CSS animation-timeline property to drive animations based on scroll
                     position:
                   </p>
-                  <pre className="bg-muted/50 p-4 rounded-xl overflow-x-auto text-sm">
+                  <pre className="bg-muted/50 overflow-x-auto rounded-xl p-4 text-sm">
                     <code>{`@keyframes app-bar-collapse {
   from { height: 80px; }
   to { height: 56px; }
@@ -299,9 +299,9 @@ export default function AdvancedScrollExamplePage() {
                   </pre>
                 </div>
 
-                <div className="p-8 bg-background border rounded-2xl scroll-reveal">
-                  <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-500/10 rounded-full flex items-center justify-center">
+                <div className="bg-background scroll-reveal rounded-2xl border p-8">
+                  <h3 className="mb-4 flex items-center gap-3 text-2xl font-bold">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-500/10">
                       <span className="font-bold text-purple-600">2</span>
                     </div>
                     JavaScript Fallback
@@ -309,7 +309,7 @@ export default function AdvancedScrollExamplePage() {
                   <p className="text-muted-foreground mb-4">
                     For browsers without CSS scroll-timeline support, we provide smooth JavaScript-driven animations:
                   </p>
-                  <pre className="bg-muted/50 p-4 rounded-xl overflow-x-auto text-sm">
+                  <pre className="bg-muted/50 overflow-x-auto rounded-xl p-4 text-sm">
                     <code>{`// Feature detection
 const supported =
   CSS.supports('animation-timeline: scroll()');
@@ -329,24 +329,24 @@ if (!supported) {
 
         {/* Interactive Demo */}
         <section className="container mx-auto px-4 py-20">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12 scroll-fade-in">
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">Try It Yourself</h2>
-              <p className="text-lg text-muted-foreground">
+          <div className="mx-auto max-w-4xl">
+            <div className="scroll-fade-in mb-12 text-center">
+              <h2 className="mb-4 text-4xl font-bold md:text-5xl">Try It Yourself</h2>
+              <p className="text-muted-foreground text-lg">
                 Scroll up and down to see the AppBar collapse, background blur, and navigation hide
               </p>
             </div>
 
             <div className="space-y-8">
               {[1, 2, 3, 4, 5].map((section) => (
-                <div key={section} className="p-8 border rounded-2xl scroll-fade-in hover:shadow-xl transition-all">
-                  <h3 className="text-2xl font-bold mb-4">Section {section}</h3>
-                  <p className="text-muted-foreground leading-relaxed mb-4">
+                <div key={section} className="scroll-fade-in rounded-2xl border p-8 transition-all hover:shadow-xl">
+                  <h3 className="mb-4 text-2xl font-bold">Section {section}</h3>
+                  <p className="text-muted-foreground mb-4 leading-relaxed">
                     Keep scrolling to observe how different components react to your scroll position. The AppBar at the
                     top shrinks and becomes more opaque, the bottom navigation hides when scrolling down and reappears
                     when scrolling up, and content elements fade in as they enter the viewport.
                   </p>
-                  <div className="h-32 bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 rounded-xl" />
+                  <div className="from-primary/10 to-primary/10 h-32 rounded-xl bg-gradient-to-r via-purple-500/10" />
                 </div>
               ))}
             </div>
@@ -354,25 +354,25 @@ if (!supported) {
         </section>
 
         {/* Benefits */}
-        <section className="bg-gradient-to-br from-primary/10 via-purple-500/10 to-primary/5 py-20">
+        <section className="from-primary/10 to-primary/5 bg-gradient-to-br via-purple-500/10 py-20">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 scroll-fade-in">Why CSS Scroll-Driven Animations?</h2>
-              <div className="grid gap-6 md:grid-cols-3 mt-12">
-                <div className="p-6 bg-background/80 backdrop-blur-sm border rounded-2xl scroll-scale">
-                  <div className="text-4xl mb-4">⚡</div>
-                  <h3 className="text-xl font-bold mb-2">60fps Performance</h3>
-                  <p className="text-sm text-muted-foreground">Runs on GPU, smoother than JavaScript</p>
+            <div className="mx-auto max-w-4xl text-center">
+              <h2 className="scroll-fade-in mb-6 text-4xl font-bold md:text-5xl">Why CSS Scroll-Driven Animations?</h2>
+              <div className="mt-12 grid gap-6 md:grid-cols-3">
+                <div className="bg-background/80 scroll-scale rounded-2xl border p-6 backdrop-blur-sm">
+                  <div className="mb-4 text-4xl">⚡</div>
+                  <h3 className="mb-2 text-xl font-bold">60fps Performance</h3>
+                  <p className="text-muted-foreground text-sm">Runs on GPU, smoother than JavaScript</p>
                 </div>
-                <div className="p-6 bg-background/80 backdrop-blur-sm border rounded-2xl scroll-scale">
-                  <div className="text-4xl mb-4">🎨</div>
-                  <h3 className="text-xl font-bold mb-2">Declarative</h3>
-                  <p className="text-sm text-muted-foreground">Write less code, maintain easier</p>
+                <div className="bg-background/80 scroll-scale rounded-2xl border p-6 backdrop-blur-sm">
+                  <div className="mb-4 text-4xl">🎨</div>
+                  <h3 className="mb-2 text-xl font-bold">Declarative</h3>
+                  <p className="text-muted-foreground text-sm">Write less code, maintain easier</p>
                 </div>
-                <div className="p-6 bg-background/80 backdrop-blur-sm border rounded-2xl scroll-scale">
-                  <div className="text-4xl mb-4">📱</div>
-                  <h3 className="text-xl font-bold mb-2">Battery Friendly</h3>
-                  <p className="text-sm text-muted-foreground">Lower CPU usage on mobile devices</p>
+                <div className="bg-background/80 scroll-scale rounded-2xl border p-6 backdrop-blur-sm">
+                  <div className="mb-4 text-4xl">📱</div>
+                  <h3 className="mb-2 text-xl font-bold">Battery Friendly</h3>
+                  <p className="text-muted-foreground text-sm">Lower CPU usage on mobile devices</p>
                 </div>
               </div>
             </div>
@@ -381,24 +381,24 @@ if (!supported) {
 
         {/* Footer CTA */}
         <section className="container mx-auto px-4 py-20">
-          <div className="max-w-4xl mx-auto text-center scroll-fade-in">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Build?</h2>
-            <p className="text-xl text-muted-foreground mb-8">
+          <div className="scroll-fade-in mx-auto max-w-4xl text-center">
+            <h2 className="mb-6 text-4xl font-bold md:text-5xl">Ready to Build?</h2>
+            <p className="text-muted-foreground mb-8 text-xl">
               Start creating beautiful, performant scroll experiences today
             </p>
-            <div className="flex flex-wrap gap-4 justify-center">
+            <div className="flex flex-wrap justify-center gap-4">
               <button
                 onClick={() =>
                   snackbar.show("Documentation opening...", {
                     severity: "info",
                   })
                 }
-                className="px-8 py-4 bg-primary text-primary-foreground rounded-xl hover:brightness-110 transition-all shadow-lg text-lg font-medium">
+                className="bg-primary text-primary-foreground rounded-xl px-8 py-4 text-lg font-medium shadow-lg transition-all hover:brightness-110">
                 View Documentation
               </button>
               <button
                 onClick={() => (window.location.href = "/examples/responsive")}
-                className="px-8 py-4 border rounded-xl hover:bg-accent transition-all text-lg font-medium">
+                className="hover:bg-accent rounded-xl border px-8 py-4 text-lg font-medium transition-all">
                 More Examples
               </button>
             </div>

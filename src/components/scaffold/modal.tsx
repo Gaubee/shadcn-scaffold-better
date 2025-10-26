@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { cn } from "@/lib/utils";
+import * as React from "react";
 
 export interface ModalProps {
   children?: React.ReactNode;
@@ -121,7 +121,7 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
           <div
             ref={ref}
             className={cn(
-              "relative w-full bg-background rounded-lg shadow-lg",
+              "bg-background relative w-full rounded-lg shadow-lg",
               "animate-in zoom-in-95 duration-200",
               sizeClasses[size],
               className,
@@ -135,11 +135,11 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
                     type="button"
                     onClick={() => onOpenChange?.(false)}
                     className={cn(
-                      "absolute right-4 top-4 p-1 rounded-md",
+                      "absolute top-4 right-4 rounded-md p-1",
                       "text-muted-foreground",
                       "transition-colors",
                       "hover:bg-accent hover:text-accent-foreground",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",
                     )}
                     aria-label="Close">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -149,13 +149,13 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
                 )}
 
                 {title && (
-                  <h2 id="modal-title" className="text-lg font-semibold text-foreground pr-8">
+                  <h2 id="modal-title" className="text-foreground pr-8 text-lg font-semibold">
                     {title}
                   </h2>
                 )}
 
                 {description && (
-                  <p id="modal-description" className="mt-2 text-sm text-muted-foreground">
+                  <p id="modal-description" className="text-muted-foreground mt-2 text-sm">
                     {description}
                   </p>
                 )}
@@ -181,7 +181,7 @@ export interface ModalFooterProps {
 
 export const ModalFooter = React.forwardRef<HTMLDivElement, ModalFooterProps>(({ children, className }, ref) => {
   return (
-    <div ref={ref} className={cn("flex items-center justify-end gap-2 pt-4 border-t", className)}>
+    <div ref={ref} className={cn("flex items-center justify-end gap-2 border-t pt-4", className)}>
       {children}
     </div>
   );

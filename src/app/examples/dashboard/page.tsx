@@ -1,35 +1,35 @@
 "use client";
 
-import * as React from "react";
 import {
-  Scaffold,
   AppBar,
-  Drawer,
   BottomNavigationBar,
-  NavigationRail,
+  Drawer,
   FloatingActionButton,
-  Snackbar,
-  useSnackbar,
   Modal,
   ModalFooter,
+  NavigationRail,
+  Scaffold,
+  Snackbar,
+  useSnackbar,
 } from "@/components/scaffold";
 import {
-  Home,
-  Menu,
-  Settings,
-  Bell,
-  User,
-  Search,
-  Plus,
-  Mail,
-  Heart,
-  MessageSquare,
-  TrendingUp,
   BarChart,
+  Bell,
   Calendar,
   FileText,
+  Heart,
+  Home,
+  Mail,
+  Menu,
+  MessageSquare,
+  Plus,
+  Search,
+  Settings,
+  TrendingUp,
+  User,
   X,
 } from "lucide-react";
+import * as React from "react";
 
 /**
  * Advanced Dashboard Example
@@ -80,7 +80,7 @@ export default function DashboardExample() {
       <Scaffold
         responsive
         responsiveBreakpoint={1024}
-        appBar={
+        header={
           <AppBar
             collapsible
             immersive
@@ -90,26 +90,26 @@ export default function DashboardExample() {
             leading={
               <button
                 onClick={() => setDrawerOpen(!drawerOpen)}
-                className="p-2 rounded-lg hover:bg-accent transition-colors"
+                className="hover:bg-accent rounded-lg p-2 transition-colors"
                 aria-label="Menu">
                 <Menu size={24} />
               </button>
             }
-            title={<div className="font-bold text-xl">Dashboard</div>}
+            title={<div className="text-xl font-bold">Dashboard</div>}
             actions={
               <>
                 <button
-                  className="p-2 rounded-lg hover:bg-accent transition-colors relative"
+                  className="hover:bg-accent relative rounded-lg p-2 transition-colors"
                   aria-label="Notifications">
                   <Bell size={22} />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
+                  <span className="bg-destructive absolute top-1 right-1 h-2 w-2 rounded-full" />
                 </button>
-                <button className="p-2 rounded-lg hover:bg-accent transition-colors" aria-label="Search">
+                <button className="hover:bg-accent rounded-lg p-2 transition-colors" aria-label="Search">
                   <Search size={22} />
                 </button>
                 <button
                   onClick={() => setSettingsOpen(!settingsOpen)}
-                  className="p-2 rounded-lg hover:bg-accent transition-colors"
+                  className="hover:bg-accent rounded-lg p-2 transition-colors"
                   aria-label="Settings">
                   <Settings size={22} />
                 </button>
@@ -120,13 +120,13 @@ export default function DashboardExample() {
         drawer={
           <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} side="left" width={280} gestureEnabled showBackdrop>
             <div className="p-6">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+              <div className="mb-8 flex items-center gap-3">
+                <div className="bg-primary/20 flex h-12 w-12 items-center justify-center rounded-full">
                   <User size={24} className="text-primary" />
                 </div>
                 <div>
                   <h3 className="font-semibold">John Doe</h3>
-                  <p className="text-sm text-muted-foreground">john@example.com</p>
+                  <p className="text-muted-foreground text-sm">john@example.com</p>
                 </div>
               </div>
 
@@ -160,11 +160,11 @@ export default function DashboardExample() {
                   <a
                     key={item.label}
                     href={item.href}
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent transition-colors">
+                    className="hover:bg-accent flex items-center gap-3 rounded-lg px-4 py-3 transition-colors">
                     {item.icon}
                     <span className="flex-1">{item.label}</span>
                     {item.badge && (
-                      <span className="px-2 py-1 text-xs font-medium bg-primary/20 text-primary rounded-full">
+                      <span className="bg-primary/20 text-primary rounded-full px-2 py-1 text-xs font-medium">
                         {item.badge}
                       </span>
                     )}
@@ -183,11 +183,11 @@ export default function DashboardExample() {
             gestureEnabled
             showBackdrop>
             <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
+              <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-xl font-bold">Settings</h2>
                 <button
                   onClick={() => setSettingsOpen(false)}
-                  className="p-2 rounded-lg hover:bg-accent transition-colors"
+                  className="hover:bg-accent rounded-lg p-2 transition-colors"
                   aria-label="Close settings">
                   <X size={20} />
                 </button>
@@ -195,7 +195,7 @@ export default function DashboardExample() {
 
               <div className="space-y-6">
                 <div>
-                  <h3 className="font-medium mb-3">Appearance</h3>
+                  <h3 className="mb-3 font-medium">Appearance</h3>
                   <div className="space-y-2">
                     <label className="flex items-center gap-2">
                       <input type="radio" name="theme" value="light" defaultChecked />
@@ -213,7 +213,7 @@ export default function DashboardExample() {
                 </div>
 
                 <div>
-                  <h3 className="font-medium mb-3">Notifications</h3>
+                  <h3 className="mb-3 font-medium">Notifications</h3>
                   <div className="space-y-2">
                     <label className="flex items-center justify-between">
                       <span>Email notifications</span>
@@ -242,14 +242,14 @@ export default function DashboardExample() {
             elevation={1}
             width={80}
             header={
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+              <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-lg">
                 <span className="text-primary-foreground font-bold">D</span>
               </div>
             }
             footer={
               <button
                 onClick={() => setSettingsOpen(true)}
-                className="p-2 rounded-lg hover:bg-accent transition-colors">
+                className="hover:bg-accent rounded-lg p-2 transition-colors">
                 <Settings size={24} />
               </button>
             }
@@ -280,12 +280,12 @@ export default function DashboardExample() {
         <div className="scaffold-content py-8">
           {/* Hero Section with Scroll Animation */}
           <section className="scroll-fade-in mb-12">
-            <h1 className="text-4xl font-bold mb-4">Welcome back, John! 👋</h1>
-            <p className="text-xl text-muted-foreground">Here's what's happening with your projects today.</p>
+            <h1 className="mb-4 text-4xl font-bold">Welcome back, John! 👋</h1>
+            <p className="text-muted-foreground text-xl">Here's what's happening with your projects today.</p>
           </section>
 
           {/* Stats Grid - Responsive using Container Queries */}
-          <div className="scaffold-grid grid gap-6 mb-12">
+          <div className="scaffold-grid mb-12 grid gap-6">
             {[
               {
                 icon: <TrendingUp size={24} />,
@@ -314,34 +314,34 @@ export default function DashboardExample() {
             ].map((stat, i) => (
               <div
                 key={stat.label}
-                className="scroll-scale bg-card border rounded-lg p-6 transition-all hover:shadow-lg"
+                className="scroll-scale bg-card rounded-lg border p-6 transition-all hover:shadow-lg"
                 style={{ animationDelay: `${i * 100}ms` }}>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 rounded-lg bg-primary/10 text-primary">{stat.icon}</div>
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="bg-primary/10 text-primary rounded-lg p-3">{stat.icon}</div>
                   <span className="text-sm font-medium text-green-600">{stat.change}</span>
                 </div>
-                <h3 className="text-2xl font-bold mb-1">{stat.value}</h3>
-                <p className="text-sm text-muted-foreground">{stat.label}</p>
+                <h3 className="mb-1 text-2xl font-bold">{stat.value}</h3>
+                <p className="text-muted-foreground text-sm">{stat.label}</p>
               </div>
             ))}
           </div>
 
           {/* Activity Section */}
           <section className="scroll-reveal mb-12">
-            <h2 className="text-2xl font-bold mb-6">Recent Activity</h2>
+            <h2 className="mb-6 text-2xl font-bold">Recent Activity</h2>
             <div className="space-y-4">
               {Array.from({ length: 10 }).map((_, i) => (
-                <div key={i} className="bg-card border rounded-lg p-4 hover:shadow-md transition-all">
+                <div key={i} className="bg-card rounded-lg border p-4 transition-all hover:shadow-md">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                    <div className="bg-primary/20 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full">
                       <User size={20} className="text-primary" />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="font-medium">Activity {i + 1}</p>
-                      <p className="text-sm text-muted-foreground truncate">
+                      <p className="text-muted-foreground truncate text-sm">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1">{i + 1} hours ago</p>
+                      <p className="text-muted-foreground mt-1 text-xs">{i + 1} hours ago</p>
                     </div>
                   </div>
                 </div>
@@ -360,19 +360,19 @@ export default function DashboardExample() {
         size="lg">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Title</label>
+            <label className="mb-2 block text-sm font-medium">Title</label>
             <input
               type="text"
               placeholder="Enter post title"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              className="focus:ring-primary w-full rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">Content</label>
+            <label className="mb-2 block text-sm font-medium">Content</label>
             <textarea
               placeholder="What's on your mind?"
               rows={6}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+              className="focus:ring-primary w-full resize-none rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none"
             />
           </div>
         </div>
@@ -380,12 +380,12 @@ export default function DashboardExample() {
         <ModalFooter>
           <button
             onClick={() => setModalOpen(false)}
-            className="px-4 py-2 text-sm font-medium rounded-lg hover:bg-accent transition-colors">
+            className="hover:bg-accent rounded-lg px-4 py-2 text-sm font-medium transition-colors">
             Cancel
           </button>
           <button
             onClick={handleCreatePost}
-            className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity">
+            className="bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90">
             Create Post
           </button>
         </ModalFooter>

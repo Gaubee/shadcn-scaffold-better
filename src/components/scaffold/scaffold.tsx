@@ -1,6 +1,5 @@
 "use client";
 
-import { useContainerBreakpoint } from "@/hooks/use-container-breakpoint";
 import { cn } from "@/lib/utils";
 import * as React from "react";
 import { useMergeRefs } from "react-best-merge-refs";
@@ -14,23 +13,11 @@ import { Portal as PopoverPortal } from "@radix-ui/react-popover";
 import { Portal as SelectPortal } from "@radix-ui/react-select";
 import { Portal as DrawerPortal } from "vaul";
 
-export interface ScaffoldProps {
+export interface ScaffoldProps<T extends PaneParams = PaneParams> {
   /**
    * AppBar slot - can be a ReactNode or a function that returns ReactNode
    */
   appBar?: ScaffoldSolt;
-  // /**
-  //  * Drawer slot (left side)
-  //  */
-  // drawer?: ScaffoldSolt<[]>;
-  // /**
-  //  * End drawer slot (right side)
-  //  */
-  // endDrawer?: ScaffoldSolt<[]>;
-  /**
-   * Navigation rail slot
-   */
-  navigationBar?: ScaffoldSolt<{ position: NavigationBarPosition }>;
   /**
    * Floating action button slot
    */
@@ -59,19 +46,34 @@ export interface ScaffoldProps {
    * const BadWrapper = ({ children, container }) => <div>{children}</div>;
    */
   portalWrappers?: PortalWrapper[];
-
-  children?: ScaffoldSolt;
+  // /**
+  //  * Drawer slot (left side)
+  //  */
+  // drawer?: ScaffoldSolt<[]>;
+  // /**
+  //  * End drawer slot (right side)
+  //  */
+  // endDrawer?: ScaffoldSolt<[]>;
+  // 导航相关 props
+  /**
+   * Navigation rail slot
+   */
+  rail?: PaneSlot<PaneParams, "rail", { railPosition: ScaffoldRailPosition }>;
+  list?: PaneSlot<PaneParams, "list">;
+  detail?: PaneSlot<PaneParams, "detail">;
+  tail?: PaneSlot<PaneParams, "tail">;
 
   /**
    * 注入导航状态
    */
-  navigationState?: NavigationState;
+  navigationState?: NavigationState<T>;
   /**
    * 导航状态变更
    */
-  onNavigationChange?: OnNavigationChange;
+  onNavigationChange?: OnNavigationChange<T>;
 }
-export type NavigationBarPosition = "rail" | "bottom";
+export type ScaffoldRailPosition = "inline-start" | "block-end";
+export type ScaffoldRTailRenderMode = "sheet" | "dialog" | "drawer" | "static";
 export interface ScaffoldContext {
   breakpoint: ScaffoldBreakpoint;
 }
@@ -83,6 +85,32 @@ type SoltRenderParams<T> = T extends SoltRender<infer Args> ? Args : never;
 
 type ScaffoldSolt<CtxExt extends object = {}> = SoltRender<[ScaffoldContext & CtxExt]> | React.ReactNode;
 
+/**
+ * 传递给每个 Pane 的渲染函数的上下文对象
+ */
+export interface PaneRenderProps<P extends PaneParams = PaneParams, N extends PaneName = PaneName> {
+  /** 当前 Pane 的状态参数 */
+  params: P[N];
+  /** 当前 Pane 是否在移动视图中处于激活状态 */
+  isActive: boolean;
+
+  /** 用于触发前进导航 */
+  navigate: <N extends PaneName>(targetPane: N, targetParams: P[N]) => void;
+  /** 是否可以返回 */
+  canGoBack: boolean;
+  /** 是否可以前进 */
+  canGoForward: boolean;
+  /** 用于触发导航前进 */
+  forward: () => void;
+  /** 用于触发返回导航 */
+  back: () => void;
+  /** 当前的断点信息 */
+  breakpoint: ScaffoldBreakpoint;
+}
+type PaneSlot<P extends PaneParams, N extends PaneName, CtxExt extends object = {}> = SoltRender<
+  [ScaffoldContext & CtxExt & PaneRenderProps<P, N>]
+>;
+
 // Helper function to render slots that can be either ReactNode or a function returning ReactNode
 const renderSlot = <T extends React.ReactNode | SoltRender<any[]>>(slot: T, ...args: SoltRenderParams<T>) => {
   if (typeof slot === "function") {
@@ -91,7 +119,7 @@ const renderSlot = <T extends React.ReactNode | SoltRender<any[]>>(slot: T, ...a
   return slot as React.ReactNode;
 };
 
-type ScaffoldComponentProps = ScaffoldProps & React.ComponentPropsWithRef<"div">;
+type ScaffoldComponentProps<T extends PaneParams = PaneParams> = ScaffoldProps<T> & React.ComponentPropsWithRef<"div">;
 
 type PortalWrapper = (props: { children: React.ReactNode; container: HTMLDivElement }) => React.ReactNode;
 
@@ -126,21 +154,27 @@ const buildInPortalWrappers = [
 });
 
 // 我们用泛型来允许用户为每个 Pane 定义自己的参数类型
-export type PaneParams = Record<PaneName, any>;
+export type PaneParams = Record<PaneName, object>;
 
 export type PaneName = "rail" | "list" | "detail" | "tail";
 
-export interface NavigationState<T extends PaneParams = PaneParams> {
+export interface NavigationRoute<T extends PaneParams = PaneParams> {
+  index: number;
   /** 当前在移动端/堆叠视图中激活的面板 */
   activePane: PaneName;
 
   /** 每个面板各自的内部状态参数 */
   panes: {
-    rail?: T["rail"];
-    list?: T["list"];
-    detail?: T["detail"];
-    tail?: T["tail"];
+    rail: T["rail"];
+    list: T["list"];
+    detail: T["detail"];
+    tail: T["tail"];
   };
+}
+
+export interface NavigationState<T extends PaneParams = PaneParams> {
+  route: NavigationRoute<T>;
+  history: NavigationRoute<T>[];
 }
 
 /** 描述导航变更的原因 */
@@ -151,21 +185,26 @@ export interface NavigationChangeReason {
 }
 
 // 回调函数的类型
-export type OnNavigationChange = (newState: NavigationState, reason: NavigationChangeReason) => void;
+export type OnNavigationChange<T extends PaneParams = PaneParams> = (
+  newState: NavigationState<T>,
+  reason: NavigationChangeReason,
+) => void;
 
-export const Scaffold: React.FC<ScaffoldComponentProps> = ({
+export const Scaffold = <T extends PaneParams = PaneParams>({
   ref,
-  children,
   className,
   appBar,
-  // drawer,
-  // endDrawer,
-  // bottomNavigationBar,
-  // navigationRail,
-  navigationBar,
   floatingActionButton,
   portalWrappers,
-}) => {
+
+  rail,
+  list,
+  detail,
+  tail,
+
+  navigationState,
+  onNavigationChange,
+}: ScaffoldComponentProps<T>) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const indicatorRef = React.useRef<HTMLDivElement>(null);
   const breakpoint = useContainerBreakpoint(containerRef, indicatorRef);
@@ -189,20 +228,127 @@ export const Scaffold: React.FC<ScaffoldComponentProps> = ({
             : null,
   }; // Render all slots
   const appBarContent = renderSlot(appBar, context);
+  const fabContent = renderSlot(floatingActionButton, context);
   // const drawerContent = renderSlot(drawer);
   // const endDrawerContent = renderSlot(endDrawer);
   // const bottomNavContent = renderSlot(bottomNavigationBar);
   // const navigationRailContent = renderSlot(navigationRail);
-  const navigationBarPosition = React.useRef<NavigationBarPosition | "">("");
 
-  if (breakpoint) {
-    navigationBarPosition.current = context.breakpoint === "mobile" ? "bottom" : "rail";
-  }
-  const navigationBarContent = navigationBarPosition.current
-    ? renderSlot(navigationBar, { ...context, position: navigationBarPosition.current })
+  const navState = React.useMemo<NavigationState<T>>(() => {
+    if (navigationState) {
+      return navigationState;
+    }
+    const route: NavigationRoute<T> = { index: 0, activePane: "rail", panes: {} as T };
+    return { route, history: [route] };
+  }, [navigationState]);
+
+  const paneBaseContext: Omit<PaneRenderProps<T>, "params" | "isActive" | "breakpoint"> = React.useMemo(() => {
+    const canGoBack = navState.history.findIndex((route) => route.index === navState.route.index) > 0;
+    const canGoForward =
+      navState.history.findLastIndex((route) => route.index === navState.route.index) < navState.history.length - 1;
+    return {
+      /** 用于触发前进导航 */
+      navigate: (targetPane, targetParams) => {
+        if (onNavigationChange) {
+          const route = {
+            index: navState.history.length,
+            activePane: targetPane,
+            panes: {
+              ...navState.route.panes,
+              [targetPane]: targetParams,
+            },
+          };
+          onNavigationChange(
+            {
+              route: route,
+              history: [
+                ...(canGoForward ? navState.history.slice(0, navState.route.index + 1) : navState.history),
+                route,
+              ],
+            },
+            {
+              type: "forward",
+              fromPane: navState.route.activePane,
+              toPane: targetPane,
+            },
+          );
+        }
+      },
+      /** 是否可以返回 */
+      canGoBack,
+      /** 是否可以前进 */
+      canGoForward,
+      /** 用于触发导航前进 */
+      forward: () => {
+        if (canGoForward && onNavigationChange) {
+          const route = navState.history[navState.route.index + 1];
+          onNavigationChange(
+            {
+              route: route,
+              history: navState.history,
+            },
+            {
+              type: "forward",
+              fromPane: navState.route.activePane,
+              toPane: route.activePane,
+            },
+          );
+        }
+      },
+      /** 用于触发返回导航 */
+      back: () => {
+        if (canGoBack && onNavigationChange) {
+          const route = navState.history[navState.route.index - 1];
+          onNavigationChange(
+            {
+              route: route,
+              history: navState.history,
+            },
+            {
+              type: "back",
+              fromPane: navState.route.activePane,
+              toPane: route.activePane,
+            },
+          );
+        }
+      },
+    };
+  }, [navState]);
+
+  const [railPosition, setRailPosition] = React.useState<ScaffoldRailPosition | "">("");
+
+  React.useLayoutEffect(() => {
+    setRailPosition(context.breakpoint === "mobile" ? "block-end" : "inline-start");
+  }, [breakpoint]);
+
+  const railContent = railPosition
+    ? renderSlot(rail, {
+        ...context,
+        ...paneBaseContext,
+        params: navState.route.panes.rail,
+        isActive: navState.route.activePane === "rail",
+        railPosition: railPosition,
+      })
     : null;
-  const fabContent = renderSlot(floatingActionButton, context);
-  const childrenContent = renderSlot(children, context);
+  const listContent = renderSlot(list, {
+    ...context,
+    ...paneBaseContext,
+    params: navState.route.panes.list,
+    isActive: navState.route.activePane === "list",
+  });
+  const detailContent = renderSlot(detail, {
+    ...context,
+    ...paneBaseContext,
+    params: navState.route.panes.detail,
+    isActive: navState.route.activePane === "detail",
+  });
+
+  const tailContent = renderSlot(tail, {
+    ...context,
+    ...paneBaseContext,
+    params: navState.route.panes.tail,
+    isActive: navState.route.activePane === "tail",
+  });
 
   // const desktopGridTemplateAreas = `"rail header header tail" "rail list detail tail" "rail footer footer tail"`;
   // const tabletGridTemplateAreas = `"rail header header" "rail list detail" "rail footer footer"`;
@@ -247,23 +393,76 @@ export const Scaffold: React.FC<ScaffoldComponentProps> = ({
             </header>
           )}
 
-          {/* Navigation Rail */}
-          {navigationBarContent && (
-            <aside className="contents" style={{ gridArea: navigationBarPosition.current }}>
-              {navigationBarContent}
-            </aside>
-          )}
-          {/* Main Content */}
+          <React.Activity
+            name="scaffold-rail-and-list"
+            mode={
+              context.breakpoint === "mobile"
+                ? navState.route.activePane === "rail" || navState.route.activePane === "list"
+                  ? "visible"
+                  : "hidden"
+                : "visible"
+            }>
+            {railContent && (
+              <aside
+                className="overflow-auto scroll-smooth"
+                style={{ gridArea: railPosition === "inline-start" ? "rail" : "bottom" }}>
+                {railContent}
+              </aside>
+            )}
 
-          <main
-            className="overflow-auto scroll-smooth"
-            style={{
-              gridArea: "main",
-            }}>
-            {childrenContent}
-          </main>
+            {listContent && (
+              <nav
+                className="overflow-auto scroll-smooth"
+                style={{ gridArea: context.breakpoint === "mobile" ? "main" : "list" }}>
+                {listContent}
+              </nav>
+            )}
+          </React.Activity>
+          <React.Activity
+            name="scaffold-detail-and-tail"
+            mode={
+              context.breakpoint === "mobile"
+                ? navState.route.activePane === "detail" || navState.route.activePane === "tail"
+                  ? "visible"
+                  : "hidden"
+                : "visible"
+            }>
+            {detailContent && (
+              <article
+                className={cn(
+                  "z-10 overflow-auto scroll-smooth",
+                  navState.route.activePane === "detail" || navState.route.activePane === "tail"
+                    ? "translate-x-0"
+                    : "translate-x-full",
+                )}
+                style={{ gridArea: context.breakpoint === "mobile" ? "main" : "detail" }}>
+                {detailContent}
+              </article>
+            )}
+            {tailContent && (
+              <aside
+                className={cn(
+                  "z-20 overflow-auto scroll-smooth",
+                  // 如果tail采用非模态化的渲染，那么会被 translate-x-full 影响：它将层叠在 detail 上面
+                  navState.route.activePane === "tail" ? "translate-x-0" : "translate-x-full",
+                )}
+                style={{
+                  gridArea:
+                    context.breakpoint === "desktop" ? "tail" : context.breakpoint === "tablet" ? "detail" : "main",
+                }}>
+                {tailContent}
+              </aside>
+            )}
+          </React.Activity>
+
           {/* Floating Action Button */}
-          <div className="contents place-content-end">{fabContent}</div>
+          <div
+            className="place-items-end"
+            style={{
+              gridArea: context.breakpoint === "desktop" ? "tail" : context.breakpoint === "tablet" ? "detail" : "main",
+            }}>
+            {fabContent}
+          </div>
         </>,
       )}
     </div>

@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Scaffold } from "./scaffold";
-import { AppBar } from "./app-bar";
-import { Drawer } from "./drawer";
-import { BottomNavigationBar } from "./bottom-navigation-bar";
-import { NavigationRail } from "./navigation-rail";
-import { FloatingActionButton } from "./floating-action-button";
+import { Heart, Home, Menu, MessageSquare, Plus, Search, Settings, ShoppingCart, User } from "lucide-react";
 import { useState } from "react";
-import { Menu, Home, Search, User, Settings, Plus, Heart, MessageSquare, ShoppingCart } from "lucide-react";
+import { AppBar } from "./app-bar";
+import { BottomNavigationBar } from "./bottom-navigation-bar";
+import { Drawer } from "./drawer";
+import { FloatingActionButton } from "./floating-action-button";
+import { NavigationRail } from "./navigation-rail";
+import { Scaffold } from "./scaffold";
 
 const meta = {
   title: "Components/Scaffold",
@@ -22,28 +22,28 @@ type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
   args: {
-    children: <div />,
+    list: <div />,
   },
   render: () => (
     <Scaffold
-      appBar={
+      header={
         <AppBar
           title="Basic Scaffold"
           leading={
-            <button className="p-2 hover:bg-accent rounded-md">
-              <Menu className="w-6 h-6" />
+            <button className="hover:bg-accent rounded-md p-2">
+              <Menu className="h-6 w-6" />
             </button>
           }
         />
       }>
       <div className="p-6">
-        <h1 className="text-3xl font-bold mb-4">Welcome to Scaffold UI</h1>
+        <h1 className="mb-4 text-3xl font-bold">Welcome to Scaffold UI</h1>
         <p className="text-muted-foreground mb-4">This is a basic scaffold with just an AppBar and content.</p>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="p-6 border rounded-lg">
-              <h3 className="font-semibold mb-2">Card {i + 1}</h3>
-              <p className="text-sm text-muted-foreground">Sample content for card {i + 1}</p>
+            <div key={i} className="rounded-lg border p-6">
+              <h3 className="mb-2 font-semibold">Card {i + 1}</h3>
+              <p className="text-muted-foreground text-sm">Sample content for card {i + 1}</p>
             </div>
           ))}
         </div>
@@ -54,19 +54,19 @@ export const Basic: Story = {
 
 export const WithDrawer: Story = {
   args: {
-    children: <div />,
+    list: <div />,
   },
   render: () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     return (
       <Scaffold
-        appBar={
+        header={
           <AppBar
             title="With Drawer"
             leading={
-              <button onClick={() => setDrawerOpen(true)} className="p-2 hover:bg-accent rounded-md">
-                <Menu className="w-6 h-6" />
+              <button onClick={() => setDrawerOpen(true)} className="hover:bg-accent rounded-md p-2">
+                <Menu className="h-6 w-6" />
               </button>
             }
           />
@@ -74,7 +74,7 @@ export const WithDrawer: Story = {
         drawer={
           <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
             <div className="p-6">
-              <h2 className="text-xl font-bold mb-4">Navigation</h2>
+              <h2 className="mb-4 text-xl font-bold">Navigation</h2>
               <nav className="flex flex-col gap-2">
                 {[
                   { icon: Home, label: "Home" },
@@ -82,8 +82,8 @@ export const WithDrawer: Story = {
                   { icon: User, label: "Profile" },
                   { icon: Settings, label: "Settings" },
                 ].map((item) => (
-                  <button key={item.label} className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md">
-                    <item.icon className="w-5 h-5" />
+                  <button key={item.label} className="hover:bg-accent flex items-center gap-3 rounded-md px-4 py-3">
+                    <item.icon className="h-5 w-5" />
                     <span>{item.label}</span>
                   </button>
                 ))}
@@ -92,7 +92,7 @@ export const WithDrawer: Story = {
           </Drawer>
         }>
         <div className="p-6">
-          <h1 className="text-3xl font-bold mb-4">Scaffold with Drawer</h1>
+          <h1 className="mb-4 text-3xl font-bold">Scaffold with Drawer</h1>
           <p>Click the menu button to open the drawer.</p>
         </div>
       </Scaffold>
@@ -102,14 +102,14 @@ export const WithDrawer: Story = {
 
 export const WithBottomNav: Story = {
   args: {
-    children: <div />,
+    list: <div />,
   },
   render: () => {
     const [selected, setSelected] = useState("home");
 
     return (
       <Scaffold
-        appBar={<AppBar title="With Bottom Navigation" />}
+        header={<AppBar title="With Bottom Navigation" />}
         bottomNavigationBar={
           <BottomNavigationBar
             value={selected}
@@ -128,7 +128,7 @@ export const WithBottomNav: Story = {
           />
         }>
         <div className="p-6">
-          <h1 className="text-3xl font-bold mb-4">Bottom Navigation</h1>
+          <h1 className="mb-4 text-3xl font-bold">Bottom Navigation</h1>
           <p>Current tab: {selected}</p>
           <div style={{ height: "150vh", paddingTop: "20px" }}>
             <p>Scroll down to see the bottom navigation stays visible.</p>
@@ -141,14 +141,14 @@ export const WithBottomNav: Story = {
 
 export const WithNavigationRail: Story = {
   args: {
-    children: <div />,
+    list: <div />,
   },
   render: () => {
     const [selected, setSelected] = useState("home");
 
     return (
       <Scaffold
-        appBar={<AppBar title="With Navigation Rail" />}
+        header={<AppBar title="With Navigation Rail" />}
         navigationRail={
           <NavigationRail
             value={selected}
@@ -170,7 +170,7 @@ export const WithNavigationRail: Story = {
           />
         }>
         <div className="p-6">
-          <h1 className="text-3xl font-bold mb-4">Navigation Rail</h1>
+          <h1 className="mb-4 text-3xl font-bold">Navigation Rail</h1>
           <p className="mb-4">Current selection: {selected}</p>
           <p className="text-muted-foreground">
             Navigation rail is perfect for desktop layouts, providing persistent navigation.
@@ -183,7 +183,7 @@ export const WithNavigationRail: Story = {
 
 export const Complete: Story = {
   args: {
-    children: <div />,
+    list: <div />,
   },
   render: () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -191,18 +191,18 @@ export const Complete: Story = {
 
     return (
       <Scaffold
-        appBar={
+        header={
           <AppBar
             title="Complete Scaffold"
             immersive
             leading={
-              <button onClick={() => setDrawerOpen(true)} className="p-2 hover:bg-accent rounded-md">
-                <Menu className="w-6 h-6" />
+              <button onClick={() => setDrawerOpen(true)} className="hover:bg-accent rounded-md p-2">
+                <Menu className="h-6 w-6" />
               </button>
             }
             actions={
-              <button className="p-2 hover:bg-accent rounded-md">
-                <Search className="w-5 h-5" />
+              <button className="hover:bg-accent rounded-md p-2">
+                <Search className="h-5 w-5" />
               </button>
             }
           />
@@ -210,10 +210,10 @@ export const Complete: Story = {
         drawer={
           <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
             <div className="p-6">
-              <h2 className="text-xl font-bold mb-4">Menu</h2>
+              <h2 className="mb-4 text-xl font-bold">Menu</h2>
               <nav className="flex flex-col gap-2">
-                <button className="text-left px-4 py-3 hover:bg-accent rounded-md">Option 1</button>
-                <button className="text-left px-4 py-3 hover:bg-accent rounded-md">Option 2</button>
+                <button className="hover:bg-accent rounded-md px-4 py-3 text-left">Option 1</button>
+                <button className="hover:bg-accent rounded-md px-4 py-3 text-left">Option 2</button>
               </nav>
             </div>
           </Drawer>
@@ -231,7 +231,7 @@ export const Complete: Story = {
         }
         floatingActionButton={<FloatingActionButton icon={<Plus />} onClick={() => alert("FAB clicked!")} />}>
         <div className="p-6">
-          <h1 className="text-3xl font-bold mb-4">Complete Example</h1>
+          <h1 className="mb-4 text-3xl font-bold">Complete Example</h1>
           <p className="mb-4">This scaffold includes all components: AppBar, Drawer, Bottom Navigation, and FAB.</p>
           <div style={{ height: "150vh" }}>
             <p>Scroll to see immersive AppBar effect.</p>
