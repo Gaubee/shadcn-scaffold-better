@@ -73,7 +73,7 @@ export default function ImmersiveExamplePage() {
   return (
     <>
       <Scaffold
-        header={
+        appBar={
           <AppBar
             immersive
             collapsible
@@ -117,8 +117,9 @@ export default function ImmersiveExamplePage() {
             onClick={() => snackbar.show("Create new article", { severity: "info" })}
             elevation={4}
           />
-        }>
-        <div className="relative">
+        }
+        list={() => (
+          <div className="relative">
           {/* Hero Section with Parallax */}
           <div
             className="relative flex h-[70vh] items-center justify-center overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500"
@@ -477,7 +478,8 @@ export default function ImmersiveExamplePage() {
             </div>
           </div>
         </div>
-      </Scaffold>
+        )}
+      />
 
       <Snackbar {...snackbar.snackbarProps} />
     </>

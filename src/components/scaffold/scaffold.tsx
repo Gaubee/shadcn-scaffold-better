@@ -17,11 +17,11 @@ export interface ScaffoldProps<T extends PaneParams = PaneParams> {
   /**
    * AppBar slot - can be a ReactNode or a function that returns ReactNode
    */
-  appBar?: ScaffoldSolt;
+  appBar?: ScaffoldSlot;
   /**
    * Floating action button slot
    */
-  floatingActionButton?: ScaffoldSolt;
+  floatingActionButton?: ScaffoldSlot;
 
   /**
    * Custom protal - A list of custom portal wrappers.
@@ -46,15 +46,8 @@ export interface ScaffoldProps<T extends PaneParams = PaneParams> {
    * const BadWrapper = ({ children, container }) => <div>{children}</div>;
    */
   portalWrappers?: PortalWrapper[];
-  // /**
-  //  * Drawer slot (left side)
-  //  */
-  // drawer?: ScaffoldSolt<[]>;
-  // /**
-  //  * End drawer slot (right side)
-  //  */
-  // endDrawer?: ScaffoldSolt<[]>;
-  // 导航相关 props
+
+  // Navigation-related props
   /**
    * Navigation rail slot
    */
@@ -79,11 +72,11 @@ export interface ScaffoldContext {
 }
 export type ScaffoldBreakpoint = null | "mobile" | "tablet" | "desktop";
 
-type SoltRender<Args extends unknown[] = unknown[]> = (...args: Args) => React.ReactNode;
+type SlotRender<Args extends unknown[] = unknown[]> = (...args: Args) => React.ReactNode;
 
-type SoltRenderParams<T> = T extends SoltRender<infer Args> ? Args : never;
+type SlotRenderParams<T> = T extends SlotRender<infer Args> ? Args : never;
 
-type ScaffoldSolt<CtxExt extends object = {}> = SoltRender<[ScaffoldContext & CtxExt]> | React.ReactNode;
+type ScaffoldSlot<CtxExt extends object = {}> = SlotRender<[ScaffoldContext & CtxExt]> | React.ReactNode;
 
 /**
  * 传递给每个 Pane 的渲染函数的上下文对象
@@ -107,12 +100,18 @@ export interface PaneRenderProps<P extends PaneParams = PaneParams, N extends Pa
   /** 当前的断点信息 */
   breakpoint: ScaffoldBreakpoint;
 }
-type PaneSlot<P extends PaneParams, N extends PaneName, CtxExt extends object = {}> = SoltRender<
+type PaneSlot<P extends PaneParams, N extends PaneName, CtxExt extends object = {}> = SlotRender<
   [ScaffoldContext & CtxExt & PaneRenderProps<P, N>]
 >;
 
 // Helper function to render slots that can be either ReactNode or a function returning ReactNode
-const renderSlot = <T extends React.ReactNode | SoltRender<any[]>>(slot: T, ...args: SoltRenderParams<T>) => {
+const renderSlot = <T extends React.ReactNode | SlotRender<any[]>>(
+  slot: T | undefined,
+  ...args: SlotRenderParams<T>
+) => {
+  if (!slot) {
+    return null;
+  }
   if (typeof slot === "function") {
     return slot(...args);
   }
@@ -146,12 +145,14 @@ const buildInPortalWrappers = [
   DrawerPortal,
   SelectPortal,
   HoverCardPortal,
-].map((Portal) => {
-  const wrapper: PortalWrapper = ({ children, container }) => {
-    return <Portal container={container}>{children}</Portal>;
-  };
-  return wrapper;
-});
+]
+  .filter((Portal) => Portal !== undefined) // Filter out undefined Portals
+  .map((Portal) => {
+    const wrapper: PortalWrapper = ({ children, container }) => {
+      return <Portal container={container}>{children}</Portal>;
+    };
+    return wrapper;
+  });
 
 // 我们用泛型来允许用户为每个 Pane 定义自己的参数类型
 export type PaneParams = Record<PaneName, object>;
@@ -204,6 +205,7 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
 
   navigationState,
   onNavigationChange,
+  ...props
 }: ScaffoldComponentProps<T>) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const indicatorRef = React.useRef<HTMLDivElement>(null);
@@ -226,13 +228,11 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
           : breakpoint === "sm"
             ? "mobile"
             : null,
-  }; // Render all slots
+  };
+
+  // Render appBar and FAB slots
   const appBarContent = renderSlot(appBar, context);
   const fabContent = renderSlot(floatingActionButton, context);
-  // const drawerContent = renderSlot(drawer);
-  // const endDrawerContent = renderSlot(endDrawer);
-  // const bottomNavContent = renderSlot(bottomNavigationBar);
-  // const navigationRailContent = renderSlot(navigationRail);
 
   const navState = React.useMemo<NavigationState<T>>(() => {
     if (navigationState) {
@@ -350,121 +350,113 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
     isActive: navState.route.activePane === "tail",
   });
 
-  // const desktopGridTemplateAreas = `"rail header header tail" "rail list detail tail" "rail footer footer tail"`;
-  // const tabletGridTemplateAreas = `"rail header header" "rail list detail" "rail footer footer"`;
-  // const mobileGridTemplateAreas = `"header" "main" "footer"`;
-
   return (
-    <div
-      ref={useMergeRefs({ ref, containerRef })}
-      className={cn(
-        "h-screen w-screen",
-        "h-dvh w-dvw",
-        // Container queries support for responsive components
-        "@container grid",
-
-        // 移动端 (默认)
-        `grid-cols-1`,
-        `grid-rows-[auto_1fr_auto]`,
-        `[grid-template-areas:"header"_"main"_"bottom"]`,
-
-        // 平板端 (md:@) - 当容器宽度 >= md断点值 (e.g., 768px)
-        `md:grid-cols-[auto_1fr_2fr]`,
-        `md:[grid-template-areas:"rail_header_header"_"rail_list_detail"_"rail_footer_footer"]`,
-
-        // 桌面端 (xl:@) - 当容器宽度 >= xl断点值 (e.g., 1280px)
-        `xl:grid-cols-[auto_2fr_3fr_2fr]`,
-        `xl:[grid-template-areas:"rail_header_header_tail"_"rail_list_detail_tail"_"rail_footer_footer_tail"]`,
-        className,
-      )}>
-      {/* --- Breakpoint 指示器元素 --- */}
+    <div className={cn("@container", className)} ref={useMergeRefs({ ref, containerRef })} {...props}>
       <div
-        ref={indicatorRef}
-        className="sm:@before:content-['sm'] md:@before:content-['md'] lg:@before:content-['lg'] xl:@before:content-['xl'] 2xl:@before:content-['2xl'] invisible absolute -z-10 before:content-['']"
-      />
-      {wrappedChildren(
-        [...buildInPortalWrappers, ...(portalWrappers ?? [])],
-        containerRef.current,
-        <>
-          {/* AppBar */}
-          {appBarContent && (
-            <header className="contents" style={{ gridArea: "header" }}>
-              {appBarContent}
-            </header>
-          )}
+        className={cn(
+          "h-screen w-screen",
+          "h-dvh w-dvw",
+          // Container queries support for responsive components
+          "grid",
 
-          <React.Activity
-            name="scaffold-rail-and-list"
-            mode={
-              context.breakpoint === "mobile"
-                ? navState.route.activePane === "rail" || navState.route.activePane === "list"
-                  ? "visible"
-                  : "hidden"
-                : "visible"
-            }>
-            {railContent && (
-              <aside
-                className="overflow-auto scroll-smooth"
-                style={{ gridArea: railPosition === "inline-start" ? "rail" : "bottom" }}>
-                {railContent}
-              </aside>
+          // 移动端 (默认)
+          `grid-cols-1`,
+          `grid-rows-[auto_1fr_auto]`,
+          `[grid-template-areas:"header"_"main"_"bottom"]`,
+
+          // 平板端 (md:@) - 当容器宽度 >= md断点值 (e.g., 768px)
+          `@md:grid-cols-[auto_1fr_2fr]`,
+          `@md:[grid-template-areas:"rail_header_header"_"rail_list_detail"_"rail_footer_footer"]`,
+
+          // 桌面端 (xl:@) - 当容器宽度 >= xl断点值 (e.g., 1280px)
+          `@xl:grid-cols-[auto_2fr_3fr_2fr]`,
+          `@xl:[grid-template-areas:"rail_header_header_tail"_"rail_list_detail_tail"_"rail_footer_footer_tail"]`,
+        )}>
+        {/* --- Breakpoint 指示器元素 --- */}
+        <div
+          ref={indicatorRef}
+          className="invisible absolute -z-10 before:content-[''] @sm:before:content-['sm'] @md:before:content-['md'] @lg:before:content-['lg'] @xl:before:content-['xl'] @2xl:before:content-['2xl']"
+        />
+        {/* Temporarily bypass Portal wrappers to debug */}
+        {wrappedChildren(
+          [...buildInPortalWrappers, ...(portalWrappers ?? [])],
+          containerRef.current,
+          <>
+            {/* AppBar */}
+            {appBarContent && (
+              <header className="contents" style={{ gridArea: "header" }}>
+                {appBarContent}
+              </header>
             )}
 
-            {listContent && (
-              <nav
-                className="overflow-auto scroll-smooth"
-                style={{ gridArea: context.breakpoint === "mobile" ? "main" : "list" }}>
-                {listContent}
-              </nav>
-            )}
-          </React.Activity>
-          <React.Activity
-            name="scaffold-detail-and-tail"
-            mode={
-              context.breakpoint === "mobile"
-                ? navState.route.activePane === "detail" || navState.route.activePane === "tail"
-                  ? "visible"
-                  : "hidden"
-                : "visible"
-            }>
-            {detailContent && (
-              <article
-                className={cn(
-                  "z-10 overflow-auto scroll-smooth",
-                  navState.route.activePane === "detail" || navState.route.activePane === "tail"
-                    ? "translate-x-0"
-                    : "translate-x-full",
+            {/* Rail and List Panes - conditionally rendered based on breakpoint and activePane */}
+            {(context.breakpoint !== "mobile" ||
+              navState.route.activePane === "rail" ||
+              navState.route.activePane === "list") && (
+              <>
+                {railContent && (
+                  <aside
+                    className="overflow-auto scroll-smooth"
+                    style={{ gridArea: railPosition === "inline-start" ? "rail" : "bottom" }}>
+                    {railContent}
+                  </aside>
                 )}
-                style={{ gridArea: context.breakpoint === "mobile" ? "main" : "detail" }}>
-                {detailContent}
-              </article>
-            )}
-            {tailContent && (
-              <aside
-                className={cn(
-                  "z-20 overflow-auto scroll-smooth",
-                  // 如果tail采用非模态化的渲染，那么会被 translate-x-full 影响：它将层叠在 detail 上面
-                  navState.route.activePane === "tail" ? "translate-x-0" : "translate-x-full",
-                )}
-                style={{
-                  gridArea:
-                    context.breakpoint === "desktop" ? "tail" : context.breakpoint === "tablet" ? "detail" : "main",
-                }}>
-                {tailContent}
-              </aside>
-            )}
-          </React.Activity>
 
-          {/* Floating Action Button */}
-          <div
-            className="place-items-end"
-            style={{
-              gridArea: context.breakpoint === "desktop" ? "tail" : context.breakpoint === "tablet" ? "detail" : "main",
-            }}>
-            {fabContent}
-          </div>
-        </>,
-      )}
+                {listContent && (
+                  <nav
+                    className="overflow-auto scroll-smooth"
+                    style={{ gridArea: context.breakpoint === "mobile" ? "main" : "list" }}>
+                    {listContent}
+                  </nav>
+                )}
+              </>
+            )}
+            {/* Detail and Tail Panes - conditionally rendered based on breakpoint and activePane */}
+            {(context.breakpoint !== "mobile" ||
+              navState.route.activePane === "detail" ||
+              navState.route.activePane === "tail") && (
+              <>
+                {detailContent && (
+                  <article
+                    className={cn(
+                      "z-10 overflow-auto scroll-smooth",
+                      navState.route.activePane === "detail" || navState.route.activePane === "tail"
+                        ? "translate-x-0"
+                        : "translate-x-full",
+                    )}
+                    style={{ gridArea: context.breakpoint === "mobile" ? "main" : "detail" }}>
+                    {detailContent}
+                  </article>
+                )}
+                {tailContent && (
+                  <aside
+                    className={cn(
+                      "z-20 overflow-auto scroll-smooth",
+                      // If tail uses non-modal rendering, it will be affected by translate-x-full: it will stack on top of detail
+                      navState.route.activePane === "tail" ? "translate-x-0" : "translate-x-full",
+                    )}
+                    style={{
+                      gridArea:
+                        context.breakpoint === "desktop" ? "tail" : context.breakpoint === "tablet" ? "detail" : "main",
+                    }}>
+                    {tailContent}
+                  </aside>
+                )}
+              </>
+            )}
+
+            {/* Floating Action Button */}
+            <div
+              className="place-items-end"
+              style={{
+                gridArea:
+                  context.breakpoint === "desktop" ? "tail" : context.breakpoint === "tablet" ? "detail" : "main",
+              }}>
+              {fabContent}
+            </div>
+          </>,
+        )}
+      </div>
     </div>
   );
 };
