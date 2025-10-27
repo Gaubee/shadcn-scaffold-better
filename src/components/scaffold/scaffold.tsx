@@ -4,15 +4,6 @@ import { cn } from "@/lib/utils";
 import * as React from "react";
 import { useMergeRefs } from "react-best-merge-refs";
 
-import { Portal as ContextMenuPortal } from "@radix-ui/react-context-menu";
-import { Portal as DialogPortal } from "@radix-ui/react-dialog";
-import { Portal as DropdownMenuPortal } from "@radix-ui/react-dropdown-menu";
-import { Portal as HoverCardPortal } from "@radix-ui/react-hover-card";
-import { Portal as MenubarPortal } from "@radix-ui/react-menubar";
-import { Portal as PopoverPortal } from "@radix-ui/react-popover";
-import { Portal as SelectPortal } from "@radix-ui/react-select";
-import { Portal as DrawerPortal } from "vaul";
-
 export interface ScaffoldProps<T extends PaneParams = PaneParams> {
   /**
    * AppBar slot - can be a ReactNode or a function that returns ReactNode
@@ -127,32 +118,14 @@ const wrappedChildren = (
   container: HTMLDivElement | null,
   children: React.ReactNode,
 ) => {
-  if (!container) return children;
-  // reduceRight 从数组末尾开始，确保数组第一项在最外层
-  return portalWrappers.reduceRight(
-    (acc, wrapper) => wrapper({ children: acc, container: container }),
-    children, // 初始值是你的主要内容
-  );
+  return children;
+  // if (!container) return children;
+  // // reduceRight 从数组末尾开始，确保数组第一项在最外层
+  // return portalWrappers.reduceRight(
+  //   (acc, wrapper) => wrapper({ children: acc, container: container }),
+  //   children, // 初始值是你的主要内容
+  // );
 };
-
-const buildInPortalWrappers = [
-  //
-  DialogPortal,
-  MenubarPortal,
-  PopoverPortal,
-  ContextMenuPortal,
-  DropdownMenuPortal,
-  DrawerPortal,
-  SelectPortal,
-  HoverCardPortal,
-]
-  .filter((Portal) => Portal !== undefined) // Filter out undefined Portals
-  .map((Portal) => {
-    const wrapper: PortalWrapper = ({ children, container }) => {
-      return <Portal container={container}>{children}</Portal>;
-    };
-    return wrapper;
-  });
 
 // 我们用泛型来允许用户为每个 Pane 定义自己的参数类型
 export type PaneParams = Record<PaneName, object>;
@@ -191,7 +164,7 @@ export type OnNavigationChange<T extends PaneParams = PaneParams> = (
   reason: NavigationChangeReason,
 ) => void;
 
-export const Scaffold = <T extends PaneParams = PaneParams>({
+export const Scaffold = <T extends PaneParams = PaneParams,>({
   ref,
   className,
   appBar,
@@ -210,6 +183,25 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
   const containerRef = React.useRef<HTMLDivElement>(null);
   const indicatorRef = React.useRef<HTMLDivElement>(null);
   const breakpoint = useContainerBreakpoint(containerRef, indicatorRef);
+
+  const buildInPortalWrappers: PortalWrapper[] = [
+    //
+    // DialogPortal,
+    // MenubarPortal,
+    // PopoverPortal,
+    // ContextMenuPortal,
+    // DropdownMenuPortal,
+    // DrawerPortal,
+    // SelectPortal,
+    // HoverCardPortal,
+  ];
+  // .filter((Portal) => Portal !== undefined) // Filter out undefined Portals
+  // .map((Portal) => {
+  //   const wrapper: PortalWrapper = ({ children, container }) => {
+  //     return <Portal container={container}>{children}</Portal>;
+  //   };
+  //   return wrapper;
+  // });
 
   /**
      Breakpoint prefix	Minimum width	CSS
@@ -377,10 +369,10 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
           ref={indicatorRef}
           className="invisible absolute -z-10 before:content-[''] @sm:before:content-['sm'] @md:before:content-['md'] @lg:before:content-['lg'] @xl:before:content-['xl'] @2xl:before:content-['2xl']"
         />
-        {/* Temporarily bypass Portal wrappers to debug */}
-        {wrappedChildren(
-          [...buildInPortalWrappers, ...(portalWrappers ?? [])],
-          containerRef.current,
+      {/* Temporarily bypass Portal wrappers to debug */}
+      {(() => {
+        // Bypass Portal wrappers temporarily until fixed by user
+        return (
           <>
             {/* AppBar */}
             {appBarContent && (
@@ -420,9 +412,13 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
                   <article
                     className={cn(
                       "z-10 overflow-auto scroll-smooth",
-                      navState.route.activePane === "detail" || navState.route.activePane === "tail"
+                      // In desktop view, detail has its own grid area and should always be visible
+                      // In tablet/mobile view, detail shares grid area with tail, show only when active
+                      context.breakpoint === "desktop"
                         ? "translate-x-0"
-                        : "translate-x-full",
+                        : navState.route.activePane === "detail"
+                          ? "translate-x-0"
+                          : "translate-x-full",
                     )}
                     style={{ gridArea: context.breakpoint === "mobile" ? "main" : "detail" }}>
                     {detailContent}
@@ -432,8 +428,13 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
                   <aside
                     className={cn(
                       "z-20 overflow-auto scroll-smooth",
-                      // If tail uses non-modal rendering, it will be affected by translate-x-full: it will stack on top of detail
-                      navState.route.activePane === "tail" ? "translate-x-0" : "translate-x-full",
+                      // In desktop view, tail has its own grid area and should always be visible
+                      // In tablet/mobile view, use translate to show/hide based on activePane
+                      context.breakpoint === "desktop"
+                        ? "translate-x-0"
+                        : navState.route.activePane === "tail"
+                          ? "translate-x-0"
+                          : "translate-x-full",
                     )}
                     style={{
                       gridArea:
@@ -454,8 +455,9 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
               }}>
               {fabContent}
             </div>
-          </>,
-        )}
+          </>
+        );
+      })()}
       </div>
     </div>
   );
