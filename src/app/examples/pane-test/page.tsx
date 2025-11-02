@@ -1,7 +1,8 @@
 "use client";
 
 import { AppBar, Scaffold } from "@/components/scaffold";
-import type { NavigationState, PaneParams } from "@/components/scaffold/scaffold";
+import type { NavigationState, PaneName, PaneParams } from "@/components/scaffold/scaffold";
+import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Home, Layers, Settings, Users } from "lucide-react";
 import * as React from "react";
 
@@ -60,47 +61,44 @@ export default function PaneTestPage() {
         console.log("Navigation changed:", { newState, reason });
         setNavState(newState);
       }}
-      rail={({ railPosition, navigate, breakpoint, isActive }) => (
-        <div className="bg-muted/30 flex h-full flex-col p-4">
-          <div className="mb-4 rounded-lg border bg-blue-50 p-3 dark:bg-blue-950">
-            <h3 className="mb-2 text-sm font-bold">🚂 Rail Pane</h3>
-            <div className="space-y-1 text-xs">
-              <div>Position: {railPosition}</div>
-              <div>Breakpoint: {breakpoint || "null"}</div>
-              <div>Active: {isActive ? "Yes" : "No"}</div>
+      rail={({ railPosition, navigate, breakpoint, isActive }) => {
+        const flexDir = railPosition === "block-end" ? "flex-row" : "flex-col";
+        const railBtnClassName = (activePane: PaneName) =>
+          cn(
+            `hover:bg-accent flex w-full items-center gap-2 rounded-lg p-3 transition-colors`,
+            navState.route.activePane === activePane ? "bg-primary/10" : "",
+            railPosition === "block-end" ? "flex-col" : "flex-row",
+          );
+        return (
+          <div className={cn("bg-muted/30 flex h-full w-full p-4", flexDir)}>
+            <div className="mb-4 rounded-lg border bg-blue-50 p-3 dark:bg-blue-950">
+              <h3 className="mb-2 text-sm font-bold">🚂 Rail Pane</h3>
+              <div className="space-y-1 text-xs">
+                <div>Position: {railPosition}</div>
+                <div>Breakpoint: {breakpoint || "null"}</div>
+                <div>Active: {isActive ? "Yes" : "No"}</div>
+              </div>
+            </div>
+
+            <div className={cn("flex flex-1 items-center justify-between space-y-2", flexDir)}>
+              <button onClick={() => navigate("list", { category: "recent" })} className={railBtnClassName("list")}>
+                <Home size={20} />
+                <span>Go to List</span>
+              </button>
+
+              <button onClick={() => navigate("detail", { itemId: "42" })} className={railBtnClassName("detail")}>
+                <Users size={20} />
+                <span>Go to Detail</span>
+              </button>
+
+              <button onClick={() => navigate("tail", { settingTab: "advanced" })} className={railBtnClassName("tail")}>
+                <Settings size={20} />
+                <span>Go to Tail</span>
+              </button>
             </div>
           </div>
-
-          <div className="space-y-2">
-            <button
-              onClick={() => navigate("list", { category: "recent" })}
-              className={`hover:bg-accent flex w-full items-center gap-2 rounded-lg p-3 transition-colors ${
-                navState.route.activePane === "list" ? "bg-primary/10" : ""
-              }`}>
-              <Home size={20} />
-              <span>Go to List</span>
-            </button>
-
-            <button
-              onClick={() => navigate("detail", { itemId: "42" })}
-              className={`hover:bg-accent flex w-full items-center gap-2 rounded-lg p-3 transition-colors ${
-                navState.route.activePane === "detail" ? "bg-primary/10" : ""
-              }`}>
-              <Users size={20} />
-              <span>Go to Detail</span>
-            </button>
-
-            <button
-              onClick={() => navigate("tail", { settingTab: "advanced" })}
-              className={`hover:bg-accent flex w-full items-center gap-2 rounded-lg p-3 transition-colors ${
-                navState.route.activePane === "tail" ? "bg-primary/10" : ""
-              }`}>
-              <Settings size={20} />
-              <span>Go to Tail</span>
-            </button>
-          </div>
-        </div>
-      )}
+        );
+      }}
       list={({ params, navigate, canGoBack, canGoForward, back, forward, breakpoint, isActive }) => (
         <div className="bg-background flex h-full flex-col p-4">
           <div className="mb-4 rounded-lg border bg-green-50 p-3 dark:bg-green-950">
@@ -117,14 +115,14 @@ export default function PaneTestPage() {
             <button
               onClick={back}
               disabled={!canGoBack}
-              className="bg-primary text-primary-foreground disabled:opacity-50 flex items-center gap-1 rounded px-3 py-2 text-sm disabled:cursor-not-allowed">
+              className="bg-primary text-primary-foreground flex items-center gap-1 rounded px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50">
               <ChevronLeft size={16} />
               Back
             </button>
             <button
               onClick={forward}
               disabled={!canGoForward}
-              className="bg-primary text-primary-foreground disabled:opacity-50 flex items-center gap-1 rounded px-3 py-2 text-sm disabled:cursor-not-allowed">
+              className="bg-primary text-primary-foreground flex items-center gap-1 rounded px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50">
               Forward
               <ChevronRight size={16} />
             </button>

@@ -4,6 +4,22 @@ import { cn } from "@/lib/utils";
 import * as React from "react";
 import { useMergeRefs } from "react-best-merge-refs";
 
+const ContainerQueryBreakpoints = {
+  "3xs": 256,
+  "2xs": 288,
+  xs: 320,
+  sm: 384,
+  md: 448,
+  lg: 512,
+  xl: 576,
+  "2xl": 672,
+  "3xl": 768,
+  "4xl": 896,
+  "5xl": 1024,
+  "6xl": 1152,
+  "7xl": 1280,
+} as const;
+
 export interface ScaffoldProps<T extends PaneParams = PaneParams> {
   /**
    * AppBar slot - can be a ReactNode or a function that returns ReactNode
@@ -42,10 +58,10 @@ export interface ScaffoldProps<T extends PaneParams = PaneParams> {
   /**
    * Navigation rail slot
    */
-  rail?: PaneSlot<PaneParams, "rail", { railPosition: ScaffoldRailPosition }>;
-  list?: PaneSlot<PaneParams, "list">;
-  detail?: PaneSlot<PaneParams, "detail">;
-  tail?: PaneSlot<PaneParams, "tail">;
+  rail?: PaneSlot<T, "rail", { railPosition: ScaffoldRailPosition }>;
+  list?: PaneSlot<T, "list">;
+  detail?: PaneSlot<T, "detail">;
+  tail?: PaneSlot<T, "tail">;
 
   /**
    * 注入导航状态
@@ -61,7 +77,7 @@ export type ScaffoldRTailRenderMode = "sheet" | "dialog" | "drawer" | "static";
 export interface ScaffoldContext {
   breakpoint: ScaffoldBreakpoint;
 }
-export type ScaffoldBreakpoint = null | "mobile" | "tablet" | "desktop";
+export type ScaffoldBreakpoint = null | NamedContainerBreakpoint;
 
 type SlotRender<Args extends unknown[] = unknown[]> = (...args: Args) => React.ReactNode;
 
@@ -164,7 +180,7 @@ export type OnNavigationChange<T extends PaneParams = PaneParams> = (
   reason: NavigationChangeReason,
 ) => void;
 
-export const Scaffold = <T extends PaneParams = PaneParams,>({
+export const Scaffold = <T extends PaneParams = PaneParams>({
   ref,
   className,
   appBar,
@@ -212,14 +228,7 @@ export const Scaffold = <T extends PaneParams = PaneParams,>({
      2xl	96rem (1536px)	@media (width >= 96rem) { ... }
      */
   const context: ScaffoldContext = {
-    breakpoint:
-      breakpoint === "xl" || breakpoint === "2xl"
-        ? "desktop"
-        : breakpoint === "md" || breakpoint === "lg"
-          ? "tablet"
-          : breakpoint === "sm"
-            ? "mobile"
-            : null,
+    breakpoint: breakpoint ?? null,
   };
 
   // Render appBar and FAB slots
@@ -350,114 +359,127 @@ export const Scaffold = <T extends PaneParams = PaneParams,>({
           "h-dvh w-dvw",
           // Container queries support for responsive components
           "grid",
+          context.breakpoint,
 
           // 移动端 (默认)
-          `grid-cols-1`,
-          `grid-rows-[auto_1fr_auto]`,
-          `[grid-template-areas:"header"_"main"_"bottom"]`,
+          `[&.mobile]:grid-cols-1`,
+          `[&.mobile]:grid-rows-[auto_1fr_auto]`,
+          `[&.mobile]:[grid-template-areas:"header"_"main"_"bottom"]`,
 
-          // 平板端 (md:@) - 当容器宽度 >= md断点值 (e.g., 768px)
-          `@md:grid-cols-[auto_1fr_2fr]`,
-          `@md:[grid-template-areas:"rail_header_header"_"rail_list_detail"_"rail_footer_footer"]`,
+          // 平板端 (3xl:@) - 当容器宽度 >= 3xl断点值 (e.g., 768px)
+          `[&.tablet]:@3xl:grid-cols-[auto_1fr_2fr]`,
+          `[&.tablet]:[grid-template-areas:"rail_header_header"_"rail_list_detail"_"rail_footer_footer"]`,
 
-          // 桌面端 (xl:@) - 当容器宽度 >= xl断点值 (e.g., 1280px)
-          `@xl:grid-cols-[auto_2fr_3fr_2fr]`,
-          `@xl:[grid-template-areas:"rail_header_header_tail"_"rail_list_detail_tail"_"rail_footer_footer_tail"]`,
+          // 桌面端 (7xl:@) - 当容器宽度 >= 7xl断点值 (e.g., 1280px)
+          `[&.desktop]:grid-cols-[auto_2fr_3fr_2fr]`,
+          `[&.desktop]:[grid-template-areas:"rail_header_header_tail"_"rail_list_detail_tail"_"rail_footer_footer_tail"]`,
         )}>
         {/* --- Breakpoint 指示器元素 --- */}
         <div
           ref={indicatorRef}
-          className="invisible absolute -z-10 before:content-[''] @sm:before:content-['sm'] @md:before:content-['md'] @lg:before:content-['lg'] @xl:before:content-['xl'] @2xl:before:content-['2xl']"
+          className="invisible absolute -z-10 before:content-['mobile'] @3xl:before:content-['tablet'] @7xl:before:content-['desktop']"
         />
-      {/* Temporarily bypass Portal wrappers to debug */}
-      {(() => {
-        // Bypass Portal wrappers temporarily until fixed by user
-        return (
-          <>
-            {/* AppBar */}
-            {appBarContent && (
-              <header className="contents" style={{ gridArea: "header" }}>
-                {appBarContent}
-              </header>
-            )}
+        {/* Temporarily bypass Portal wrappers to debug */}
+        {(() => {
+          // Bypass Portal wrappers temporarily until fixed by user
+          return (
+            <>
+              {/* AppBar */}
+              {appBarContent && (
+                <header data-role="app-bar" style={{ gridArea: "header" }}>
+                  {appBarContent}
+                </header>
+              )}
 
-            {/* Rail and List Panes - conditionally rendered based on breakpoint and activePane */}
-            {(context.breakpoint !== "mobile" ||
-              navState.route.activePane === "rail" ||
-              navState.route.activePane === "list") && (
-              <>
-                {railContent && (
-                  <aside
-                    className="overflow-auto scroll-smooth"
-                    style={{ gridArea: railPosition === "inline-start" ? "rail" : "bottom" }}>
-                    {railContent}
-                  </aside>
-                )}
+              {/* Rail and List Panes - conditionally rendered based on breakpoint and activePane */}
+              {(context.breakpoint !== "mobile" ||
+                navState.route.activePane === "rail" ||
+                navState.route.activePane === "list") && (
+                <>
+                  {railContent && (
+                    <aside
+                      data-role="rail"
+                      data-bp={context.breakpoint}
+                      className="overflow-auto scroll-smooth"
+                      style={{ gridArea: railPosition === "inline-start" ? "rail" : "bottom" }}>
+                      {railContent}
+                    </aside>
+                  )}
 
-                {listContent && (
-                  <nav
-                    className="overflow-auto scroll-smooth"
-                    style={{ gridArea: context.breakpoint === "mobile" ? "main" : "list" }}>
-                    {listContent}
-                  </nav>
-                )}
-              </>
-            )}
-            {/* Detail and Tail Panes - conditionally rendered based on breakpoint and activePane */}
-            {(context.breakpoint !== "mobile" ||
-              navState.route.activePane === "detail" ||
-              navState.route.activePane === "tail") && (
-              <>
-                {detailContent && (
-                  <article
-                    className={cn(
-                      "z-10 overflow-auto scroll-smooth",
-                      // In desktop view, detail has its own grid area and should always be visible
-                      // In tablet/mobile view, detail shares grid area with tail, show only when active
-                      context.breakpoint === "desktop"
-                        ? "translate-x-0"
-                        : navState.route.activePane === "detail"
+                  {listContent && (
+                    <nav
+                      data-role="list"
+                      data-bp={context.breakpoint}
+                      className="overflow-auto scroll-smooth"
+                      style={{ gridArea: context.breakpoint === "mobile" ? "main" : "list" }}>
+                      {listContent}
+                    </nav>
+                  )}
+                </>
+              )}
+              {/* Detail and Tail Panes - conditionally rendered based on breakpoint and activePane */}
+              {(context.breakpoint !== "mobile" ||
+                navState.route.activePane === "detail" ||
+                navState.route.activePane === "tail") && (
+                <>
+                  {detailContent && (
+                    <article
+                      data-role="detail"
+                      data-bp={context.breakpoint}
+                      className={cn(
+                        "z-10 overflow-auto scroll-smooth",
+                        // In desktop view, detail has its own grid area and should always be visible
+                        // In tablet/mobile view, detail shares grid area with tail, show only when active
+                        context.breakpoint === "mobile" &&
+                          (navState.route.activePane === "rail" || navState.route.activePane === "list")
+                          ? "translate-x-full"
+                          : "translate-x-0",
+                      )}
+                      style={{ gridArea: context.breakpoint === "mobile" ? "main" : "detail" }}>
+                      {detailContent}
+                    </article>
+                  )}
+                  {tailContent && (
+                    <aside
+                      data-role="tail"
+                      data-bp={context.breakpoint}
+                      className={cn(
+                        "bg-background z-20 overflow-auto scroll-smooth",
+                        // In desktop view, tail has its own grid area and should always be visible
+                        // In tablet/mobile view, use translate to show/hide based on activePane
+                        context.breakpoint === "desktop"
                           ? "translate-x-0"
-                          : "translate-x-full",
-                    )}
-                    style={{ gridArea: context.breakpoint === "mobile" ? "main" : "detail" }}>
-                    {detailContent}
-                  </article>
-                )}
-                {tailContent && (
-                  <aside
-                    className={cn(
-                      "z-20 overflow-auto scroll-smooth",
-                      // In desktop view, tail has its own grid area and should always be visible
-                      // In tablet/mobile view, use translate to show/hide based on activePane
-                      context.breakpoint === "desktop"
-                        ? "translate-x-0"
-                        : navState.route.activePane === "tail"
-                          ? "translate-x-0"
-                          : "translate-x-full",
-                    )}
-                    style={{
-                      gridArea:
-                        context.breakpoint === "desktop" ? "tail" : context.breakpoint === "tablet" ? "detail" : "main",
-                    }}>
-                    {tailContent}
-                  </aside>
-                )}
-              </>
-            )}
+                          : navState.route.activePane === "tail"
+                            ? "translate-x-0"
+                            : "translate-x-full",
+                      )}
+                      style={{
+                        gridArea:
+                          context.breakpoint === "desktop"
+                            ? "tail"
+                            : context.breakpoint === "tablet"
+                              ? "detail"
+                              : "main",
+                      }}>
+                      {tailContent}
+                    </aside>
+                  )}
+                </>
+              )}
 
-            {/* Floating Action Button */}
-            <div
-              className="place-items-end"
-              style={{
-                gridArea:
-                  context.breakpoint === "desktop" ? "tail" : context.breakpoint === "tablet" ? "detail" : "main",
-              }}>
-              {fabContent}
-            </div>
-          </>
-        );
-      })()}
+              {/* Floating Action Button */}
+              <div
+                data-role="floating-action-button"
+                className="place-items-end"
+                style={{
+                  gridArea:
+                    context.breakpoint === "desktop" ? "tail" : context.breakpoint === "tablet" ? "detail" : "main",
+                }}>
+                {fabContent}
+              </div>
+            </>
+          );
+        })()}
       </div>
     </div>
   );
@@ -465,11 +487,12 @@ export const Scaffold = <T extends PaneParams = PaneParams,>({
 
 Scaffold.displayName = "Scaffold";
 
+type NamedContainerBreakpoint = "desktop" | "tablet" | "mobile";
 function useContainerBreakpoint<TContainer extends HTMLElement, TIndicator extends HTMLElement>(
   containerRef: React.RefObject<TContainer | null>,
   indicatorRef: React.RefObject<TIndicator | null>,
-): string | undefined {
-  const [activeBreakpoint, setActiveBreakpoint] = React.useState<string | undefined>();
+): NamedContainerBreakpoint | undefined {
+  const [activeBreakpoint, setActiveBreakpoint] = React.useState<NamedContainerBreakpoint | undefined>();
 
   React.useEffect(() => {
     const containerElement = containerRef.current;
@@ -489,7 +512,7 @@ function useContainerBreakpoint<TContainer extends HTMLElement, TIndicator exten
       const breakpointName = indicatorContent.replace(/['"]/g, "");
 
       if (breakpointName !== activeBreakpoint) {
-        setActiveBreakpoint(breakpointName === "none" ? undefined : breakpointName);
+        setActiveBreakpoint(breakpointName === "none" ? undefined : (breakpointName as NamedContainerBreakpoint));
       }
     });
 
