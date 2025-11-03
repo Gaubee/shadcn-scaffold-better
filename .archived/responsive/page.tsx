@@ -201,7 +201,7 @@ export default function ResponsiveExamplePage() {
               {/* Drawer Header */}
               <div className="from-primary/10 to-primary/5 border-b bg-linear-to-br p-6">
                 <div className="flex items-center gap-3">
-                  <div className="from-primary text-primary-foreground flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br to-purple-600 text-lg font-bold">
+                  <div className="from-primary text-primary-foreground flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br to-purple-600 text-lg font-bold">
                     FM
                   </div>
                   <div>

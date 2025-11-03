@@ -88,9 +88,9 @@ export default function AdvancedScrollExamplePage() {
         drawer={
           <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} gestureEnabled elevation={4}>
             <div className="flex h-full flex-col">
-              <div className="from-primary/10 border-b bg-gradient-to-br to-purple-500/10 p-6">
+              <div className="from-primary/10 border-b bg-linear-to-br to-purple-500/10 p-6">
                 <div className="flex items-center gap-3">
-                  <div className="from-primary flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br to-purple-600">
+                  <div className="from-primary flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br to-purple-600">
                     <Sparkles className="text-primary-foreground" size={24} />
                   </div>
                   <div>
@@ -155,13 +155,13 @@ export default function AdvancedScrollExamplePage() {
         {/* Progress Bar */}
         <div className="bg-muted/30 fixed top-0 right-0 left-0 z-50 h-1">
           <div
-            className="from-primary h-full bg-gradient-to-r to-purple-600 transition-all duration-150"
+            className="from-primary h-full bg-linear-to-r to-purple-600 transition-all duration-150"
             style={{ width: `${scrollProgress}%` }}
           />
         </div>
 
         {/* Hero Section */}
-        <section className="from-background via-primary/5 relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br to-purple-500/5">
+        <section className="from-background via-primary/5 relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br to-purple-500/5">
           <div className="pointer-events-none absolute inset-0">
             <div className="bg-primary/10 parallax-slow absolute top-1/4 left-1/4 h-64 w-64 rounded-full blur-3xl" />
             <div className="parallax-fast absolute right-1/4 bottom-1/3 h-96 w-96 rounded-full bg-purple-500/10 blur-3xl" />
@@ -169,7 +169,7 @@ export default function AdvancedScrollExamplePage() {
 
           <div className="relative z-10 container mx-auto px-4 py-20 text-center">
             <div className="scroll-fade-in mx-auto max-w-4xl space-y-8">
-              <h1 className="from-primary to-primary bg-gradient-to-r via-purple-600 bg-clip-text text-5xl font-bold text-transparent md:text-7xl">
+              <h1 className="from-primary to-primary bg-linear-to-r via-purple-600 bg-clip-text text-5xl font-bold text-transparent md:text-7xl">
                 CSS Scroll-Driven Animations
               </h1>
               <p className="text-muted-foreground mx-auto max-w-2xl text-xl md:text-2xl">
@@ -346,7 +346,7 @@ if (!supported) {
                     top shrinks and becomes more opaque, the bottom navigation hides when scrolling down and reappears
                     when scrolling up, and content elements fade in as they enter the viewport.
                   </p>
-                  <div className="from-primary/10 to-primary/10 h-32 rounded-xl bg-gradient-to-r via-purple-500/10" />
+                  <div className="from-primary/10 to-primary/10 h-32 rounded-xl bg-linear-to-r via-purple-500/10" />
                 </div>
               ))}
             </div>
@@ -354,7 +354,7 @@ if (!supported) {
         </section>
 
         {/* Benefits */}
-        <section className="from-primary/10 to-primary/5 bg-gradient-to-br via-purple-500/10 py-20">
+        <section className="from-primary/10 to-primary/5 bg-linear-to-br via-purple-500/10 py-20">
           <div className="container mx-auto px-4">
             <div className="mx-auto max-w-4xl text-center">
               <h2 className="scroll-fade-in mb-6 text-4xl font-bold md:text-5xl">Why CSS Scroll-Driven Animations?</h2>

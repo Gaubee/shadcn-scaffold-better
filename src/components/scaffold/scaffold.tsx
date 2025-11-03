@@ -29,6 +29,14 @@ export interface ScaffoldProps<T extends PaneParams = PaneParams> {
    * Floating action button slot
    */
   floatingActionButton?: ScaffoldSlot;
+  classNames?: {
+    appBar?: string;
+    floatingActionButton?: string;
+    rail?: string;
+    list?: string;
+    detail?: string;
+    tail?: string;
+  };
 
   /**
    * Custom protal - A list of custom portal wrappers.
@@ -183,6 +191,7 @@ export type OnNavigationChange<T extends PaneParams = PaneParams> = (
 export const Scaffold = <T extends PaneParams = PaneParams>({
   ref,
   className,
+  classNames,
   appBar,
   floatingActionButton,
   portalWrappers,
@@ -353,16 +362,21 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
   });
 
   return (
-    <div className={cn("@container relative", className)} ref={useMergeRefs({ ref, containerRef })} {...props}>
+    <div
+      className={cn("@container relative size-full", className)}
+      ref={useMergeRefs({ ref, containerRef })}
+      {...props}>
       {/* --- Breakpoint 指示器元素 --- */}
       <div
         ref={indicatorRef}
         className="pointer-events-none invisible absolute -z-10 size-full before:content-['mobile'] @3xl:before:content-['tablet'] @7xl:before:content-['desktop']"
       />
+      {/*<DialogPortal container={containerRef.current}>
+      </DialogPortal>*/}
       <div
         className={cn(
-          "h-screen w-screen overflow-hidden",
-          "h-dvh w-dvw",
+          "size-full overflow-hidden",
+          // "h-min-screen w-min-screen h-min-dvh w-min-dvw",
           // Container queries support for responsive components
           "grid",
           context.breakpoint,
@@ -381,7 +395,7 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
           `[&.desktop]:[grid-template-areas:"rail_header_header_tail"_"rail_list_detail_tail"_"rail_footer_footer_tail"]`,
 
           // 动画
-          `*:transition-all *:duration-300 *:ease-out`,
+          `*:scroll-smooth *:transition-all *:duration-300 *:ease-out`,
         )}>
         {/* Temporarily bypass Portal wrappers to debug */}
         {(() => {
@@ -390,7 +404,7 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
             <>
               {/* AppBar */}
               {appBarContent && (
-                <header data-role="app-bar" style={{ gridArea: "header" }}>
+                <header data-role="app-bar" className={classNames?.appBar} style={{ gridArea: "header" }}>
                   {appBarContent}
                 </header>
               )}
@@ -404,7 +418,10 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
                     <aside
                       data-role="rail"
                       data-bp={context.breakpoint}
-                      className="overflow-auto scroll-smooth"
+                      className={cn(
+                        // railPosition === "inline-start" ? "overflow-y-auto" : "overflow-x-auto",
+                        classNames?.rail,
+                      )}
                       style={{ gridArea: railPosition === "inline-start" ? "rail" : "bottom" }}>
                       {railContent}
                     </aside>
@@ -414,7 +431,7 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
                     <nav
                       data-role="list"
                       data-bp={context.breakpoint}
-                      className="overflow-auto scroll-smooth"
+                      className={cn("overflow-auto", classNames?.list)}
                       style={{ gridArea: context.breakpoint === "mobile" ? "main" : "list" }}>
                       {listContent}
                     </nav>
@@ -431,13 +448,14 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
                       data-role="detail"
                       data-bp={context.breakpoint}
                       className={cn(
-                        "z-10 overflow-auto scroll-smooth",
+                        "z-10 overflow-auto",
                         // In desktop view, detail has its own grid area and should always be visible
                         // In tablet/mobile view, detail shares grid area with tail, show only when active
                         context.breakpoint === "mobile" &&
                           (navState.route.activePane === "rail" || navState.route.activePane === "list")
                           ? "translate-x-full"
                           : "translate-x-0",
+                        classNames?.detail,
                       )}
                       style={{ gridArea: context.breakpoint === "mobile" ? "main" : "detail" }}>
                       {detailContent}
@@ -448,7 +466,7 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
                       data-role="tail"
                       data-bp={context.breakpoint}
                       className={cn(
-                        "z-20 overflow-auto scroll-smooth",
+                        "z-20",
                         // In desktop view, tail has its own grid area and should always be visible
                         // In tablet/mobile view, use translate to show/hide based on activePane
                         context.breakpoint === "desktop"
@@ -456,6 +474,7 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
                           : navState.route.activePane === "tail"
                             ? "translate-x-0"
                             : "translate-x-full",
+                        classNames?.tail,
                       )}
                       style={{
                         gridArea:
@@ -472,15 +491,17 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
               )}
 
               {/* Floating Action Button */}
-              <div
-                data-role="floating-action-button"
-                className="place-items-end"
-                style={{
-                  gridArea:
-                    context.breakpoint === "desktop" ? "tail" : context.breakpoint === "tablet" ? "detail" : "main",
-                }}>
-                {fabContent}
-              </div>
+              {fabContent && (
+                <div
+                  data-role="floating-action-button"
+                  className={cn("place-items-end", classNames?.floatingActionButton)}
+                  style={{
+                    gridArea:
+                      context.breakpoint === "desktop" ? "tail" : context.breakpoint === "tablet" ? "detail" : "main",
+                  }}>
+                  {fabContent}
+                </div>
+              )}
             </>
           );
         })()}
