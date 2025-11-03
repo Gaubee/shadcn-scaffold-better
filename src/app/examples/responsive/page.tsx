@@ -158,9 +158,7 @@ export default function ResponsiveExamplePage() {
   return (
     <>
       <Scaffold
-        responsive
-        responsiveBreakpoint={768}
-        header={
+        appBar={
           <AppBar
             elevation={2}
             leading={
@@ -201,7 +199,7 @@ export default function ResponsiveExamplePage() {
           <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} gestureEnabled={true} elevation={4}>
             <div className="flex h-full flex-col">
               {/* Drawer Header */}
-              <div className="from-primary/10 to-primary/5 border-b bg-gradient-to-br p-6">
+              <div className="from-primary/10 to-primary/5 border-b bg-linear-to-br p-6">
                 <div className="flex items-center gap-3">
                   <div className="from-primary text-primary-foreground flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br to-purple-600 text-lg font-bold">
                     FM
@@ -253,7 +251,7 @@ export default function ResponsiveExamplePage() {
                       <span className="font-medium">256 GB / 512 GB</span>
                     </div>
                     <div className="bg-background h-2 w-full overflow-hidden rounded-full">
-                      <div className="from-primary h-full w-1/2 bg-gradient-to-r to-purple-600" />
+                      <div className="from-primary h-full w-1/2 bg-linear-to-r to-purple-600" />
                     </div>
                   </div>
                 </div>
@@ -278,8 +276,8 @@ export default function ResponsiveExamplePage() {
         navigationItems={navigationItems}
         navigationValue={selectedNav}
         onNavigationChange={(value) => {
-          setSelectedNav(value);
-          snackbar.show(`Switched to ${navigationItems.find((i) => i.key === value)?.label}`, { severity: "default" });
+          setSelectedNav(value.route.activePane);
+          // snackbar.show(`Switched to ${navigationItems.find((i) => i.key === value.route.index)?.label}`, { severity: "default" });
         }}
         navigationShowLabels
         floatingActionButton={

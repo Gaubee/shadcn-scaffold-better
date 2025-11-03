@@ -178,40 +178,46 @@ export default function PaneTestPage() {
           </div>
         </div>
       )}
-      tail={({ params, navigate, breakpoint, isActive }) => (
-        <div className="bg-muted/50 flex h-full flex-col p-4">
-          <div className="mb-4 rounded-lg border bg-amber-50 p-3 dark:bg-amber-950">
-            <h3 className="mb-2 text-sm font-bold">⚙️ Tail Pane</h3>
-            <div className="space-y-1 text-xs">
-              <div>Setting Tab: {params.settingTab}</div>
-              <div>Breakpoint: {breakpoint || "null"}</div>
-              <div>Active: {isActive ? "Yes" : "No"}</div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="rounded-lg border p-4">
-              <h4 className="mb-2 font-semibold">Settings</h4>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" className="accent-primary" />
-                  <span className="text-sm">Enable notifications</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" className="accent-primary" defaultChecked />
-                  <span className="text-sm">Auto-save</span>
-                </label>
+      tail={({ params, navigate, breakpoint, isActive }) =>
+        isActive ? (
+          <div className="bg-muted/50 flex h-full flex-col p-4 backdrop-blur-lg">
+            <div className="mb-4 rounded-lg border bg-amber-50 p-3 dark:bg-amber-950">
+              <h3 className="mb-2 text-sm font-bold">⚙️ Tail Pane</h3>
+              <div className="space-y-1 text-xs">
+                <div>Setting Tab: {params.settingTab}</div>
+                <div>Breakpoint: {breakpoint || "null"}</div>
+                <div>Active: {isActive ? "Yes" : "No"}</div>
               </div>
             </div>
 
-            <button
-              onClick={() => navigate("list", { category: "settings" })}
-              className="hover:bg-accent w-full rounded-lg border p-3 transition-colors">
-              Back to List
-            </button>
+            <div className="space-y-4">
+              <div className="rounded-lg border p-4">
+                <h4 className="mb-2 font-semibold">Settings</h4>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2">
+                    <input type="checkbox" className="accent-primary" />
+                    <span className="text-sm">Enable notifications</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="checkbox" className="accent-primary" defaultChecked />
+                    <span className="text-sm">Auto-save</span>
+                  </label>
+                </div>
+              </div>
+
+              <button
+                onClick={() => navigate("list", { category: "settings" })}
+                className="hover:bg-accent w-full rounded-lg border p-3 transition-colors">
+                Back to List
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="grid size-full place-items-center">
+            <p className="font-light text-neutral-400 italic">未激活</p>
+          </div>
+        )
+      }
     />
   );
 }

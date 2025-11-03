@@ -244,9 +244,10 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
   }, [navigationState]);
 
   const paneBaseContext: Omit<PaneRenderProps<T>, "params" | "isActive" | "breakpoint"> = React.useMemo(() => {
-    const canGoBack = navState.history.findIndex((route) => route.index === navState.route.index) > 0;
-    const canGoForward =
-      navState.history.findLastIndex((route) => route.index === navState.route.index) < navState.history.length - 1;
+    const canGoBackIndex = navState.history.findIndex((route) => route.index === navState.route.index);
+    const canGoBack = canGoBackIndex > 0;
+    const canGoForwardIndex = navState.history.findLastIndex((route) => route.index === navState.route.index);
+    const canGoForward = canGoForwardIndex < navState.history.length - 1;
     return {
       /** 用于触发前进导航 */
       navigate: (targetPane, targetParams) => {
@@ -282,7 +283,7 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
       /** 用于触发导航前进 */
       forward: () => {
         if (canGoForward && onNavigationChange) {
-          const route = navState.history[navState.route.index + 1];
+          const route = navState.history[canGoForwardIndex + 1];
           onNavigationChange(
             {
               route: route,
@@ -299,7 +300,7 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
       /** 用于触发返回导航 */
       back: () => {
         if (canGoBack && onNavigationChange) {
-          const route = navState.history[navState.route.index - 1];
+          const route = navState.history[canGoBackIndex - 1];
           onNavigationChange(
             {
               route: route,
@@ -352,10 +353,15 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
   });
 
   return (
-    <div className={cn("@container", className)} ref={useMergeRefs({ ref, containerRef })} {...props}>
+    <div className={cn("@container relative", className)} ref={useMergeRefs({ ref, containerRef })} {...props}>
+      {/* --- Breakpoint 指示器元素 --- */}
+      <div
+        ref={indicatorRef}
+        className="pointer-events-none invisible absolute -z-10 size-full before:content-['mobile'] @3xl:before:content-['tablet'] @7xl:before:content-['desktop']"
+      />
       <div
         className={cn(
-          "h-screen w-screen",
+          "h-screen w-screen overflow-hidden",
           "h-dvh w-dvw",
           // Container queries support for responsive components
           "grid",
@@ -373,12 +379,10 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
           // 桌面端 (7xl:@) - 当容器宽度 >= 7xl断点值 (e.g., 1280px)
           `[&.desktop]:grid-cols-[auto_2fr_3fr_2fr]`,
           `[&.desktop]:[grid-template-areas:"rail_header_header_tail"_"rail_list_detail_tail"_"rail_footer_footer_tail"]`,
+
+          // 动画
+          `*:transition-all *:duration-300 *:ease-out`,
         )}>
-        {/* --- Breakpoint 指示器元素 --- */}
-        <div
-          ref={indicatorRef}
-          className="invisible absolute -z-10 before:content-['mobile'] @3xl:before:content-['tablet'] @7xl:before:content-['desktop']"
-        />
         {/* Temporarily bypass Portal wrappers to debug */}
         {(() => {
           // Bypass Portal wrappers temporarily until fixed by user
@@ -444,7 +448,7 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
                       data-role="tail"
                       data-bp={context.breakpoint}
                       className={cn(
-                        "bg-background z-20 overflow-auto scroll-smooth",
+                        "z-20 overflow-auto scroll-smooth",
                         // In desktop view, tail has its own grid area and should always be visible
                         // In tablet/mobile view, use translate to show/hide based on activePane
                         context.breakpoint === "desktop"
