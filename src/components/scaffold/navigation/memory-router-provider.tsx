@@ -23,24 +23,41 @@ export class MemoryRouterProvider<T extends PaneParams> implements NavigationPro
 
   constructor(initialState: NavigationState<T>, onStateChange: (state: NavigationState<T>) => void) {
     this.onStateChange = onStateChange;
-    this.history.push(initialState);
+    this.history.push(this.cloneState(initialState));
     this.currentIndex = 0;
+    // Bug Fix #1: 构造函数应该触发初始状态回调
+    // 但为了避免在构造函数中产生副作用，这里暂不自动触发
+    // 外部调用者应该根据需要手动触发或获取初始状态
+  }
+
+  /**
+   * 深拷贝状态对象，确保数据隔离
+   */
+  private cloneState(state: NavigationState<T>): NavigationState<T> {
+    return JSON.parse(JSON.stringify(state));
   }
 
   pushState(state: NavigationState<T>) {
     // 删除当前位置之后的所有历史记录
     this.history = this.history.slice(0, this.currentIndex + 1);
-    // 添加新状态
-    this.history.push(state);
+    // 添加新状态（深拷贝以保证数据隔离）
+    this.history.push(this.cloneState(state));
     this.currentIndex++;
+    // Bug Fix #2: pushState应该通知状态变化
+    this.onStateChange(this.cloneState(state));
   }
 
   replaceState(state: NavigationState<T>) {
-    this.history[this.currentIndex] = state;
+    const clonedState = this.cloneState(state);
+    this.history[this.currentIndex] = clonedState;
+    // Bug Fix #3: replaceState应该通知状态变化
+    this.onStateChange(this.cloneState(clonedState));
   }
 
   getCurrentState(): NavigationState<T> | null {
-    return this.history[this.currentIndex] || null;
+    const state = this.history[this.currentIndex];
+    // 返回深拷贝以保护内部状态
+    return state ? this.cloneState(state) : null;
   }
 
   /**

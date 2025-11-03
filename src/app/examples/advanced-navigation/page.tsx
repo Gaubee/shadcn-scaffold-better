@@ -39,6 +39,7 @@ function useNavigationWithRouter<T extends PaneParams>(
 ) {
   const [navigationState, setNavigationState] = React.useState<NavigationState<T>>(initialState);
   const providerRef = React.useRef<NavigationProvider<T> | null>(null);
+  const [, forceUpdate] = React.useReducer((x) => x + 1, 0); // 用于强制重新渲染
   const [isClient, setIsClient] = React.useState(false);
 
   // 确保只在客户端初始化
@@ -49,9 +50,6 @@ function useNavigationWithRouter<T extends PaneParams>(
   // 初始化 provider
   React.useEffect(() => {
     if (typeof window === "undefined" || !isClient) return;
-
-    // 销毁旧 provider
-    providerRef.current?.destroy();
 
     // 创建新 provider
     let provider: NavigationProvider<T>;
@@ -90,6 +88,7 @@ function useNavigationWithRouter<T extends PaneParams>(
     }
 
     providerRef.current = provider;
+    forceUpdate(); // 触发重新渲染以更新navigationProvider prop
 
     // 尝试恢复状态（Memory Router 除外）
     if (routerType !== "memory") {
@@ -105,7 +104,7 @@ function useNavigationWithRouter<T extends PaneParams>(
     return () => {
       provider.destroy();
     };
-  }, [routerType, isClient]); // 当 routerType 变化时重新初始化
+  }, [routerType, isClient, initialState]); // 当 routerType 或 initialState 变化时重新初始化
 
   // 导航变更处理
   const handleNavigationChange = React.useCallback((newState: NavigationState<T>) => {
@@ -116,6 +115,7 @@ function useNavigationWithRouter<T extends PaneParams>(
   return {
     navigationState,
     onNavigationChange: handleNavigationChange,
+    navigationProvider: providerRef.current,
   };
 }
 
@@ -124,22 +124,12 @@ export default function AdvancedNavigationPage() {
   // Router 类型选择（默认使用 auto）
   const [routerType, setRouterType] = React.useState<RouterType>("auto");
 
-  // 初始导航状态
-  const initialState: NavigationState<AppPaneParams> = {
-    route: {
-      index: 0,
-      activePane: "list",
-      panes: {
-        rail: { section: "home" },
-        list: { category: "all", page: 1 },
-        detail: { id: "welcome", tab: "overview" },
-        tail: { settingId: "general" },
-      },
-    },
-    history: [
-      {
+  // 初始导航状态 - 使用useMemo稳定引用
+  const initialState: NavigationState<AppPaneParams> = React.useMemo(
+    () => ({
+      route: {
         index: 0,
-        activePane: "list",
+        activePane: "list" as const,
         panes: {
           rail: { section: "home" },
           list: { category: "all", page: 1 },
@@ -147,11 +137,27 @@ export default function AdvancedNavigationPage() {
           tail: { settingId: "general" },
         },
       },
-    ],
-  };
+      history: [
+        {
+          index: 0,
+          activePane: "list" as const,
+          panes: {
+            rail: { section: "home" },
+            list: { category: "all", page: 1 },
+            detail: { id: "welcome", tab: "overview" },
+            tail: { settingId: "general" },
+          },
+        },
+      ],
+    }),
+    [],
+  );
 
   // 使用带 Router Provider 集成的导航
-  const { navigationState, onNavigationChange } = useNavigationWithRouter<AppPaneParams>(initialState, routerType);
+  const { navigationState, onNavigationChange, navigationProvider } = useNavigationWithRouter<AppPaneParams>(
+    initialState,
+    routerType,
+  );
 
   const [showUrlBar, setShowUrlBar] = React.useState(true);
   const [currentUrl, setCurrentUrl] = React.useState("");
@@ -386,8 +392,12 @@ export default function AdvancedNavigationPage() {
       )}
 
       {/* Scaffold 主内容 */}
-      <Scaffold<AppPaneParams> className="flex-1"
-          appBar={
+      <Scaffold<AppPaneParams>
+        className="flex-1"
+        navigationState={navigationState}
+        onNavigationChange={onNavigationChange}
+        navigationProvider={navigationProvider || undefined}
+        appBar={
             <AppBar
               title={
                 <div className="flex items-center gap-2">
@@ -400,8 +410,6 @@ export default function AdvancedNavigationPage() {
               }
             />
           }
-          navigationState={navigationState}
-          onNavigationChange={onNavigationChange}
           rail={({ navigate, isActive }) => {
             const sections = [
               { id: "home", label: "Home", icon: Home },

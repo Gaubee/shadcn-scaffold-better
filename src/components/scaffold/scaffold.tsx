@@ -79,6 +79,17 @@ export interface ScaffoldProps<T extends PaneParams = PaneParams> {
    * 导航状态变更
    */
   onNavigationChange?: OnNavigationChange<T>;
+  /**
+   * 导航提供者（可选）
+   * 如果提供，将使用provider的canGoBack/canGoForward/goBack/goForward方法
+   * 否则使用基于history数组的fallback实现
+   */
+  navigationProvider?: {
+    canGoBack?(): boolean;
+    canGoForward?(): boolean;
+    goBack?(): boolean;
+    goForward?(): boolean;
+  };
 }
 export type ScaffoldRailPosition = "inline-start" | "block-end";
 export type ScaffoldRTailRenderMode = "sheet" | "dialog" | "drawer" | "static";
@@ -203,6 +214,7 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
 
   navigationState,
   onNavigationChange,
+  navigationProvider,
   ...props
 }: ScaffoldComponentProps<T>) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -253,10 +265,16 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
   }, [navigationState]);
 
   const paneBaseContext: Omit<PaneRenderProps<T>, "params" | "isActive" | "breakpoint"> = React.useMemo(() => {
+    // 优先使用provider的canGoBack/canGoForward方法
+    // 如果provider没有提供这些方法，则使用基于history数组的fallback实现
     const canGoBackIndex = navState.history.findIndex((route) => route.index === navState.route.index);
-    const canGoBack = canGoBackIndex > 0;
+    const canGoBackFallback = canGoBackIndex > 0;
     const canGoForwardIndex = navState.history.findLastIndex((route) => route.index === navState.route.index);
-    const canGoForward = canGoForwardIndex < navState.history.length - 1;
+    const canGoForwardFallback = canGoForwardIndex < navState.history.length - 1;
+
+    const canGoBack = navigationProvider?.canGoBack?.() ?? canGoBackFallback;
+    const canGoForward = navigationProvider?.canGoForward?.() ?? canGoForwardFallback;
+
     return {
       /** 用于触发前进导航 */
       navigate: (targetPane, targetParams) => {
@@ -291,7 +309,11 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
       canGoForward,
       /** 用于触发导航前进 */
       forward: () => {
-        if (canGoForward && onNavigationChange) {
+        // 优先使用provider的goForward方法
+        if (navigationProvider?.goForward) {
+          navigationProvider.goForward();
+        } else if (canGoForward && onNavigationChange) {
+          // Fallback: 使用基于history数组的实现
           const route = navState.history[canGoForwardIndex + 1];
           onNavigationChange(
             {
@@ -308,7 +330,11 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
       },
       /** 用于触发返回导航 */
       back: () => {
-        if (canGoBack && onNavigationChange) {
+        // 优先使用provider的goBack方法
+        if (navigationProvider?.goBack) {
+          navigationProvider.goBack();
+        } else if (canGoBack && onNavigationChange) {
+          // Fallback: 使用基于history数组的实现
           const route = navState.history[canGoBackIndex - 1];
           onNavigationChange(
             {
@@ -324,7 +350,7 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
         }
       },
     };
-  }, [navState]);
+  }, [navState, navigationProvider]);
 
   const [railPosition, setRailPosition] = React.useState<ScaffoldRailPosition | "">("");
 

@@ -85,13 +85,27 @@ export class HashRouterProvider<T extends PaneParams> implements NavigationProvi
   };
 
   pushState(state: NavigationState<T>) {
+    // 直接修改hash会自动触发hashchange事件
+    // hashchange事件会调用onStateChange
     window.location.hash = this.stateToHash(state);
   }
 
   replaceState(state: NavigationState<T>) {
     const hash = this.stateToHash(state);
+    // Bug Fix: replaceState不会触发hashchange事件，需要手动更新location.hash并触发回调
+    // 但是window.history.replaceState不会更新location.hash
+    // 所以我们需要直接使用location.hash的替换方法
+
+    // 保存当前滚动位置
+    const scrollPos = { x: window.scrollX, y: window.scrollY };
+
+    // 使用history.replaceState更新URL（不触发导航）
     window.history.replaceState(null, "", hash);
-    // 手动触发状态变化
+
+    // 恢复滚动位置
+    window.scrollTo(scrollPos.x, scrollPos.y);
+
+    // Bug Fix #2: 手动触发状态变化以保持与pushState的行为一致
     const newState = this.parseHashToState();
     if (newState) {
       this.onStateChange(newState);

@@ -92,11 +92,15 @@ export class BrowserHistoryProvider<T extends PaneParams> implements NavigationP
   pushState(state: NavigationState<T>) {
     const url = this.stateToUrl(state);
     window.history.pushState({ navigationState: state }, "", url);
+    // 注意：pushState不触发回调，因为外部调用者已经更新了自己的状态
+    // 这个方法只负责将状态同步到URL
   }
 
   replaceState(state: NavigationState<T>) {
     const url = this.stateToUrl(state);
     window.history.replaceState({ navigationState: state }, "", url);
+    // 注意：replaceState不触发回调，因为外部调用者已经更新了自己的状态
+    // 这个方法只负责将状态同步到URL
   }
 
   getCurrentState(): NavigationState<T> | null {
