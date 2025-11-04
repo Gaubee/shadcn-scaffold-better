@@ -3,9 +3,10 @@ import { HashRouterProvider } from "../hash-router-provider";
 import type { NavigationState, PaneParams } from "../../scaffold";
 
 interface TestPaneParams extends PaneParams {
-  home: { userId?: string };
-  settings: { section?: string };
-  profile: { tab?: string };
+  rail: { userId?: string };
+  list: { section?: string };
+  detail: { tab?: string };
+  tail: {};
 }
 
 // Mock window.location for testing
@@ -49,18 +50,19 @@ describe("HashRouterProvider", () => {
   });
 
   afterEach(() => {
-    window.location = originalLocation;
-    window.history = originalHistory;
+    (window as any).location = originalLocation;
+    (window as any).history = originalHistory;
   });
 
-  const createTestState = (activePane: keyof TestPaneParams = "home"): NavigationState<TestPaneParams> => ({
+  const createTestState = (activePane: keyof TestPaneParams = "rail"): NavigationState<TestPaneParams> => ({
     route: {
       index: 0,
       activePane,
       panes: {
-        home: { userId: "123" },
-        settings: { section: "account" },
-        profile: { tab: "info" },
+        rail: { userId: "123" },
+        list: { section: "account" },
+        detail: { tab: "info" },
+        tail: {},
       },
     },
     history: [
@@ -68,9 +70,10 @@ describe("HashRouterProvider", () => {
         index: 0,
         activePane,
         panes: {
-          home: { userId: "123" },
-          settings: { section: "account" },
-          profile: { tab: "info" },
+          rail: { userId: "123" },
+          list: { section: "account" },
+          detail: { tab: "info" },
+          tail: {},
         },
       },
     ],
@@ -91,15 +94,15 @@ describe("HashRouterProvider", () => {
     });
 
     it("应该能够从hash中解析状态", () => {
-      const testState = createTestState("settings");
+      const testState = createTestState("list");
       const encodedData = encodeURIComponent(JSON.stringify(testState.route.panes));
-      mockLocation.hash = `#/settings?data=${encodedData}`;
+      mockLocation.hash = `#/list?data=${encodedData}`;
 
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
       const state = provider.getCurrentState();
 
       expect(state).not.toBeNull();
-      expect(state?.route.activePane).toBe("settings");
+      expect(state?.route.activePane).toBe("list");
       expect(state?.route.panes).toEqual(testState.route.panes);
     });
   });
@@ -107,17 +110,17 @@ describe("HashRouterProvider", () => {
   describe("pushState", () => {
     it("应该将状态写入hash", () => {
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
-      const testState = createTestState("profile");
+      const testState = createTestState("detail");
 
       provider.pushState(testState);
 
-      expect(mockLocation.hash).toContain("#/profile");
+      expect(mockLocation.hash).toContain("#/detail");
       expect(mockLocation.hash).toContain("data=");
     });
 
     it("pushState应该触发hashchange并调用onStateChange（Bug #1）", () => {
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
-      const testState = createTestState("settings");
+      const testState = createTestState("list");
 
       provider.pushState(testState);
 
@@ -132,8 +135,8 @@ describe("HashRouterProvider", () => {
 
     it("应该正确编码包含特殊字符的数据", () => {
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
-      const testState = createTestState("home");
-      testState.route.panes.home = { userId: "user@123" };
+      const testState = createTestState("rail");
+      testState.route.panes.rail = { userId: "user@123" };
 
       provider.pushState(testState);
 
@@ -142,29 +145,29 @@ describe("HashRouterProvider", () => {
 
       // 验证可以正确解析回来
       const parsedState = provider.getCurrentState();
-      expect(parsedState?.route.panes.home?.userId).toBe("user@123");
+      expect(parsedState?.route.panes.rail?.userId).toBe("user@123");
     });
   });
 
   describe("replaceState", () => {
     it("应该替换当前hash", () => {
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
-      const testState = createTestState("home");
+      const testState = createTestState("rail");
 
       // 先设置一个状态
       provider.pushState(testState);
       onStateChange.mockClear();
 
       // 替换状态
-      const newState = createTestState("settings");
+      const newState = createTestState("list");
       provider.replaceState(newState);
 
-      expect(mockLocation.hash).toContain("#/settings");
+      expect(mockLocation.hash).toContain("#/list");
     });
 
     it("replaceState应该立即触发onStateChange（已修复）", () => {
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
-      const testState = createTestState("profile");
+      const testState = createTestState("detail");
 
       provider.replaceState(testState);
 
@@ -173,7 +176,7 @@ describe("HashRouterProvider", () => {
       expect(onStateChange).toHaveBeenCalledWith(
         expect.objectContaining({
           route: expect.objectContaining({
-            activePane: "profile",
+            activePane: "detail",
           }),
         })
       );
@@ -182,24 +185,24 @@ describe("HashRouterProvider", () => {
 
   describe("hashchange事件处理", () => {
     it("应该在hashchange时触发onStateChange", () => {
-      const testState = createTestState("settings");
+      const testState = createTestState("list");
       const encodedData = encodeURIComponent(JSON.stringify(testState.route.panes));
-      mockLocation.hash = `#/settings?data=${encodedData}`;
+      mockLocation.hash = `#/list?data=${encodedData}`;
 
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
       onStateChange.mockClear();
 
       // 模拟hash变化
-      const newState = createTestState("profile");
+      const newState = createTestState("detail");
       const newEncodedData = encodeURIComponent(JSON.stringify(newState.route.panes));
-      mockLocation.hash = `#/profile?data=${newEncodedData}`;
+      mockLocation.hash = `#/detail?data=${newEncodedData}`;
 
       const event = new Event("hashchange");
       window.dispatchEvent(event);
 
       expect(onStateChange).toHaveBeenCalled();
       const calledState = onStateChange.mock.calls[0][0];
-      expect(calledState.route.activePane).toBe("profile");
+      expect(calledState.route.activePane).toBe("detail");
     });
 
     it("无效hash时不应触发onStateChange", () => {
@@ -216,19 +219,19 @@ describe("HashRouterProvider", () => {
 
   describe("URL解析边界情况", () => {
     it("应该处理没有前导斜杠的hash", () => {
-      const testState = createTestState("home");
+      const testState = createTestState("rail");
       const encodedData = encodeURIComponent(JSON.stringify(testState.route.panes));
-      mockLocation.hash = `#home?data=${encodedData}`;
+      mockLocation.hash = `#rail?data=${encodedData}`;
 
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
       const state = provider.getCurrentState();
 
       expect(state).not.toBeNull();
-      expect(state?.route.activePane).toBe("home");
+      expect(state?.route.activePane).toBe("rail");
     });
 
     it("应该处理空data参数", () => {
-      mockLocation.hash = "#/settings?data=";
+      mockLocation.hash = "#/list?data=";
 
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
       const state = provider.getCurrentState();
@@ -238,7 +241,7 @@ describe("HashRouterProvider", () => {
     });
 
     it("应该处理格式错误的JSON", () => {
-      mockLocation.hash = "#/settings?data=invalid-json";
+      mockLocation.hash = "#/list?data=invalid-json";
 
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
       const state = provider.getCurrentState();
@@ -248,7 +251,7 @@ describe("HashRouterProvider", () => {
     });
 
     it("应该处理缺少activePane的情况", () => {
-      const testState = createTestState("home");
+      const testState = createTestState("rail");
       const encodedData = encodeURIComponent(JSON.stringify(testState.route.panes));
       mockLocation.hash = `#/?data=${encodedData}`;
 
@@ -260,7 +263,7 @@ describe("HashRouterProvider", () => {
     });
 
     it("应该处理缺少data参数的情况", () => {
-      mockLocation.hash = "#/settings";
+      mockLocation.hash = "#/list";
 
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
       const state = provider.getCurrentState();
@@ -270,15 +273,15 @@ describe("HashRouterProvider", () => {
     });
 
     it("应该正确处理包含查询参数的复杂hash", () => {
-      const testState = createTestState("settings");
+      const testState = createTestState("list");
       const encodedData = encodeURIComponent(JSON.stringify(testState.route.panes));
-      mockLocation.hash = `#/settings?data=${encodedData}&extra=param`;
+      mockLocation.hash = `#/list?data=${encodedData}&extra=param`;
 
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
       const state = provider.getCurrentState();
 
       expect(state).not.toBeNull();
-      expect(state?.route.activePane).toBe("settings");
+      expect(state?.route.activePane).toBe("list");
     });
   });
 
@@ -289,9 +292,9 @@ describe("HashRouterProvider", () => {
       provider.destroy();
 
       // 触发hashchange不应该再调用回调
-      const testState = createTestState("settings");
+      const testState = createTestState("list");
       const encodedData = encodeURIComponent(JSON.stringify(testState.route.panes));
-      mockLocation.hash = `#/settings?data=${encodedData}`;
+      mockLocation.hash = `#/list?data=${encodedData}`;
 
       const event = new Event("hashchange");
       window.dispatchEvent(event);
@@ -303,8 +306,8 @@ describe("HashRouterProvider", () => {
   describe("状态往返测试", () => {
     it("pushState后应该能够正确读取相同状态", () => {
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
-      const originalState = createTestState("profile");
-      originalState.route.panes.profile = { tab: "security" };
+      const originalState = createTestState("detail");
+      originalState.route.panes.detail = { tab: "security" };
 
       provider.pushState(originalState);
       const retrievedState = provider.getCurrentState();
@@ -315,28 +318,28 @@ describe("HashRouterProvider", () => {
 
     it("replaceState后应该能够正确读取相同状态", () => {
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
-      const originalState = createTestState("home");
-      originalState.route.panes.home = { userId: "999" };
+      const originalState = createTestState("rail");
+      originalState.route.panes.rail = { userId: "999" };
 
       provider.replaceState(originalState);
       const retrievedState = provider.getCurrentState();
 
       expect(retrievedState?.route.activePane).toBe(originalState.route.activePane);
-      expect(retrievedState?.route.panes.home?.userId).toBe("999");
+      expect(retrievedState?.route.panes.rail?.userId).toBe("999");
     });
   });
 
   describe("历史记录重建问题", () => {
     it("getCurrentState返回的历史记录应该完整（Bug #4）", () => {
-      const testState = createTestState("settings");
+      const testState = createTestState("list");
       // 模拟有完整历史的状态
       testState.history = [
-        { index: 0, activePane: "home", panes: testState.route.panes },
-        { index: 1, activePane: "settings", panes: testState.route.panes },
+        { index: 0, activePane: "rail", panes: testState.route.panes },
+        { index: 1, activePane: "list", panes: testState.route.panes },
       ];
 
       const encodedData = encodeURIComponent(JSON.stringify(testState.route.panes));
-      mockLocation.hash = `#/settings?data=${encodedData}`;
+      mockLocation.hash = `#/list?data=${encodedData}`;
 
       const provider = new HashRouterProvider<TestPaneParams>(onStateChange);
       const state = provider.getCurrentState();

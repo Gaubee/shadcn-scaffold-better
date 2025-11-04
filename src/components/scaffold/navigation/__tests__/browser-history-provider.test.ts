@@ -3,9 +3,10 @@ import { BrowserHistoryProvider } from "../browser-history-provider";
 import type { NavigationState, PaneParams } from "../../scaffold";
 
 interface TestPaneParams extends PaneParams {
-  home: { userId?: string };
-  settings: { section?: string };
-  profile: { tab?: string };
+  rail: { userId?: string };
+  list: { section?: string };
+  detail: { tab?: string };
+  tail: {};
 }
 
 // Mock window.location and history
@@ -50,18 +51,19 @@ describe("BrowserHistoryProvider", () => {
   });
 
   afterEach(() => {
-    window.location = originalLocation;
-    window.history = originalHistory;
+    (window as any).location = originalLocation;
+    (window as any).history = originalHistory;
   });
 
-  const createTestState = (activePane: keyof TestPaneParams = "home"): NavigationState<TestPaneParams> => ({
+  const createTestState = (activePane: keyof TestPaneParams = "rail"): NavigationState<TestPaneParams> => ({
     route: {
       index: 0,
       activePane,
       panes: {
-        home: { userId: "123" },
-        settings: { section: "account" },
-        profile: { tab: "info" },
+        rail: { userId: "123" },
+        list: { section: "account" },
+        detail: { tab: "info" },
+        tail: {},
       },
     },
     history: [
@@ -69,9 +71,10 @@ describe("BrowserHistoryProvider", () => {
         index: 0,
         activePane,
         panes: {
-          home: { userId: "123" },
-          settings: { section: "account" },
-          profile: { tab: "info" },
+          rail: { userId: "123" },
+          list: { section: "account" },
+          detail: { tab: "info" },
+          tail: {},
         },
       },
     ],
@@ -94,16 +97,16 @@ describe("BrowserHistoryProvider", () => {
     });
 
     it("应该能够从URL解析状态", () => {
-      const testState = createTestState("settings");
+      const testState = createTestState("list");
       const encodedData = encodeURIComponent(JSON.stringify(testState.route.panes));
-      mockLocation.href = `http://localhost:3000${baseUrl}?pane=settings&data=${encodedData}`;
-      mockLocation.search = `?pane=settings&data=${encodedData}`;
+      mockLocation.href = `http://localhost:3000${baseUrl}?pane=list&data=${encodedData}`;
+      mockLocation.search = `?pane=list&data=${encodedData}`;
 
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
       const state = provider.getCurrentState();
 
       expect(state).not.toBeNull();
-      expect(state?.route.activePane).toBe("settings");
+      expect(state?.route.activePane).toBe("list");
       expect(state?.route.panes).toEqual(testState.route.panes);
     });
   });
@@ -111,7 +114,7 @@ describe("BrowserHistoryProvider", () => {
   describe("pushState", () => {
     it("应该调用window.history.pushState并触发回调", () => {
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
-      const testState = createTestState("profile");
+      const testState = createTestState("detail");
 
       provider.pushState(testState);
 
@@ -119,7 +122,7 @@ describe("BrowserHistoryProvider", () => {
       expect(mockHistory.pushState).toHaveBeenCalledWith(
         { navigationState: testState },
         "",
-        expect.stringContaining("pane=profile")
+        expect.stringContaining("pane=detail")
       );
       // Bug Fix: pushState现在应该立即触发回调
       expect(onStateChange).toHaveBeenCalledWith(testState);
@@ -127,20 +130,20 @@ describe("BrowserHistoryProvider", () => {
 
     it("应该生成正确的URL格式", () => {
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
-      const testState = createTestState("settings");
+      const testState = createTestState("list");
 
       provider.pushState(testState);
 
       const url = mockHistory.pushState.mock.calls[0][2];
       expect(url).toContain(baseUrl);
-      expect(url).toContain("pane=settings");
+      expect(url).toContain("pane=list");
       expect(url).toContain("data=");
     });
 
     it("应该正确编码复杂数据", () => {
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
-      const testState = createTestState("home");
-      testState.route.panes.home = { userId: "user@test.com" };
+      const testState = createTestState("rail");
+      testState.route.panes.rail = { userId: "user@test.com" };
 
       provider.pushState(testState);
 
@@ -150,14 +153,14 @@ describe("BrowserHistoryProvider", () => {
       // 模拟URL已更新
       const params = new URL(url, "http://localhost:3000").searchParams;
       const data = JSON.parse(decodeURIComponent(params.get("data") || ""));
-      expect(data.home.userId).toBe("user@test.com");
+      expect(data.rail.userId).toBe("user@test.com");
     });
   });
 
   describe("replaceState", () => {
     it("应该调用window.history.replaceState并触发回调", () => {
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
-      const testState = createTestState("settings");
+      const testState = createTestState("list");
 
       provider.replaceState(testState);
 
@@ -165,7 +168,7 @@ describe("BrowserHistoryProvider", () => {
       expect(mockHistory.replaceState).toHaveBeenCalledWith(
         { navigationState: testState },
         "",
-        expect.stringContaining("pane=settings")
+        expect.stringContaining("pane=list")
       );
       // Bug Fix: replaceState现在应该立即触发回调
       expect(onStateChange).toHaveBeenCalledWith(testState);
@@ -173,7 +176,7 @@ describe("BrowserHistoryProvider", () => {
 
     it("应该生成与pushState相同格式的URL", () => {
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
-      const testState = createTestState("profile");
+      const testState = createTestState("detail");
 
       provider.pushState(testState);
       const pushUrl = mockHistory.pushState.mock.calls[0][2];
@@ -189,7 +192,7 @@ describe("BrowserHistoryProvider", () => {
   describe("popstate事件处理", () => {
     it("应该在popstate时从event.state读取状态并触发回调", () => {
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
-      const testState = createTestState("settings");
+      const testState = createTestState("list");
 
       const event = new PopStateEvent("popstate", {
         state: { navigationState: testState },
@@ -200,10 +203,10 @@ describe("BrowserHistoryProvider", () => {
     });
 
     it("event.state为空时应该尝试从URL解析", () => {
-      const testState = createTestState("profile");
+      const testState = createTestState("detail");
       const encodedData = encodeURIComponent(JSON.stringify(testState.route.panes));
-      mockLocation.href = `http://localhost:3000${baseUrl}?pane=profile&data=${encodedData}`;
-      mockLocation.search = `?pane=profile&data=${encodedData}`;
+      mockLocation.href = `http://localhost:3000${baseUrl}?pane=detail&data=${encodedData}`;
+      mockLocation.search = `?pane=detail&data=${encodedData}`;
 
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
       onStateChange.mockClear();
@@ -213,7 +216,7 @@ describe("BrowserHistoryProvider", () => {
 
       expect(onStateChange).toHaveBeenCalled();
       const calledState = onStateChange.mock.calls[0][0];
-      expect(calledState.route.activePane).toBe("profile");
+      expect(calledState.route.activePane).toBe("detail");
     });
 
     it("event.state和URL都无效时不应触发回调", () => {
@@ -232,7 +235,7 @@ describe("BrowserHistoryProvider", () => {
 
   describe("URL解析边界情况", () => {
     it("应该处理缺少pane参数的URL", () => {
-      const testState = createTestState("home");
+      const testState = createTestState("rail");
       const encodedData = encodeURIComponent(JSON.stringify(testState.route.panes));
       mockLocation.href = `http://localhost:3000${baseUrl}?data=${encodedData}`;
       mockLocation.search = `?data=${encodedData}`;
@@ -244,8 +247,8 @@ describe("BrowserHistoryProvider", () => {
     });
 
     it("应该处理缺少data参数的URL", () => {
-      mockLocation.href = `http://localhost:3000${baseUrl}?pane=settings`;
-      mockLocation.search = `?pane=settings`;
+      mockLocation.href = `http://localhost:3000${baseUrl}?pane=list`;
+      mockLocation.search = `?pane=list`;
 
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
       const state = provider.getCurrentState();
@@ -254,8 +257,8 @@ describe("BrowserHistoryProvider", () => {
     });
 
     it("应该处理格式错误的JSON数据", () => {
-      mockLocation.href = `http://localhost:3000${baseUrl}?pane=settings&data=invalid-json`;
-      mockLocation.search = `?pane=settings&data=invalid-json`;
+      mockLocation.href = `http://localhost:3000${baseUrl}?pane=list&data=invalid-json`;
+      mockLocation.search = `?pane=list&data=invalid-json`;
 
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
       const state = provider.getCurrentState();
@@ -264,8 +267,8 @@ describe("BrowserHistoryProvider", () => {
     });
 
     it("应该处理空data参数", () => {
-      mockLocation.href = `http://localhost:3000${baseUrl}?pane=settings&data=`;
-      mockLocation.search = `?pane=settings&data=`;
+      mockLocation.href = `http://localhost:3000${baseUrl}?pane=list&data=`;
+      mockLocation.search = `?pane=list&data=`;
 
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
       const state = provider.getCurrentState();
@@ -274,16 +277,16 @@ describe("BrowserHistoryProvider", () => {
     });
 
     it("应该正确处理包含额外查询参数的URL", () => {
-      const testState = createTestState("settings");
+      const testState = createTestState("list");
       const encodedData = encodeURIComponent(JSON.stringify(testState.route.panes));
-      mockLocation.href = `http://localhost:3000${baseUrl}?pane=settings&data=${encodedData}&extra=value`;
-      mockLocation.search = `?pane=settings&data=${encodedData}&extra=value`;
+      mockLocation.href = `http://localhost:3000${baseUrl}?pane=list&data=${encodedData}&extra=value`;
+      mockLocation.search = `?pane=list&data=${encodedData}&extra=value`;
 
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
       const state = provider.getCurrentState();
 
       expect(state).not.toBeNull();
-      expect(state?.route.activePane).toBe("settings");
+      expect(state?.route.activePane).toBe("list");
     });
   });
 
@@ -293,7 +296,7 @@ describe("BrowserHistoryProvider", () => {
 
       provider.destroy();
 
-      const testState = createTestState("settings");
+      const testState = createTestState("list");
       const event = new PopStateEvent("popstate", {
         state: { navigationState: testState },
       });
@@ -315,8 +318,8 @@ describe("BrowserHistoryProvider", () => {
   describe("状态往返测试", () => {
     it("pushState后getCurrentState应该能读取相同数据", () => {
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
-      const testState = createTestState("profile");
-      testState.route.panes.profile = { tab: "security" };
+      const testState = createTestState("detail");
+      testState.route.panes.detail = { tab: "security" };
 
       provider.pushState(testState);
 
@@ -328,23 +331,23 @@ describe("BrowserHistoryProvider", () => {
 
       const retrievedState = provider.getCurrentState();
 
-      expect(retrievedState?.route.activePane).toBe("profile");
-      expect(retrievedState?.route.panes.profile?.tab).toBe("security");
+      expect(retrievedState?.route.activePane).toBe("detail");
+      expect(retrievedState?.route.panes.detail?.tab).toBe("security");
     });
   });
 
   describe("历史记录重建问题", () => {
     it("getCurrentState返回的历史记录应该完整（Bug #5）", () => {
-      const testState = createTestState("settings");
+      const testState = createTestState("list");
       // 模拟有完整历史的状态
       testState.history = [
-        { index: 0, activePane: "home", panes: testState.route.panes },
-        { index: 1, activePane: "settings", panes: testState.route.panes },
+        { index: 0, activePane: "rail", panes: testState.route.panes },
+        { index: 1, activePane: "list", panes: testState.route.panes },
       ];
 
       const encodedData = encodeURIComponent(JSON.stringify(testState.route.panes));
-      mockLocation.href = `http://localhost:3000${baseUrl}?pane=settings&data=${encodedData}`;
-      mockLocation.search = `?pane=settings&data=${encodedData}`;
+      mockLocation.href = `http://localhost:3000${baseUrl}?pane=list&data=${encodedData}`;
+      mockLocation.search = `?pane=list&data=${encodedData}`;
 
       const provider = new BrowserHistoryProvider<TestPaneParams>(baseUrl, onStateChange);
       const state = provider.getCurrentState();
@@ -359,7 +362,7 @@ describe("BrowserHistoryProvider", () => {
   describe("baseUrl处理", () => {
     it("应该正确处理带斜杠的baseUrl", () => {
       const provider = new BrowserHistoryProvider<TestPaneParams>("/app/", onStateChange);
-      const testState = createTestState("home");
+      const testState = createTestState("rail");
 
       provider.pushState(testState);
 
@@ -369,7 +372,7 @@ describe("BrowserHistoryProvider", () => {
 
     it("应该正确处理不带斜杠的baseUrl", () => {
       const provider = new BrowserHistoryProvider<TestPaneParams>("app", onStateChange);
-      const testState = createTestState("home");
+      const testState = createTestState("rail");
 
       provider.pushState(testState);
 
@@ -379,12 +382,12 @@ describe("BrowserHistoryProvider", () => {
 
     it("应该正确处理空baseUrl", () => {
       const provider = new BrowserHistoryProvider<TestPaneParams>("", onStateChange);
-      const testState = createTestState("home");
+      const testState = createTestState("rail");
 
       provider.pushState(testState);
 
       const url = mockHistory.pushState.mock.calls[0][2];
-      expect(url).toContain("?pane=home");
+      expect(url).toContain("?pane=rail");
     });
   });
 });

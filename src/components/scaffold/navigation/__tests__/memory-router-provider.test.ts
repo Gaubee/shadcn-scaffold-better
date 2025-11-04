@@ -3,30 +3,33 @@ import { MemoryRouterProvider } from "../memory-router-provider";
 import type { NavigationState, PaneParams } from "../../scaffold";
 
 interface TestPaneParams extends PaneParams {
-  home: { userId?: string };
-  settings: { section?: string };
-  profile: { tab?: string };
+  rail: { userId?: string };
+  list: { section?: string };
+  detail: { tab?: string };
+  tail: {};
 }
 
 describe("MemoryRouterProvider", () => {
   const createInitialState = (): NavigationState<TestPaneParams> => ({
     route: {
       index: 0,
-      activePane: "home",
+      activePane: "rail",
       panes: {
-        home: { userId: "123" },
-        settings: {},
-        profile: {},
+        rail: { userId: "123" },
+        list: {},
+        detail: {},
+        tail: {},
       },
     },
     history: [
       {
         index: 0,
-        activePane: "home",
+        activePane: "rail",
         panes: {
-          home: { userId: "123" },
-          settings: {},
-          profile: {},
+          rail: { userId: "123" },
+          list: {},
+          detail: {},
+          tail: {},
         },
       },
     ],
@@ -64,22 +67,24 @@ describe("MemoryRouterProvider", () => {
       const newState: NavigationState<TestPaneParams> = {
         route: {
           index: 1,
-          activePane: "settings",
+          activePane: "list",
           panes: {
-            home: { userId: "123" },
-            settings: { section: "account" },
-            profile: {},
+            rail: { userId: "123" },
+            list: { section: "account" },
+            detail: {},
+            tail: {},
           },
         },
         history: [
           initialState.route,
           {
             index: 1,
-            activePane: "settings",
+            activePane: "list",
             panes: {
-              home: { userId: "123" },
-              settings: { section: "account" },
-              profile: {},
+              rail: { userId: "123" },
+              list: { section: "account" },
+              detail: {},
+              tail: {},
             },
           },
         ],
@@ -98,7 +103,7 @@ describe("MemoryRouterProvider", () => {
 
       const newState: NavigationState<TestPaneParams> = {
         ...initialState,
-        route: { ...initialState.route, activePane: "settings" },
+        route: { ...initialState.route, activePane: "list" },
       };
 
       provider.pushState(newState);
@@ -107,7 +112,7 @@ describe("MemoryRouterProvider", () => {
       expect(onStateChange).toHaveBeenCalledWith(
         expect.objectContaining({
           route: expect.objectContaining({
-            activePane: "settings",
+            activePane: "list",
           }),
         })
       );
@@ -120,7 +125,7 @@ describe("MemoryRouterProvider", () => {
 
       const newState: NavigationState<TestPaneParams> = {
         ...initialState,
-        route: { ...initialState.route, activePane: "settings" },
+        route: { ...initialState.route, activePane: "list" },
       };
 
       provider.pushState(newState);
@@ -136,11 +141,11 @@ describe("MemoryRouterProvider", () => {
       // 添加两个状态
       const state2: NavigationState<TestPaneParams> = {
         ...initialState,
-        route: { ...initialState.route, activePane: "settings" },
+        route: { ...initialState.route, activePane: "list" },
       };
       const state3: NavigationState<TestPaneParams> = {
         ...initialState,
-        route: { ...initialState.route, activePane: "profile" },
+        route: { ...initialState.route, activePane: "detail" },
       };
 
       provider.pushState(state2);
@@ -153,7 +158,7 @@ describe("MemoryRouterProvider", () => {
       // 从中间位置push新状态，应该清除forward历史
       const state4: NavigationState<TestPaneParams> = {
         ...initialState,
-        route: { ...initialState.route, activePane: "home" },
+        route: { ...initialState.route, activePane: "rail" },
       };
       provider.pushState(state4);
 
@@ -173,7 +178,7 @@ describe("MemoryRouterProvider", () => {
           ...initialState.route,
           panes: {
             ...initialState.route.panes,
-            home: { userId: "456" },
+            rail: { userId: "456" },
           },
         },
       };
@@ -196,7 +201,7 @@ describe("MemoryRouterProvider", () => {
           ...initialState.route,
           panes: {
             ...initialState.route.panes,
-            home: { userId: "456" },
+            rail: { userId: "456" },
           },
         },
       };
@@ -208,7 +213,7 @@ describe("MemoryRouterProvider", () => {
         expect.objectContaining({
           route: expect.objectContaining({
             panes: expect.objectContaining({
-              home: { userId: "456" },
+              rail: { userId: "456" },
             }),
           }),
         })
@@ -227,11 +232,11 @@ describe("MemoryRouterProvider", () => {
       state1 = createInitialState();
       state2 = {
         ...state1,
-        route: { ...state1.route, activePane: "settings" },
+        route: { ...state1.route, activePane: "list" },
       };
       state3 = {
         ...state1,
-        route: { ...state1.route, activePane: "profile" },
+        route: { ...state1.route, activePane: "detail" },
       };
 
       onStateChange = vi.fn();
@@ -318,11 +323,11 @@ describe("MemoryRouterProvider", () => {
 
       // 修改获取的状态不应该影响provider内部状态
       if (retrievedState) {
-        retrievedState.route.activePane = "settings";
+        retrievedState.route.activePane = "list";
       }
 
       const retrievedAgain = provider.getCurrentState();
-      expect(retrievedAgain?.route.activePane).toBe("home");
+      expect(retrievedAgain?.route.activePane).toBe("rail");
     });
   });
 });
