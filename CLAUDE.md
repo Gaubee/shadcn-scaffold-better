@@ -2,3 +2,4 @@
 2. 后续我手写了 [Scaffold](src/components/ui/skeleton.tsx) 组件，它使用了 grid+container-query 等先进css技术进行响应式设计，并内置了“导航”原始能力
 3. 然后我让AI开发了`src/components/scaffold/navigation`，来提供了将导航能力和浏览器history/navigation-api等适配
 3. 接着我让AI开发了[RailBavbar](src/components/scaffold/rail-navbar.tsx)这个组件，这是我们参考shadcnui的理念，开始为我们的Scaffold插槽提供一些常见的组件封装
+3. 我和AI一起开发了[ResponsiveContainer](src/components/ui/responsive-container.tsx)这个组件，任何有需要展示或者测试响应式效果的，都可以用这个组件来做到

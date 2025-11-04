@@ -4,30 +4,54 @@ import { cn } from "@/lib/utils";
 import { Maximize2, Minimize2, Monitor, Smartphone, Tablet, ZoomIn, ZoomOut } from "lucide-react";
 import * as React from "react";
 
-// 预设设备尺寸
-const DEVICE_PRESETS = {
+// 设备预设配置类型
+export interface DevicePresetConfig {
+  width: number;
+  height: number;
+  label: string;
+  icon: React.ComponentType<{ size?: number }>;
+}
+
+// 默认设备预设
+const DEFAULT_DEVICE_PRESETS = {
   mobile: { width: 375, height: 667, label: "Mobile", icon: Smartphone },
   tablet: { width: 768, height: 1024, label: "Tablet", icon: Tablet },
   desktop: { width: 1280, height: 800, label: "Desktop", icon: Monitor },
-} as const;
-
-type DevicePreset = keyof typeof DEVICE_PRESETS;
+} as const satisfies Record<string, DevicePresetConfig>;
 
 // 缩放预设
 const SCALE_PRESETS = [0.25, 0.5, 0.75, 1] as const;
 
-interface ResponsiveContainerProps {
+interface ResponsiveContainerProps<T extends Record<string, DevicePresetConfig> = typeof DEFAULT_DEVICE_PRESETS> {
   children: React.ReactNode;
   title?: string;
-  initialDevice?: DevicePreset;
+  /** 自定义设备预设配置 */
+  devicePresets?: T;
+  initialDevice?: keyof T;
   initialScale?: number;
   showControls?: boolean;
   className?: string;
 }
 
-export const ResponsiveContainer = React.forwardRef<HTMLDivElement, ResponsiveContainerProps>(
-  ({ children, title, initialDevice = "mobile", initialScale = 0.75, showControls = true, className }, ref) => {
-    const [device, setDevice] = React.useState<DevicePreset>(initialDevice);
+const ResponsiveContainerInner = React.forwardRef(
+  <T extends Record<string, DevicePresetConfig> = typeof DEFAULT_DEVICE_PRESETS>(
+    {
+      children,
+      title,
+      devicePresets,
+      initialDevice,
+      initialScale = 0.75,
+      showControls = true,
+      className,
+    }: ResponsiveContainerProps<T>,
+    ref: React.ForwardedRef<HTMLDivElement>,
+  ) => {
+    // 使用自定义预设或默认预设
+    const presets = (devicePresets ?? DEFAULT_DEVICE_PRESETS) as T;
+    const firstDeviceKey = Object.keys(presets)[0] as keyof T;
+    const defaultDevice = initialDevice ?? firstDeviceKey;
+
+    const [device, setDevice] = React.useState<keyof T>(defaultDevice);
     const [scale, setScale] = React.useState(initialScale);
     const [isFullscreen, setIsFullscreen] = React.useState(false);
     const [customSize, setCustomSize] = React.useState<{ width: number; height: number } | null>(null);
@@ -40,8 +64,8 @@ export const ResponsiveContainer = React.forwardRef<HTMLDivElement, ResponsiveCo
     // 获取当前尺寸
     const currentSize = React.useMemo(() => {
       if (customSize) return customSize;
-      return DEVICE_PRESETS[device];
-    }, [device, customSize]);
+      return presets[device];
+    }, [device, customSize, presets]);
 
     // 监听容器尺寸变化（通过 CSS resize）
     React.useEffect(() => {
@@ -70,7 +94,7 @@ export const ResponsiveContainer = React.forwardRef<HTMLDivElement, ResponsiveCo
     }, [scale, customSize]);
 
     // 切换设备预设
-    const handleDeviceChange = (newDevice: DevicePreset) => {
+    const handleDeviceChange = (newDevice: keyof T) => {
       setDevice(newDevice);
       setCustomSize(null); // 清除自定义尺寸
     };
@@ -224,13 +248,13 @@ export const ResponsiveContainer = React.forwardRef<HTMLDivElement, ResponsiveCo
               {/* 控制按钮组 */}
               <div className="flex items-center gap-1">
                 {/* 设备预设 */}
-                {Object.entries(DEVICE_PRESETS).map(([key, preset]) => {
+                {Object.entries(presets).map(([key, preset]) => {
                   const Icon = preset.icon;
                   const isActive = device === key && !customSize;
                   return (
                     <button
                       key={key}
-                      onClick={() => handleDeviceChange(key as DevicePreset)}
+                      onClick={() => handleDeviceChange(key as keyof T)}
                       className={cn(
                         "rounded p-1.5 transition-colors",
                         isActive ? "bg-accent text-accent-foreground" : "hover:bg-accent/50",
@@ -337,4 +361,11 @@ export const ResponsiveContainer = React.forwardRef<HTMLDivElement, ResponsiveCo
   },
 );
 
-ResponsiveContainer.displayName = "ResponsiveContainer";
+// 类型断言以支持泛型组件
+export const ResponsiveContainer = ResponsiveContainerInner as <
+  T extends Record<string, DevicePresetConfig> = typeof DEFAULT_DEVICE_PRESETS,
+>(
+  props: ResponsiveContainerProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> },
+) => React.ReactElement;
+
+(ResponsiveContainer as any).displayName = "ResponsiveContainer";

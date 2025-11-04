@@ -277,31 +277,34 @@ const RailNavbarMenuContent = React.forwardRef<HTMLDivElement, React.ComponentPr
 RailNavbarMenuContent.displayName = "RailNavbarMenuContent";
 
 // --- RailNavbarMenuSubItem ---
-const RailNavbarMenuSubItem = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
-  ({ className, children, ...props }, ref) => {
-    const { railPosition } = useRailNavbar();
-    const compactContext = useCompact();
+const RailNavbarMenuSubItem = React.forwardRef<
+  HTMLDivElement,
+  Omit<React.ComponentProps<"div">, "onSelect"> & {
+    onSelect?: (event: Event) => void;
+  }
+>(({ className, children, onSelect, ...props }, ref) => {
+  const { railPosition } = useRailNavbar();
+  const compactContext = useCompact();
 
-    const isInline = railPosition.startsWith("inline-");
-    const compact = compactContext?.compact ?? false;
+  const isInline = railPosition.startsWith("inline-");
+  const compact = compactContext?.compact ?? false;
 
-    // compact 模式或 block-* 位置：使用 DropdownMenuItem
-    if (compact || !isInline) {
-      return (
-        <DropdownMenuItem ref={ref} data-rail-menu="menu-sub-item" className={className} {...props}>
-          {children}
-        </DropdownMenuItem>
-      );
-    }
-
-    // inline-* 非 compact：普通 div
+  // compact 模式或 block-* 位置：使用 DropdownMenuItem
+  if (compact || !isInline) {
     return (
-      <div ref={ref} data-rail-menu="menu-sub-item" className={className} {...props}>
+      <DropdownMenuItem ref={ref} data-rail-menu="menu-sub-item" className={className} onSelect={onSelect} {...props}>
         {children}
-      </div>
+      </DropdownMenuItem>
     );
-  },
-);
+  }
+
+  // inline-* 非 compact：普通 div
+  return (
+    <div ref={ref} data-rail-menu="menu-sub-item" className={className} {...props}>
+      {children}
+    </div>
+  );
+});
 RailNavbarMenuSubItem.displayName = "RailNavbarMenuSubItem";
 
 // --- RailNavbarMenuSubButton ---
