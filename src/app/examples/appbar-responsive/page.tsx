@@ -15,7 +15,7 @@ import {
   NavBar,
   TitleBar,
   type NavHistoryItem,
-} from "@/components/appbar";
+} from "@/components/scaffold/appbar";
 import { Button } from "@/components/ui/button";
 import { ResponsiveContainer, type DevicePresetConfig } from "@/components/ui/responsive-container";
 import { Bell, Search, User } from "lucide-react";

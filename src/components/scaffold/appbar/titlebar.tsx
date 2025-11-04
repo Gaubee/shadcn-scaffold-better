@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import * as React from "react";
 import { useMergeRefs } from "react-best-merge-refs";
-import { useResponsiveVariant, type RenderStrategyProvider } from "./responsive-variant";
+import { useResponsiveVariant, type RenderStrategyProvider } from "../responsive-variant";
 
 /**
  * TitleBar 组件属性

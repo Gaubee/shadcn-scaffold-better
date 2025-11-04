@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { ChevronLeft } from "lucide-react";
 import * as React from "react";
 import { useMergeRefs } from "react-best-merge-refs";
-import { adjacentProvider, useResponsiveVariant, type RenderStrategyProvider } from "./responsive-variant";
+import { adjacentProvider, useResponsiveVariant, type RenderStrategyProvider } from "../responsive-variant";
 
 /**
  * 历史导航项
