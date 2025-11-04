@@ -156,7 +156,10 @@ export const ActionsBar = React.forwardRef<HTMLDivElement, ActionsBarProps>(
     }, [activeVariant]);
 
     return (
-      <div ref={useMergeRefs({ ref, containerRef })} className={cn("flex min-w-0 items-center", className)} {...props}>
+      <div
+        ref={useMergeRefs({ ref, containerRef })}
+        className={cn("flex size-full items-center justify-end", className)}
+        {...props}>
         {renderVariants()}
       </div>
     );

@@ -95,7 +95,7 @@ export const TitleBar = React.forwardRef<HTMLDivElement, TitleBarProps>(
     return (
       <div
         ref={useMergeRefs({ ref, containerRef })}
-        className={cn("flex size-full flex-1 items-center justify-center", className)}
+        className={cn("flex size-full items-center justify-center", className)}
         {...props}>
         {renderVariants()}
       </div>
