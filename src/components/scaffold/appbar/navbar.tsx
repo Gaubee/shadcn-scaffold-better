@@ -230,7 +230,7 @@ export const NavBar = React.forwardRef<HTMLElement, NavBarProps>(
           ref,
           containerRef,
         })}
-        className={cn("flex size-full items-center justify-start", className)}
+        className={cn("flex size-full content-center items-center justify-start justify-items-start", className)}
         {...props}>
         {renderVariants()}
       </nav>

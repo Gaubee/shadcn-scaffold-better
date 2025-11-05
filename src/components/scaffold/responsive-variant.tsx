@@ -235,7 +235,7 @@ export function useResponsiveVariant<T extends string>({
       <div
         ref={containerRef}
         className={cn(
-          "grid [align-items:inherit] [justify-content:inherit]", // Grid 容器占满父容器宽度
+          "grid [align-content:inherit] [align-items:inherit] [justify-content:inherit] [justify-items:inherit]", // Grid 容器占满父容器宽度
           `[grid-template-areas:"variants"]`,
           enableTransition && "transition-all duration-300 ease-out",
         )}

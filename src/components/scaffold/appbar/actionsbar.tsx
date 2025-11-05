@@ -158,7 +158,7 @@ export const ActionsBar = React.forwardRef<HTMLDivElement, ActionsBarProps>(
     return (
       <div
         ref={useMergeRefs({ ref, containerRef })}
-        className={cn("flex size-full items-center justify-end", className)}
+        className={cn("flex size-full content-center items-center justify-end justify-items-end", className)}
         {...props}>
         {renderVariants()}
       </div>

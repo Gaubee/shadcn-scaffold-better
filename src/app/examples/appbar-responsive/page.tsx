@@ -209,7 +209,7 @@ export default function AppBarResponsiveExample() {
           initialScale={0.8}>
           <div className="flex h-full w-full flex-col">
             {/* AppBar */}
-            <header className="bg-background flex h-18 items-center justify-between border p-2">
+            <header className="bg-background flex h-18 w-full items-center justify-between border p-2">
               {/* NavBar */}
               <NavBar
                 onBack={handleBack}

@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import * as React from "react";
 import { useMergeRefs } from "react-best-merge-refs";
-import { useResponsiveVariant, type RenderStrategyProvider } from "../responsive-variant";
+import { adjacentProvider, useResponsiveVariant, type RenderStrategyProvider } from "../responsive-variant";
 
 /**
  * TitleBar 组件属性
@@ -87,7 +87,7 @@ export const TitleBar = React.forwardRef<HTMLDivElement, TitleBarProps>(
 
     const { renderVariants } = useResponsiveVariant({
       variants,
-      strategy,
+      strategy: React.useMemo(() => strategy ?? adjacentProvider(["compact", "normal", "expanded"]), [strategy]),
       containerEle: containerEle,
       enableTransition,
     });
@@ -95,7 +95,7 @@ export const TitleBar = React.forwardRef<HTMLDivElement, TitleBarProps>(
     return (
       <div
         ref={useMergeRefs({ ref, containerRef })}
-        className={cn("flex size-full items-center justify-center", className)}
+        className={cn("flex size-full content-center items-center justify-center justify-items-center", className)}
         {...props}>
         {renderVariants()}
       </div>
