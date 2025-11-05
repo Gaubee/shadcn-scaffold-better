@@ -18,61 +18,71 @@ import {
 } from "@/components/scaffold/appbar";
 import { Button } from "@/components/ui/button";
 import { ResponsiveContainer, type DevicePresetConfig } from "@/components/ui/responsive-container";
-import { Bell, Search, User } from "lucide-react";
+import { obj_pick } from "@gaubee/util";
 import * as React from "react";
 
 const HEIGHT = 100;
 // 自定义 AppBar 测试的设备预设
 const APPBAR_TEST_PRESETS = {
-  xs: {
+  "60": {
     width: 60,
     height: HEIGHT,
     label: "60px",
     icon: () => <span>60</span>,
   },
-  sm: {
+  "120": {
     width: 120,
     height: HEIGHT,
     label: "120px",
     icon: () => <span>120</span>,
   },
-  md: {
+  "240": {
     width: 240,
     height: HEIGHT,
     label: "240px",
     icon: () => <span>240</span>,
   },
-  lg: {
+  "360": {
     width: 360,
     height: HEIGHT,
     label: "360px",
     icon: () => <span>360</span>,
   },
-  xl: {
+  "512": {
     width: 512,
     height: HEIGHT,
     label: "512px",
     icon: () => <span>512</span>,
   },
-  "3xl": {
+  "768": {
     width: 768,
     height: HEIGHT,
     label: "768px",
     icon: () => <span>768</span>,
   },
-  "4xl": {
+  "1024": {
     width: 1024,
     height: HEIGHT,
     label: "1024px",
     icon: () => <span>1024</span>,
   },
-  "7xl": {
+  "1280": {
     width: 1280,
     height: HEIGHT,
     label: "1280px",
     icon: () => <span>1280</span>,
   },
 } as const satisfies Record<string, DevicePresetConfig>;
+
+const getDevicePresets = <const T extends keyof typeof APPBAR_TEST_PRESETS>(keys: readonly T[], height = HEIGHT) => {
+  const res = obj_pick(APPBAR_TEST_PRESETS, ...keys);
+  if (height != null) {
+    for (const key of keys) {
+      res[key] = { ...res[key], height };
+    }
+  }
+  return res;
+};
 
 export default function AppBarResponsiveExample() {
   const [currentPage, setCurrentPage] = React.useState("Dashboard");
@@ -97,27 +107,51 @@ export default function AppBarResponsiveExample() {
   // 共享的 Actions 内容
   const actionsContent = (
     <>
-      <ActionItem label="File">
-        <ActionSubItem onSelect={() => console.log("New")}>New</ActionSubItem>
-        <ActionSubItem onSelect={() => console.log("Open")}>Open</ActionSubItem>
-        <ActionSubItem onSelect={() => console.log("Save")}>Save</ActionSubItem>
+      <ActionItem key="file" label="File">
+        <ActionSubItem key="new" onSelect={() => console.log("New")}>
+          New
+        </ActionSubItem>
+        <ActionSubItem key="open" onSelect={() => console.log("Open")}>
+          Open
+        </ActionSubItem>
+        <ActionSubItem key="save" onSelect={() => console.log("Save")}>
+          Save
+        </ActionSubItem>
         <ActionSeparator />
-        <ActionSubItem onSelect={() => console.log("Exit")}>Exit</ActionSubItem>
+        <ActionSubItem key="exit" onSelect={() => console.log("Exit")}>
+          Exit
+        </ActionSubItem>
       </ActionItem>
 
-      <ActionItem label="Edit">
-        <ActionSubItem onSelect={() => console.log("Undo")}>Undo</ActionSubItem>
-        <ActionSubItem onSelect={() => console.log("Redo")}>Redo</ActionSubItem>
+      <ActionItem key="edit" label="Edit">
+        <ActionSubItem key="undo" onSelect={() => console.log("Undo")}>
+          Undo
+        </ActionSubItem>
+        <ActionSubItem key="redo" onSelect={() => console.log("Redo")}>
+          Redo
+        </ActionSubItem>
         <ActionSeparator />
-        <ActionSubItem onSelect={() => console.log("Cut")}>Cut</ActionSubItem>
-        <ActionSubItem onSelect={() => console.log("Copy")}>Copy</ActionSubItem>
-        <ActionSubItem onSelect={() => console.log("Paste")}>Paste</ActionSubItem>
+        <ActionSubItem key="cut" onSelect={() => console.log("Cut")}>
+          Cut
+        </ActionSubItem>
+        <ActionSubItem key="copy" onSelect={() => console.log("Copy")}>
+          Copy
+        </ActionSubItem>
+        <ActionSubItem key="paste" onSelect={() => console.log("Paste")}>
+          Paste
+        </ActionSubItem>
       </ActionItem>
 
-      <ActionItem label="View">
-        <ActionSubItem onSelect={() => console.log("Zoom In")}>Zoom In</ActionSubItem>
-        <ActionSubItem onSelect={() => console.log("Zoom Out")}>Zoom Out</ActionSubItem>
-        <ActionSubItem onSelect={() => console.log("Reset Zoom")}>Reset Zoom</ActionSubItem>
+      <ActionItem key="view" label="View">
+        <ActionSubItem key="zoom-in" onSelect={() => console.log("Zoom In")}>
+          Zoom In
+        </ActionSubItem>
+        <ActionSubItem key="zoom-out" onSelect={() => console.log("Zoom Out")}>
+          Zoom Out
+        </ActionSubItem>
+        <ActionSubItem key="reset-zoom" onSelect={() => console.log("Reset Zoom")}>
+          Reset Zoom
+        </ActionSubItem>
       </ActionItem>
     </>
   );
@@ -137,8 +171,8 @@ export default function AppBarResponsiveExample() {
       <div className="w-full">
         <ResponsiveContainer
           title="1. NavBar 独立测试"
-          devicePresets={APPBAR_TEST_PRESETS}
-          initialDevice="lg"
+          devicePresets={getDevicePresets(["120", "360", "768"])}
+          initialDevice="360"
           initialScale={0.8}>
           <div className="bg-background flex h-18 items-center p-2">
             <NavBar
@@ -171,109 +205,101 @@ export default function AppBarResponsiveExample() {
       </div>
 
       {/* TitleBar 独立测试 */}
-      <div className="w-full">
-        <ResponsiveContainer
-          title="2. TitleBar 独立测试"
-          devicePresets={APPBAR_TEST_PRESETS}
-          initialDevice="lg"
-          initialScale={0.8}>
-          <div className="bg-background flex h-18 items-center justify-center p-2">
-            <TitleBar
-              className="border p-2"
-              title={currentPage}
-              subtitle="Optional subtitle for testing expanded variant"
-            />
-          </div>
-        </ResponsiveContainer>
-      </div>
+      {false ? null : (
+        <div className="w-full">
+          <ResponsiveContainer
+            title="2. TitleBar 独立测试"
+            devicePresets={getDevicePresets(["120", "360", "768"], 120)}
+            initialDevice="768"
+            initialScale={0.8}>
+            <div className="bg-background flex size-full items-center justify-center p-2">
+              <TitleBar
+                className="border p-2"
+                title={currentPage}
+                subtitle="Optional subtitle for testing expanded variant"
+              />
+            </div>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* ActionsBar 独立测试 */}
-      <div className="w-full">
-        <ResponsiveContainer
-          title="3. ActionsBar 独立测试"
-          devicePresets={APPBAR_TEST_PRESETS}
-          initialDevice="lg"
-          initialScale={0.8}>
-          <div className="bg-background flex h-18 items-center justify-end p-2">
-            <ActionsBar className="border p-2">{actionsContent}</ActionsBar>
-          </div>
-        </ResponsiveContainer>
-      </div>
+      {false ? null : (
+        <div className="w-full">
+          <ResponsiveContainer
+            title="3. ActionsBar 独立测试"
+            devicePresets={getDevicePresets(["120", "360", "768"])}
+            initialDevice="360"
+            initialScale={0.8}>
+            <div className="bg-background flex h-18 items-center justify-end p-2">
+              <ActionsBar className="border p-2">{actionsContent}</ActionsBar>
+            </div>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* 组合测试 */}
-      <div className="w-full">
-        <ResponsiveContainer
-          title="4. 组合测试（完整 AppBar）"
-          devicePresets={APPBAR_TEST_PRESETS}
-          initialDevice="4xl"
-          initialScale={0.8}>
-          <div className="flex h-full w-full flex-col">
-            {/* AppBar */}
-            <header className="bg-background flex h-18 w-full items-center justify-between border p-2">
-              {/* NavBar */}
-              <NavBar
-                onBack={handleBack}
-                historyItems={history}
-                disabled={history.length === 0}
-                breadcrumb={
-                  <BreadcrumbList>
-                    <BreadcrumbItem>
-                      <BreadcrumbLink href="#" onClick={() => handleNavigate("Home")}>
-                        Home
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                      <BreadcrumbLink href="#" onClick={() => handleNavigate("Projects")}>
-                        Projects
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                      <BreadcrumbPage>{currentPage}</BreadcrumbPage>
-                    </BreadcrumbItem>
-                  </BreadcrumbList>
-                }
-              />
+      {false ? null : (
+        <div className="w-full">
+          <ResponsiveContainer
+            title="4. 组合测试（完整 AppBar）"
+            devicePresets={getDevicePresets(["360", "768", "1280"], 200)}
+            initialDevice="768"
+            initialScale={0.8}>
+            <div className="flex h-full w-full flex-col">
+              {/* AppBar */}
+              <header className="bg-background flex h-18 w-full items-center justify-between border p-2">
+                {/* NavBar */}
+                <NavBar
+                  onBack={handleBack}
+                  historyItems={history}
+                  disabled={history.length === 0}
+                  breadcrumb={
+                    <BreadcrumbList>
+                      <BreadcrumbItem>
+                        <BreadcrumbLink href="#" onClick={() => handleNavigate("Home")}>
+                          Home
+                        </BreadcrumbLink>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        <BreadcrumbLink href="#" onClick={() => handleNavigate("Projects")}>
+                          Projects
+                        </BreadcrumbLink>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        <BreadcrumbPage>{currentPage}</BreadcrumbPage>
+                      </BreadcrumbItem>
+                    </BreadcrumbList>
+                  }
+                />
 
-              {/* TitleBar */}
-              <TitleBar title={currentPage} subtitle="Optional subtitle" />
+                {/* TitleBar */}
+                <TitleBar title={currentPage} subtitle="Optional subtitle" />
 
-              {/* ActionsBar */}
-              <ActionsBar className="shrink-0">{actionsContent}</ActionsBar>
+                {/* ActionsBar */}
+                <ActionsBar>{actionsContent}</ActionsBar>
+              </header>
 
-              {/* 右侧按钮组 */}
-              <div className="flex shrink-0 items-center gap-2">
-                <Button variant="ghost" size="icon-sm">
-                  <Search />
-                </Button>
-                <Button variant="ghost" size="icon-sm">
-                  <Bell />
-                </Button>
-                <Button variant="ghost" size="icon-sm">
-                  <User />
-                </Button>
-              </div>
-            </header>
+              {/* Main Content */}
+              <main className="flex flex-1 flex-col items-center justify-center gap-4 overflow-auto p-6">
+                <div className="text-center">
+                  <h2 className="mb-2 text-2xl font-bold">当前页面: {currentPage}</h2>
+                  <p className="text-muted-foreground text-sm">历史记录长度: {history.length}</p>
+                </div>
 
-            {/* Main Content */}
-            <main className="flex flex-1 flex-col items-center justify-center gap-4 overflow-auto p-6">
-              <div className="text-center">
-                <h2 className="mb-2 text-2xl font-bold">当前页面: {currentPage}</h2>
-                <p className="text-muted-foreground text-sm">历史记录长度: {history.length}</p>
-              </div>
-
-              <div className="flex gap-4">
-                <Button onClick={() => handleNavigate(`Page-${Date.now()}`)}>导航到新页面</Button>
-                <Button variant="outline" onClick={handleBack} disabled={history.length === 0}>
-                  返回
-                </Button>
-              </div>
-            </main>
-          </div>
-        </ResponsiveContainer>
-      </div>
-
+                <div className="flex gap-4">
+                  <Button onClick={() => handleNavigate(`Page-${Date.now()}`)}>导航到新页面</Button>
+                  <Button variant="outline" onClick={handleBack} disabled={history.length === 0}>
+                    返回
+                  </Button>
+                </div>
+              </main>
+            </div>
+          </ResponsiveContainer>
+        </div>
+      )}
       {/* 说明文档 */}
       <div className="rounded-lg border p-6">
         <h2 className="mb-4 text-xl font-semibold">响应式行为说明</h2>

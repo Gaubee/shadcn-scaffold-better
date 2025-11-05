@@ -191,7 +191,6 @@ export function useResponsiveVariant<T extends string>({
       }
       updateVariant(toVariantId);
     };
-    Object.assign(self, { sizeMap });
 
     // 使用 ResizeObserver 监听容器尺寸变化
     const resizeObserver = new ResizeObserver((entries) => {
@@ -246,25 +245,36 @@ export function useResponsiveVariant<T extends string>({
           const shouldRender = idsToRender.includes(variantId);
 
           const variant = variants[variantId];
+          const variantContent = <>{variant.render()}</>;
+          const measurementContent = React.cloneElement(variantContent);
 
           return (
-            <div
-              key={variantId}
-              ref={(el) => {
-                setVariantRef(variantId, el);
-
-                return () => setVariantRef(variantId, null);
-              }}
-              className={cn(
-                // 使用 grid-area 让所有变体占据同一个网格区域，justify-self:start 横向不撑满，align-self: start 纵向不撑满
-                "transition-discrete duration-300 ease-out [grid-area:variants] starting:open:opacity-0",
-                // 对于不渲染的原始，使用absolute，来避免挤占空间从而影响布局
-                isActive ? "pointer-events-auto opacity-100" : "pointer-events-none absolute opacity-0",
-              )}
-              data-variant={variantId}
-              data-active={isActive}>
-              {variant.render()}
-            </div>
+            <>
+              <div
+                key={`measurement:${variantId}`}
+                ref={(el) => {
+                  setVariantRef(variantId, el);
+                  return () => setVariantRef(variantId, null);
+                }}
+                // 测量元素使用absolute
+                className="pointer-events-none invisible absolute"
+                data-variant={variantId}
+                data-active={isActive}>
+                {measurementContent}
+              </div>
+              <div
+                key={`content:${variantId}`}
+                className={cn(
+                  // 使用 grid-area 让所有变体占据同一个网格区域，justify-self:start 横向不撑满，align-self: start 纵向不撑满
+                  "max-w-full overflow-hidden transition-discrete duration-300 ease-out [grid-area:variants] starting:open:opacity-0",
+                  // 对于不渲染的原始，使用absolute，来避免挤占空间从而影响布局
+                  isActive ? "pointer-events-auto opacity-100" : "pointer-events-none absolute opacity-0",
+                )}
+                data-variant={variantId}
+                data-active={isActive}>
+                {variantContent}
+              </div>
+            </>
           );
         })}
       </div>

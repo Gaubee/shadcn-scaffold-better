@@ -105,8 +105,6 @@ const useActionsBar = () => {
  */
 export const ActionsBar = React.forwardRef<HTMLDivElement, ActionsBarProps>(
   ({ className, children, strategy, enableTransition = false, triggerLabel = <Menu />, ...props }, ref) => {
-    const [mode, setMode] = React.useState<"navigation" | "dropdown">("navigation");
-
     // 定义变体配置
     const variants = React.useMemo(
       () => ({
@@ -149,11 +147,6 @@ export const ActionsBar = React.forwardRef<HTMLDivElement, ActionsBarProps>(
       containerEle: containerEle,
       enableTransition,
     });
-
-    // 更新 mode
-    React.useEffect(() => {
-      setMode(activeVariant === "full" ? "navigation" : "dropdown");
-    }, [activeVariant]);
 
     return (
       <div

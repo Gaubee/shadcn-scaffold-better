@@ -56,21 +56,21 @@ export const TitleBar = React.forwardRef<HTMLDivElement, TitleBarProps>(
         compact: {
           render: () => (
             <div className="flex items-center justify-center">
-              <h1 className="truncate text-base font-medium">{title}</h1>
+              <h1 className="truncate text-xs font-medium break-keep whitespace-nowrap">{title}</h1>
             </div>
           ),
         },
         normal: {
           render: () => (
             <div className="flex items-center justify-center">
-              <h1 className="text-base font-medium">{title}</h1>
+              <h1 className="text-base font-medium break-keep whitespace-nowrap">{title}</h1>
             </div>
           ),
         },
         expanded: {
           render: () => (
             <div className="flex flex-col items-center justify-center gap-0.5">
-              <h1 className="text-base font-medium">{title}</h1>
+              <h1 className="text-base font-medium break-keep whitespace-nowrap">{title}</h1>
               <p className="text-muted-foreground text-sm">{subtitle}</p>
             </div>
           ),
