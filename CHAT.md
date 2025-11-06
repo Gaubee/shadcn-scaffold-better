@@ -140,3 +140,18 @@ responsive-variant 需要加入更多精细的控制：
 
 1. 比如策略中，什么时候应该切换到下一个变体，现在是基于 `(w1 < w < w2) ? w1 : w2`，这里是有争议的，因为 w2 可能是非刚性的支持伸缩
 2. 比如两个变体切换的时候，自定义动画
+
+---
+
+目前我们是直接从 scaffold 暴露出一个非常简单的 navigationState+onNavigationChange ，这是一种基于不可变编程的思想。后来为了更好的适配native的各种功能，又加了一个 navigationProvider。
+
+1. 我们需要先从这里入手，将这三者整合成 `navigation: NavigationProvider<TypeSafe> = useMemoryNavigationProvider()` 这样的能力。
+2. 我们的核心参考是 [Navigation_API](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API)
+3. 首先我们需要对 NavigationProvider 进行升级，扩展一些可选的能力，比如 getNavigationState、setNavigationState、onNavigationStateChange
+4. 另外，目前 pushState/replaceState 这两个接口的参数定义也不大合理，需要简化。参考Navigation_API
+5. 还有，我们需要补充一些接口，比如 traverseTo() / reload()
+6. 我建议充分参考 Web-Navigation_API，它很强大，但是我们只需要一个满足90%场景的功能子集
+7. 我们优先完成 web-navigation-api 和 memory 这两种 provider。
+8. 对于 history-api 的支持，我们需要充分利用它是可以存储 State 的能力，同时假设开发中没有使用iframe等元素来干扰 history-api，在这种理想情况下去实现
+9. 对于 browser-hash 的支持，其实一样，它和 history-api 的差别主要在于一个用的是path一个用的是hash，用path的需要一定的服务端或者或者service-worker支持；用hash的主要是在纯粹的spa场景
+10. safari 因为不支持Web-Navigation_API，因此 主要是使用 history-api-provider 和browser-hash-provider。如果有iframe的需求它也可以使用memory-provider

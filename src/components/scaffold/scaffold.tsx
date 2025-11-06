@@ -20,6 +20,8 @@ const ContainerQueryBreakpoints = {
   "7xl": 1280,
 } as const;
 
+import { useNavigation, NavigationRoute, NavigationState, PaneName } from "./navigation";
+
 export interface ScaffoldProps<T extends PaneParams = PaneParams> {
   /**
    * AppBar slot - can be a ReactNode or a function that returns ReactNode
@@ -70,26 +72,6 @@ export interface ScaffoldProps<T extends PaneParams = PaneParams> {
   list?: PaneSlot<T, "list">;
   detail?: PaneSlot<T, "detail">;
   tail?: PaneSlot<T, "tail">;
-
-  /**
-   * 注入导航状态
-   */
-  navigationState?: NavigationState<T>;
-  /**
-   * 导航状态变更
-   */
-  onNavigationChange?: OnNavigationChange<T>;
-  /**
-   * 导航提供者（可选）
-   * 如果提供，将使用provider的canGoBack/canGoForward/goBack/goForward方法
-   * 否则使用基于history数组的fallback实现
-   */
-  navigationProvider?: {
-    canGoBack?(): boolean;
-    canGoForward?(): boolean;
-    goBack?(): boolean;
-    goForward?(): boolean;
-  };
 }
 export type ScaffoldRailPosition = "inline-start" | "block-end";
 export type ScaffoldRTailRenderMode = "sheet" | "dialog" | "drawer" | "static";
@@ -186,18 +168,7 @@ export interface NavigationState<T extends PaneParams = PaneParams> {
   history: NavigationRoute<T>[];
 }
 
-/** 描述导航变更的原因 */
-export interface NavigationChangeReason {
-  type: "forward" | "back"; // 'forward' 是前进, 'back' 是返回
-  fromPane?: PaneName;
-  toPane: PaneName;
-}
 
-// 回调函数的类型
-export type OnNavigationChange<T extends PaneParams = PaneParams> = (
-  newState: NavigationState<T>,
-  reason: NavigationChangeReason,
-) => void;
 
 export const Scaffold = <T extends PaneParams = PaneParams>({
   ref,
@@ -211,146 +182,59 @@ export const Scaffold = <T extends PaneParams = PaneParams>({
   list,
   detail,
   tail,
-
-  navigationState,
-  onNavigationChange,
-  navigationProvider,
   ...props
 }: ScaffoldComponentProps<T>) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const indicatorRef = React.useRef<HTMLDivElement>(null);
   const breakpoint = useContainerBreakpoint(containerRef, indicatorRef);
+  const navigation = useNavigation<T>();
 
-  const buildInPortalWrappers: PortalWrapper[] = [
-    //
-    // DialogPortal,
-    // MenubarPortal,
-    // PopoverPortal,
-    // ContextMenuPortal,
-    // DropdownMenuPortal,
-    // DrawerPortal,
-    // SelectPortal,
-    // HoverCardPortal,
-  ];
-  // .filter((Portal) => Portal !== undefined) // Filter out undefined Portals
-  // .map((Portal) => {
-  //   const wrapper: PortalWrapper = ({ children, container }) => {
-  //     return <Portal container={container}>{children}</Portal>;
-  //   };
-  //   return wrapper;
-  // });
+  const [currentEntry, setCurrentEntry] = React.useState(navigation.currentEntry);
 
-  /**
-     Breakpoint prefix	Minimum width	CSS
-     sm	40rem (640px)	@media (width >= 40rem) { ... }
-     md	48rem (768px)	@media (width >= 48rem) { ... }
-     lg	64rem (1024px)	@media (width >= 64rem) { ... }
-     xl	80rem (1280px)	@media (width >= 80rem) { ... }
-     2xl	96rem (1536px)	@media (width >= 96rem) { ... }
-     */
-  const context: ScaffoldContext = {
-    breakpoint: breakpoint ?? null,
-  };
-
-  // Render appBar and FAB slots
-  const appBarContent = renderSlot(appBar, context);
-  const fabContent = renderSlot(floatingActionButton, context);
+  React.useEffect(() => {
+    const handleCurrentEntryChange = (event: any) => {
+      setCurrentEntry(event.entry);
+    };
+    navigation.on("current-entry-change", handleCurrentEntryChange);
+    return () => {
+      navigation.off("current-entry-change", handleCurrentEntryChange);
+    };
+  }, [navigation]);
 
   const navState = React.useMemo<NavigationState<T>>(() => {
-    if (navigationState) {
-      return navigationState;
+    if (currentEntry) {
+      const route = currentEntry.getState() as NavigationRoute<T>;
+      return { route, history: navigation.entries.map(e => e.getState() as NavigationRoute<T>) };
     }
     const route: NavigationRoute<T> = { index: 0, activePane: "rail", panes: {} as T };
     return { route, history: [route] };
-  }, [navigationState]);
+  }, [currentEntry, navigation.entries]);
 
   const paneBaseContext: Omit<PaneRenderProps<T>, "params" | "isActive" | "breakpoint"> = React.useMemo(() => {
-    // 优先使用provider的canGoBack/canGoForward方法
-    // 如果provider没有提供这些方法，则使用基于history数组的fallback实现
-    const canGoBackIndex = navState.history.findIndex((route) => route.index === navState.route.index);
-    const canGoBackFallback = canGoBackIndex > 0;
-    const canGoForwardIndex = navState.history.findLastIndex((route) => route.index === navState.route.index);
-    const canGoForwardFallback = canGoForwardIndex < navState.history.length - 1;
-
-    const canGoBack = navigationProvider?.canGoBack?.() ?? canGoBackFallback;
-    const canGoForward = navigationProvider?.canGoForward?.() ?? canGoForwardFallback;
-
     return {
-      /** 用于触发前进导航 */
       navigate: (targetPane, targetParams) => {
-        if (onNavigationChange) {
-          const route = {
-            index: navState.history.length,
-            activePane: targetPane,
-            panes: {
-              ...navState.route.panes,
-              [targetPane]: targetParams,
-            },
-          };
-          onNavigationChange(
-            {
-              route: route,
-              history: [
-                ...(canGoForward ? navState.history.slice(0, navState.route.index + 1) : navState.history),
-                route,
-              ],
-            },
-            {
-              type: "forward",
-              fromPane: navState.route.activePane,
-              toPane: targetPane,
-            },
-          );
-        }
+        const newPanes = {
+          ...navState.route.panes,
+          [targetPane]: targetParams,
+        };
+        const route = {
+          index: navState.history.length,
+          activePane: targetPane,
+          panes: newPanes,
+        };
+        const url = new URL(window.location.href);
+        url.searchParams.set("activePane", targetPane);
+        Object.entries(newPanes).forEach(([key, value]) => {
+          url.searchParams.set(key, JSON.stringify(value));
+        });
+        navigation.navigate(url.pathname + url.search, { state: route as any });
       },
-      /** 是否可以返回 */
-      canGoBack,
-      /** 是否可以前进 */
-      canGoForward,
-      /** 用于触发导航前进 */
-      forward: () => {
-        // 优先使用provider的goForward方法
-        if (navigationProvider?.goForward) {
-          navigationProvider.goForward();
-        } else if (canGoForward && onNavigationChange) {
-          // Fallback: 使用基于history数组的实现
-          const route = navState.history[canGoForwardIndex + 1];
-          onNavigationChange(
-            {
-              route: route,
-              history: navState.history,
-            },
-            {
-              type: "forward",
-              fromPane: navState.route.activePane,
-              toPane: route.activePane,
-            },
-          );
-        }
-      },
-      /** 用于触发返回导航 */
-      back: () => {
-        // 优先使用provider的goBack方法
-        if (navigationProvider?.goBack) {
-          navigationProvider.goBack();
-        } else if (canGoBack && onNavigationChange) {
-          // Fallback: 使用基于history数组的实现
-          const route = navState.history[canGoBackIndex - 1];
-          onNavigationChange(
-            {
-              route: route,
-              history: navState.history,
-            },
-            {
-              type: "back",
-              fromPane: navState.route.activePane,
-              toPane: route.activePane,
-            },
-          );
-        }
-      },
+      canGoBack: navigation.canGoBack,
+      canGoForward: navigation.canGoForward,
+      forward: () => navigation.forward(),
+      back: () => navigation.back(),
     };
-  }, [navState, navigationProvider]);
+  }, [navState, navigation]);
 
   const [railPosition, setRailPosition] = React.useState<ScaffoldRailPosition | "">("");
 
